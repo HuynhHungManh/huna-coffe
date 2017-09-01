@@ -38,7 +38,6 @@ class Category extends Component {
   }
 
   render() {
-    console.log(this.props.categories);
     return (
       <div className="box-list-document">
         <h2 className="list-title">

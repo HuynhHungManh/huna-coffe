@@ -5,7 +5,6 @@ function categories(state = initial, action) {
     case 'GET_LIST_CATEGORIES':
       return action.categories;
     default:
-
       return state;
   }
 }
