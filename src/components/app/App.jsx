@@ -8,12 +8,7 @@ class App extends React.Component {
   constructor(props, context) {
     super(props, context);
 
-    Categories.actions.categories.request().then(response => {
-      this.props.dispatch({
-        type: 'GET_LIST_CATEGORIES',
-        categories: response.data
-      });
-    });
+    this.props.dispatch(Categories.actions.categories());
   }
 
   render() {

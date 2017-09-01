@@ -1,9 +1,15 @@
-let initial = ['hung'];
+let initial = [];
+const {createTreeFromFlatArray} = require('libs/arrayToTree');
 
 function categories(state = initial, action) {
   switch (action.type) {
     case 'GET_LIST_CATEGORIES':
-      return action.categories;
+      let tree = createTreeFromFlatArray(action.categories, {
+        parentProperty: 'parent'
+      });
+      return [
+        ...tree
+      ]
     default:
       return state;
   }

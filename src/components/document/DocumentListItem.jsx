@@ -7,8 +7,8 @@ gotoProcedureDetail(xxx) {
 }
   render() {
     return (
-      <li className="sub-detail-document" onClick={this.gotoProcedureDetail.bind(this, 'xxx')}>
-        <p className="text-detail-document">{this.props.title}</p>
+      <li className="sub-detail-document">
+        <p className="text-detail-document">{this.props.data.title.rendered}</p>
       </li>
     );
   }

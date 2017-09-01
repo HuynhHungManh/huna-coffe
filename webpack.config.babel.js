@@ -71,6 +71,7 @@ var resolve = {
     'assets': path.resolve(__dirname, './src/assets/'),
     'constants': path.resolve(__dirname, './src/constants'),
     'api': path.resolve(__dirname, './src/api/'),
+    'libs': path.resolve(__dirname, './src/libs/'),
     'app': path.resolve(__dirname, './src/components/app'),
     'pages': path.resolve(__dirname, './src/components/pages'),
     'layouts': path.resolve(__dirname, './src/components/layouts'),

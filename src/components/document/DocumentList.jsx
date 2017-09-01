@@ -94,6 +94,7 @@ constructor(props, context) {
 }
 
   render() {
+    console.log(this.props.documents);
     return (
       <div className="box-detail-document">
         <h2 className="list-title">
@@ -102,9 +103,9 @@ constructor(props, context) {
         <div className="box-detail-scroll resize-box-document">
           <ul className="list-detail-document">
             {
-              this.state.documents.map((item, i) => {
+              this.props.documents.map((item, i) => {
                 return (
-                  <DocumentListItem key={i} {...item}/>
+                  <DocumentListItem key={i} data={item}/>
                 )
               })
             }

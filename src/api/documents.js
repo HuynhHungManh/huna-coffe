@@ -4,8 +4,8 @@ import CONFIG from 'base/constants/config';
 
 // Example
 const rest = reduxApi({
-  categories: {
-    url: '/categories',
+  documents: {
+    url: '/posts?filter[taxonomy]=category&filter[term]=:catSlug',
     options:(url, params, getState) => {
       return {
         method: "GET",
@@ -18,8 +18,8 @@ const rest = reduxApi({
     postfetch: [
       function({data, actions, dispatch, getState, request}) {
         dispatch({
-          type: 'GET_LIST_CATEGORIES',
-          categories: data.data
+          type: 'GET_DOCUMENT_BY_SLUG',
+          documents: data.data
         });
       }
     ]
