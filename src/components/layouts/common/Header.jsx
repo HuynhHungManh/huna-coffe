@@ -18,6 +18,10 @@ class Header extends React.Component {
           <div className="text-logo">
             <span className="text-title-logo">UBND QUẬN THANH KHÊ</span>
           </div>
+          <p className="title-hotline">
+            <span className="text-hotline">Đường dây nóng</span>
+            <span className="number-hotline">0905 114 229</span>
+          </p>
         </div>
       </header>
     );

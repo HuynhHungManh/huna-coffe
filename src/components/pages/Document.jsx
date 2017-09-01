@@ -1,45 +1,139 @@
 import React, { Component } from 'react';
 import {CommonLayout} from 'layouts';
+import classnames from 'classnames';
+import {Category} from 'components/document';
+
 
 class Document extends Component {
   constructor(props, context) {
     super(props, context);
-
-    this.state = {
-      categories: [
-        { title: 'Tài liệu Công đoàn quận Thanh Khê' },
-        { title: 'Bộ TTHC lĩnh vực Kho bạc Nhà nước' },
-        { title: 'Biểu mẫu đăng ký báo cáo thành tích' },
-        { title: 'Văn bản thi đua' },
-        { title: 'Tài liệu Công đoàn quận Thanh Khê' },
-        { title: 'Bộ TTHC lĩnh vực Kho bạc Nhà nước' },
-        { title: 'Biểu mẫu đăng ký báo cáo thành tích' },
-        { title: 'Cấp phép tổ chức hoạt động dạy thêm học thêm, cấp phép dạy thêm cho cá nhân' }
-      ],
-      documents: [
-        { title: 'Thông tư 40/2016/TT-BTC của Bộ Tài chính' },
-        { title: 'Thông tin về khoản thu phí' },
-        { title: 'Quy trình TTVDT và vốn sự nghiệp mới ban hành cuối năm 2016' },
-        { title: 'Nội dung thực hiện kiến nghị, phản ánh của cá nhân, tổ chức' },
-        { title: 'Thông tư 39/2016/TT-BTC của Bộ Tài chính' },
-        { title: 'Nội dung TTHC Kho bạc Nhà nước' },
-        { title: 'Danh mục công khai niêm yết xử phạt VPHC' },
-        { title: 'Thủ tục đăng ký khai sinh có yếu tố nước ngoài' },
-        { title: 'Thủ tục đăng ký khai sinh có yếu tố nước ngoài' },
-        { title: 'Thủ tục đăng ký khai sinh có yếu tố nước ngoài' },
-        { title: 'Thủ tục đăng ký khai sinh có yếu tố nước ngoài' },
-        { title: 'Thủ tục đăng ký khai sinh có yếu tố nước ngoài' },
-        { title: 'Thủ tục đăng ký khai sinh có yếu tố nước ngoài' },
-        { title: 'Thủ tục đăng ký khai sinh có yếu tố nước ngoài' },
-        { title: 'Thủ tục đăng ký khai sinh có yếu tố nước ngoài' },
-        { title: 'Thủ tục đăng ký khai sinh có yếu tố nước ngoài' },
-        { title: 'Thủ tục đăng ký khai sinh có yếu tố nước ngoài' }
-      ]
-    }
+    this.resetState();
   }
 
   gotoProcedureDetail(xxx) {
     this.props.history.push('/procedure-detail');
+  }
+
+  resetState(){
+    this.state = {
+      documents: [
+        {
+          id: 1,
+          title: 'Thông tư 40/2016/TT-BTC của Bộ Tài chính',
+          id_parent: 1
+        },
+        {
+          id: 2,
+          title: 'Thông tin về khoản thu phí',
+          id_parent: 1
+        },
+        {
+          id: 3,
+          title: 'Thông tin về khoản thu phí',
+          id_parent: 1
+        },
+        {
+          id: 4,
+          title: 'Nội dung thực hiện kiến nghị, phản ánh của cá nhân, tổ chức',
+          id_parent: 1
+        },
+        {
+          id: 5,
+          title: 'Thông tư 39/2016/TT-BTC của Bộ Tài chính',
+          id_parent: 1
+        },
+        {
+          id: 6,
+            title: 'Thông tin về khoản thu phí',
+          id_parent: 1
+        },
+        {
+          id: 7,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 1
+        },
+        {
+          id: 8,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 1
+        },
+        {
+          id: 9,
+          title: 'Thông tư 40/2016/TT-BTC của Bộ Tài chính',
+          id_parent: 2
+        },
+        {
+          id: 10,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 2
+        },
+        {
+          id: 11,
+            title: 'Thông tin về khoản thu phí',
+          id_parent: 2
+        },
+        {
+          id: 12,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 2
+        },
+        {
+          id: 13,
+          title: 'Thông tin về khoản thu phí',
+          id_parent: 3
+        },
+        {
+          id: 14,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 3
+        },
+        {
+          id: 15,
+          title: 'Thông tin về khoản thu phí',
+          id_parent: 3
+        },
+        {
+          id: 16,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 3
+        },
+        {
+          id: 17,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 3
+        },
+        {
+          id: 18,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 3
+        },
+        {
+          id: 19,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 3
+        },
+        {
+          id: 19,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 3
+        },
+        {
+          id: 20,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 3
+        },
+        {
+          id: 21,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 3
+        },
+        {
+          id: 22,
+          title: 'Danh mục công khai niêm yết xử phạt VPHC',
+          id_parent: 3
+        },
+      ]
+    };
   }
 
   render() {
@@ -56,27 +150,7 @@ class Document extends Component {
             </div>
           </div>
           <div className="content">
-            <div className="box-list-document">
-              <h2 className="list-title">
-                Lĩnh vực biểu mẫu
-              </h2>
-              <div className="box-list-scroll resize-box-document">
-                <ul className="list-document">
-                  {
-                    this.state.categories.map((item, i) => {
-                      return (
-                        <li key={i} className="sub-list-document">
-                          <p className="text-document">
-                            {item.title}
-                          </p>
-                        </li>
-                      )
-                    })
-                  }
-
-                </ul>
-              </div>
-            </div>
+            <Category/>
             <div className="box-detail-document">
               <h2 className="list-title">
                 Tệp biểu mẫu
@@ -86,14 +160,12 @@ class Document extends Component {
                   {
                     this.state.documents.map((item, i) => {
                       return (
-                        <li className="sub-detail-document" onClick={this.gotoProcedureDetail.bind(this, 'xxx')}>
+                        <li key={i} className="sub-detail-document" onClick={this.gotoProcedureDetail.bind(this, 'xxx')}>
                           <p className="text-detail-document">{item.title}</p>
                         </li>
                       )
                     })
                   }
-
-
                 </ul>
               </div>
             </div>

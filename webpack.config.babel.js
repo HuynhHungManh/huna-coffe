@@ -54,7 +54,7 @@ var _module = {
           loader: "css-loader"
         }]
       })
-    }
+    },
   ],
 };
 

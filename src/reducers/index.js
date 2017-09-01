@@ -2,12 +2,12 @@ import {createStore, combineReducers, applyMiddleware} from 'redux';
 import { routerReducer as routing } from 'react-router-redux'
 import thunk from "redux-thunk";
 import * as API from 'api';
+import {categories} from 'base/reducers/categories';
 
 let rootReducer = combineReducers(
   {
     routing,
-    ...API.Categories.reducers,
-    ...API.Users.reducers
+    categories
   }
 );
 
