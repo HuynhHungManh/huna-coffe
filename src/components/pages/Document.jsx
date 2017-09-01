@@ -151,24 +151,7 @@ class Document extends Component {
           </div>
           <div className="content">
             <Category/>
-            <div className="box-detail-document">
-              <h2 className="list-title">
-                Tệp biểu mẫu
-              </h2>
-              <div className="box-detail-scroll resize-box-document">
-                <ul className="list-detail-document">
-                  {
-                    this.state.documents.map((item, i) => {
-                      return (
-                        <li key={i} className="sub-detail-document" onClick={this.gotoProcedureDetail.bind(this, 'xxx')}>
-                          <p className="text-detail-document">{item.title}</p>
-                        </li>
-                      )
-                    })
-                  }
-                </ul>
-              </div>
-            </div>
+            <DocumentList/>
           </div>
         </div>
       </CommonLayout>
