@@ -1,16 +1,23 @@
 import reduxApi, {transformers} from 'redux-api';
 import customFetch from 'api/axios';
+import CONFIG from 'base/constants/config';
 
 // Example
-export default reduxApi({
+const rest = reduxApi({
   categories: {
-    url: 'http://localhost:8888/categories',
+    url: '/categories',
     options:(url, params, getState) => {
       return {
         method: "GET",
-        headers: {},
+        headers: {
+          //'Content-Type': 'application/json'
+        },
         data: {}
       };
     }
   }
-}).use('fetch', customFetch);
+})
+.use('fetch', customFetch)
+.use("rootUrl", CONFIG.API_URL);
+
+export default rest;
