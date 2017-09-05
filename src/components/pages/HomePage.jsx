@@ -2,6 +2,7 @@ import React from 'react';
 import {MasterLayout} from 'layouts';
 
 class HomePage extends React.Component {
+
   gotoPage(page) {
     this.props.history.push(page);
   }

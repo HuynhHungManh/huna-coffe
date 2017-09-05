@@ -7,23 +7,40 @@ class Footer extends React.Component {
     this.state = {
       statusPopup : false
     }
+    this.print = this.print.bind(this);
   }
 
   gotoPage(page) {
     this.context.router.history.push(page);
   }
 
-  showPopupBackHome(){
+  showPopupBackHome() {
     this.setState({
       statusPopup : !this.state.statusPopup
     })
   }
 
+  // handlePrint() {
+  //   this.ref.print.print();
+  //   console.log(this.ref.print);
+  // }
+  print() {
+    this.pdf.print();
+ }
+
   render() {
+    console.log(this.context.router.route.match.path);
     return (
       <footer className="footer footer-pdf">
+        <embed type="application/pdf" width="0" height="0" src="http://localhost:8080/wp-content/uploads/2017/09/compressed.tracemonkey-pldi-09.pdf" ref={(ref) => this.pdf = ref}/>
         <div className="container">
           <button className="btn-icon home btn-action-back" id="btn-back-home" onClick={this.showPopupBackHome.bind(this)}><i className="icon icon-home"/><span className="space-home">Trang chủ</span></button>
+          { this.context.router.route.match.path === '/procedure-detail/:id' &&
+            <div className="box-print">
+              <button className="btn print-document left"><span className="icon-print" /><span className="text-print" onClick={this.myPrint}><span>IN BIỂU MẪU TRẮNG</span></span></button>
+              <button className="btn print-document left"><span className="icon-print" /><span className="text-print" />IN BIỂU MẪU SẴN</button>
+            </div>
+          }
         </div>
         <Modal
           isOpen={this.state.statusPopup}

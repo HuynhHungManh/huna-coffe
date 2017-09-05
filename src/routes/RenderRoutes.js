@@ -14,10 +14,8 @@ const RenderRoutes = ({routes, auth}) => {
   return (
     <ConnectedSwitch>
       {routes.map((route, i) => (
-
         <Route key={i} path={route.path} exact={route.exact} render={(props) => (
           <div>
-
             {
               <route.component {...props} route={route} routes={route.routes}/>
             }
