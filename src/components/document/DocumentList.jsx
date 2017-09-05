@@ -94,7 +94,6 @@ constructor(props, context) {
 }
 
   render() {
-    console.log(this.props.documents);
     return (
       <div className="box-detail-document">
         <h2 className="list-title">
