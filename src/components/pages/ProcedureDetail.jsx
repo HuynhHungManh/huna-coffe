@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import {CommonLayout} from 'layouts';
-
+import {connect} from 'react-redux';
+import {Documents} from 'api';
 
 class ProcedureDetail extends Component {
+
+  viewFilePdf() {
+    let file = this.props.documents.find((item) => item.id == this.props.match.params.id);
+    return file.acf.file_bieu_mau.url
+  }
+
   render() {
     return (
       <CommonLayout>
@@ -14,7 +21,7 @@ class ProcedureDetail extends Component {
           </div>
           <div className="content custom-procedure">
             <div className="view-procedure">
-              <iframe className="view-pdf" src="./lib-pdf/web/viewer.html?file=file.pdf" seamless />
+              <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${this.viewFilePdf()}`} seamless />
             </div>
           </div>
         </div>
@@ -23,4 +30,10 @@ class ProcedureDetail extends Component {
   }
 }
 
-export default ProcedureDetail;
+const bindStateToProps = (state) => {
+  return {
+    documents: state.documents || []
+  }
+}
+
+export default connect(bindStateToProps)(ProcedureDetail);

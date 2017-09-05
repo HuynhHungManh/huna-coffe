@@ -7,9 +7,6 @@ import {Documents} from 'api';
 import {Category,DocumentList, Search} from 'components/document';
 
 class Document extends Component {
-  constructor(props, context) {
-    super(props, context);
-  }
 
   render() {
     return (
@@ -23,7 +20,7 @@ class Document extends Component {
           </div>
           <div className="content">
           <Category />
-          <DocumentList />
+          <DocumentList/>
           </div>
         </div>
       </CommonLayout>

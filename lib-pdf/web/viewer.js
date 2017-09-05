@@ -2034,9 +2034,9 @@ validateFileURL = function validateFileURL(file) {
       return;
     }
     var fileOrigin = new URL(file, window.location.href).origin;
-    if (fileOrigin !== viewerOrigin) {
-      throw new Error('file origin does not match viewer\'s');
-    }
+    // if (fileOrigin !== viewerOrigin) {
+    //   throw new Error('file origin does not match viewer\'s');
+    // }
   } catch (e) {
     var message = e && e.message;
     var loadingErrorMessage = mozL10n.get('loading_error', null, 'An error occurred while loading the PDF.');

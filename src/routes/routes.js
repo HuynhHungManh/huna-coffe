@@ -37,6 +37,11 @@ const routes = [
         path: '/procedure-detail',
       },
       {
+        component: ProcedureDetail,
+        exact: true,
+        path: '/procedure-detail/:id',
+      },
+      {
         component: FindProcedure,
         exact: true,
         path: '/find-procedure',
