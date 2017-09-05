@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import {connect} from 'react-redux';
 import {Documents} from 'api';
+import SubCategory from './SubCategory.jsx';
 
 class Category extends Component {
   constructor(props, context) {
     super(props, context);
+    this.browseDocuments = this.browseDocuments.bind(this);
   }
 
   browseDocuments(category) {
@@ -33,20 +35,14 @@ class Category extends Component {
                       {item.name}
                     </p>
                     { item.children.length > 0 &&
-                      <ul className="sub-list-text-document">
-                      {
-                        item.children.map((subItem, i1) => {
-                          return (
-                            <li key={i1} className={
-                              classnames('box-sub-text-document', {
-                                // 'text-active-document' : subItem.statusClick
-                              })}
-                             onClick={this.browseDocuments.bind(this, subItem)}>
-                              <p className="sub-text-document ">{subItem.name} </p>
-                            </li>
+                       <ul className="sub-list-text-document">
+                        {
+                          item.children.map((subItem, i1) => {
+                            return (
+                              <SubCategory key={i1} data={subItem} browseDocuments ={this.browseDocuments}/>
                             )
                           })
-                        }
+                         }
                         </ul>
                       }
                   </li>
