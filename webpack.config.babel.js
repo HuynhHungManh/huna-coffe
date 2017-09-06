@@ -16,7 +16,7 @@ const {
 var _module = {
   rules: [
     {
-      test: /\.(ico|jpg|jpeg|png|gif|eot|ttf|woff|svg)/,
+      test: /\.(ico|jpg|jpeg|png|gif|eot|ttf|woff|svg|pdf)/,
       use: [
         {
           loader: 'file-loader',

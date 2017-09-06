@@ -4,7 +4,6 @@ import {CommonLayout} from 'layouts';
 
 class RatingDetail extends Component {
   numberInput() {
-
   }
   render() {
     return (

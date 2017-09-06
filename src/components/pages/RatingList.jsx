@@ -5,7 +5,6 @@ import {RatingListItem} from 'components/ratingList';
 class RatingList extends Component {
 
   render() {
-    console.log(this.props);
     return (
       <CommonLayout>
         <div className="container">
