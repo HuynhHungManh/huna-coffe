@@ -11,12 +11,12 @@ class Feedback extends Component {
           <h2 className="title bg-fb">
             <span className="title-main">Góp Ý - phản Ánh</span>
           </h2>
-          <span className="message-fb" id="showMessage">
+          {/* <span className="message-fb" id="showMessage">
             <span className="text-message-fb">
               Gửi góp ý thành công
             </span>
-            <span className="icon-close-message icon-close"/>
-          </span>
+            <span className="icon-close-message icon-close"/></span>
+          </span> */}
         </div>
         <div className="content">
           <FeedbackForm />
