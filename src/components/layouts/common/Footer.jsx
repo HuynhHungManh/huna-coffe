@@ -20,10 +20,10 @@ class Footer extends React.Component {
   }
 
   printPDF() {
-    var pdfFrame = window.frames["pdf"];
-    pdfFrame.focus();
-    pdfFrame.print();
-    window.close();
+    const mainProcess = window.require("electron").remote.require('./print.js');
+
+    mainProcess.print('http://192.168.1.196:8080/wp-content/uploads/2017/09/compressed.tracemonkey-pldi-09.pdf');
+
   }
 
   render() {

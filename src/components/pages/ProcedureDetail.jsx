@@ -21,7 +21,7 @@ class ProcedureDetail extends Component {
           </div>
           <div className="content custom-procedure">
             <div className="view-procedure">
-              <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${encodeURI(this.viewFilePdf())}`} seamless />
+              <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=http://192.168.1.196:8080/wp-content/uploads/2017/09/compressed.tracemonkey-pldi-09.pdf`} seamless />
             </div>
           </div>
         </div>
