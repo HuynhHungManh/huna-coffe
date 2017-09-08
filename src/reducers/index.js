@@ -4,12 +4,14 @@ import thunk from "redux-thunk";
 import * as API from 'api';
 import {categories} from 'base/reducers/categories';
 import {documents} from 'base/reducers/documents';
+import {calendar} from 'base/reducers/calendar';
 
 let rootReducer = combineReducers(
   {
     routing,
     categories,
-    documents
+    documents,
+    calendar
   }
 );
 

@@ -1508,6 +1508,12 @@ background-image: url("../images/icon/calendar.svg");
 .title-main-right-date {
   font-size: 23px;
 }
+.fix-right-text {
+  margin-right: 5px;
+}
+.fix-right-text:last-child {
+  margin-left: 5px;
+}
 /*---------------------------*/
 /*style-detail-rating*/
 .info-name {
