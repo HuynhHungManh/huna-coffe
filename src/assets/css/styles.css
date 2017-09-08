@@ -1024,6 +1024,40 @@ span.icon-Arrow{
   padding: 39px 60px;
   border-bottom: 1px solid #e5e5e5;
 }
+/*---Validation-Feedback-Page-----*/
+.title-validation {
+  position: relative;
+}
+.notice-form{
+  font-size:23px;
+  float: right;
+  text-transform: none;
+}
+.validation-form{
+  background-color: #ee0000;
+  border-radius: 5px;
+  left: auto;
+  line-height: 50px;
+  font-family:'Roboto-Medium';
+  font-size: 23px;
+  position: absolute;
+  right: 40px;
+  text-transform: none;
+  text-align: center;
+  top: 30px;
+  width: 550px;
+}
+.validation-form .validation-success {
+  background-color: #04b46c;
+}
+.validation-text, .validation-success-text{
+  color: #ffffff;
+  padding: 0 20px;
+}
+.star-red{
+  color: #ee0000;
+}
+/*---------------------------------------*/
 .form-fb{
   padding: 36px 60px 13px 60px;
   font-family:'Roboto-Bold';
