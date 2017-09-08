@@ -1,7 +1,9 @@
 import React from 'react';
 import {CommonLayout} from 'layouts';
-class Calendar extends React.Component {
+import classnames from 'classnames';
+import {Calendar_PDF, Calendar_Title} from 'components/calendar';
 
+class Calendar extends React.Component {
   render() {
     return (
       <CommonLayout>
@@ -10,10 +12,7 @@ class Calendar extends React.Component {
           <h2 className="title bg-calendar">
             <span className="title-main">Lịch Làm Việc Quận Thanh Khê</span>
           </h2>
-          <div className="title-right">
-            <p className="title-main-right">LỊCH CÔNG TÁC CƠ QUAN TUẦN THỨ 27</p>
-            <p className="title-main-right-date">(TỪ NGÀY 03/07/2017 ĐẾN NGÀY 08/07/2017)</p>
-          </div>
+          <Calendar_Title />
         </div>
         <div className="content custom-procedure">
           <div className="view-procedure">
