@@ -1,6 +1,26 @@
 import React, { Component } from 'react';
+import {Feedbacks} from 'api';
+import {connect} from 'react-redux';
 
 class FeedbackForm extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+        'hoVaTen': '',
+        'soDienThoai': '',
+        'email': '',
+        'noiDung': '',
+        'status':'publish',
+      }
+  }
+
+  sendFeedback() {
+    this.props.dispatch(Feedbacks.actions.feedbacks.request(null,this.state));
+  }
+
+  handleChange(e) {
+    this.setState({[e.target.name]: e.target.value})
+  }
 
   render() {
     return (
@@ -20,7 +40,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <input id="ipt-name" type="text" placeholder="Nhập họ và tên" />
+                <input id="ipt-name"  name="hoVaTen" type="text" onChange={this.handleChange.bind(this)} placeholder="Nhập họ và tên" />
               </div>
             </div>
             <div className="sub-box-input">
@@ -30,7 +50,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <input id="ipt-phone" type="text" placeholder="Nhập số" />
+                <input id="ipt-phone" name="soDienThoai" onChange={this.handleChange.bind(this)} type="text" placeholder="Nhập số" />
               </div>
             </div>
             <div className="sub-box-input">
@@ -40,7 +60,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <input id="ipt-email" type="text" placeholder="Nhập email" />
+                <input id="ipt-email" name="email" onChange={this.handleChange.bind(this)} type="text" placeholder="Nhập email" />
               </div>
             </div>
             <div className="sub-box-input">
@@ -50,7 +70,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <textarea id="inp-content" placeholder="Nhập nội dung phản ánh, góp ý của bạn" defaultValue={""} />
+                <textarea id="inp-content" name="noiDung" onChange={this.handleChange.bind(this)} placeholder="Nhập nội dung phản ánh, góp ý của bạn" defaultValue={""} />
               </div>
             </div>
             <div className="sub-box-input">
@@ -58,7 +78,7 @@ class FeedbackForm extends Component {
               </div>
               <div className="input-fb">
                 <button className="btn clear-fb"><span className="btn-clear-fb btn-action-cancel">Nhập lại</span></button>
-                <button className="btn send-fb btn-action-send"><span className="btn-send-fb">Gửi góp ý</span></button>
+                <button className="btn send-fb btn-action-send" onClick={this.sendFeedback.bind(this)}><span className="btn-send-fb">Gửi góp ý</span></button>
               </div>
             </div>
           </div>
@@ -69,4 +89,10 @@ class FeedbackForm extends Component {
 
 }
 
-export default FeedbackForm;
+const bindStateToProps = (state) => {
+  return {
+
+  }
+}
+
+export default connect(bindStateToProps)(FeedbackForm);

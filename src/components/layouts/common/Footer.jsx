@@ -23,21 +23,15 @@ class Footer extends React.Component {
     var pdfFrame = window.frames["pdf"];
     pdfFrame.focus();
     pdfFrame.print();
-    // pdfFrame.close();
-
-    // var pp = getPrintParams(); // Get printing parameters
-    // pp.interactive = pp.constants.interactionLevel.automatic; // Do not prompt user
-    // pp.printerName = 'PDFCreator'; // Set printer name
-    // this.print(pp); // Print
+    window.close();
   }
-
 
   render() {
 
     return (
       <footer className="footer footer-pdf">
         <div className="container">
-          <iframe id="pdf" name="pdf" src={`./lib-pdf/web/viewer.html?file=${"http://192.168.0.117:8080/wp-content/uploads/2017/09/compressed.tracemonkey-pldi-09.pdf"}`}  width="0" height="0"/>
+          <iframe name="pdf" src={`./lib-pdf/web/viewer.html?file=${"http://192.168.1.196:8080/wp-content/uploads/2017/09/compressed.tracemonkey-pldi-09.pdf"}`}  width="0" height="0"/>
           <button className="btn-icon home btn-action-back" id="btn-back-home" onClick={this.showPopupBackHome.bind(this)}><i className="icon icon-home"/><span className="space-home">Trang chủ</span></button>
           { this.context.router.route.match.path === '/procedure-detail/:id' &&
             <div className="box-print">
