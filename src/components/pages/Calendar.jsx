@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import {Calendar_PDF, Calendar_Title} from 'components/calendar';
 
 class Calendar extends React.Component {
+
   render() {
     return (
       <CommonLayout>
@@ -15,9 +16,7 @@ class Calendar extends React.Component {
           <Calendar_Title />
         </div>
         <div className="content custom-procedure">
-          <div className="view-procedure">
-            <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=`} seamless />
-          </div>
+          <Calendar_PDF />
         </div>
       </div>
       </CommonLayout>

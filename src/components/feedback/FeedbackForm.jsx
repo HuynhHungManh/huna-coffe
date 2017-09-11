@@ -69,7 +69,7 @@ class FeedbackForm extends Component {
         noiDung: this.state.noiDung,
         status: this.state.status
       }
-      this.props.dispatch(Feedbacks.actions.feedbacks.request(null, params));
+      this.props.dispatch(Feedbacks.actions.feedbacks(null, params));
       this.setState({
         success: true,
         message: 'Gửi góp ý thành công'

@@ -14,6 +14,12 @@ class Category extends Component {
     this.props.dispatch(Documents.actions.documents({catSlug: category.slug}));
   }
 
+  changeStyleCategories(items) {
+    if(item.length > 0)
+      return true;
+    return false
+  }
+
   render() {
     return (
       <div className="box-list-document">

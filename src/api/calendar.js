@@ -5,7 +5,7 @@ import CONFIG from 'base/constants/config';
 // Example
 const rest = reduxApi({
   calendars: {
-    url: '/posts',
+    url: '/calendar',
     options:(url, params, getState) => {
       return {
         method: "GET",
