@@ -36,7 +36,7 @@ class FeedbackForm extends Component {
       this.setState({
         error: true,
         success:false,
-        message: 'Vui lòng điền họ tên'
+        message: 'Vui lòng nhập họ và tên'
       },()=> {
         setTimeout(this.hide.bind(this), 3000);
       })
@@ -54,15 +54,24 @@ class FeedbackForm extends Component {
       this.setState({
         error: true,
         success:false,
-        message: 'Vui lòng điền số điện thoại'
+        message: 'Vui lòng nhập số điện thoại'
       },()=> {
         setTimeout(this.hide.bind(this), 3000);
       })
-    } else if(this.state.email) {
+    }  else if(state.soDienThoai.length < 10 || state.soDienThoai.length > 11) {
+      pass = false;
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Vui lòng nhập lại số điện thoại hợp lệ'
+      },()=> {
+        setTimeout(this.hide.bind(this), 3000);
+      })
+    }else if(this.state.email) {
       let email = this.state.email;
       let atpos = email.indexOf("@");
       let dotpos = email.lastIndexOf(".");
-      if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= email.length) {
+      if (atpos < 1 || dotpos < atpos + 2 || dotpos + 3 >= email.length) {
         pass = false;
         this.setState({
           error: true,
@@ -77,7 +86,7 @@ class FeedbackForm extends Component {
       this.setState({
         error: true,
         success:false,
-        message: 'Vui lòng góp ý'
+        message: 'Vui lòng điền góp ý'
       },()=> {
         setTimeout(this.hide.bind(this), 3000);
       })
@@ -134,7 +143,6 @@ class FeedbackForm extends Component {
       })
     }
   }
-
 
   handleClear(e) {
     e.preventDefault();
@@ -229,7 +237,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <textarea id="inp-content" onChange={this.handleChange.bind(this, 'noiDung')} value={this.state.noiDung} placeholder="Nhập nội dung phản ánh, góp ý của bạn" defaultValue={""} />
+                <textarea id="inp-content" onChange={this.handleChange.bind(this, 'noiDung')} value={this.state.noiDung} placeholder="Nhập nội dung phản ánh, góp ý của bạn" />
               </div>
             </div>
             <div className="sub-box-input">
