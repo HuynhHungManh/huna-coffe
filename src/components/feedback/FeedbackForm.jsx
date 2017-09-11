@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import {Feedbacks} from 'api';
 import {connect} from 'react-redux';
 
+const PhoneNumber = (input) => {  return input = input.replace(/[^0-9]+/g, "");}
+const FullName = (input) => {  return input = input.replace(/[^A-Za-z]+/g, "");}
+
 class FeedbackForm extends Component {
   constructor(props, context) {
     super(props, context);
@@ -37,6 +40,15 @@ class FeedbackForm extends Component {
       },()=> {
         setTimeout(this.hide.bind(this), 3000);
       })
+    } else if(state.hoVaTen.length < 4) {
+      pass = false;
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Họ và tên ít nhất 4 kí tự'
+      },()=> {
+        setTimeout(this.hide.bind(this), 3000);
+      })
     } else if(state.soDienThoai == '') {
       pass = false;
       this.setState({
@@ -46,6 +58,20 @@ class FeedbackForm extends Component {
       },()=> {
         setTimeout(this.hide.bind(this), 3000);
       })
+    } else if(this.state.email) {
+      let email = this.state.email;
+      let atpos = email.indexOf("@");
+      let dotpos = email.lastIndexOf(".");
+      if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= email.length) {
+        pass = false;
+        this.setState({
+          error: true,
+          success:false,
+          message: 'Email không đúng định dạng'
+        },()=> {
+          setTimeout(this.hide.bind(this), 3000);
+        })
+      }
     } else if(state.noiDung == '') {
       pass = false;
       this.setState({
@@ -72,7 +98,11 @@ class FeedbackForm extends Component {
       this.props.dispatch(Feedbacks.actions.feedbacks(null, params));
       this.setState({
         success: true,
-        message: 'Gửi góp ý thành công'
+        message: 'Gửi góp ý thành công',
+        hoVaTen: '',
+        soDienThoai: '',
+        email: '',
+        noiDung: '',
       }, ()=> {
         setTimeout(this.hide.bind(this), 3000);
       })
@@ -81,8 +111,19 @@ class FeedbackForm extends Component {
   }
 
   handleChange(name, e) {
-    const re = /^[0-10\b]+$/;
-    if (name == 'soDienThoai' || name == 'hoVaTen' || name == 'noiDung') {
+    if (name == 'soDienThoai') {
+      e.target.value = PhoneNumber(e.target.value)
+      this.setState({
+        [name]: e.target.value,
+        error: false
+      })
+    } else if (name == 'hoVaTen') {
+      e.target.value = FullName(e.target.value)
+      this.setState({
+        [name]: e.target.value,
+        error: false
+      })
+    } else if (name == 'noiDung') {
       this.setState({
         [name]: e.target.value,
         error: false
@@ -93,6 +134,7 @@ class FeedbackForm extends Component {
       })
     }
   }
+
 
   handleClear(e) {
     e.preventDefault();
@@ -107,6 +149,24 @@ class FeedbackForm extends Component {
     })
     return;
   }
+
+  checkEmail() {
+  if(this.state.email) {
+    let email = this.state.email;
+    let atpos = email.indexOf("@");
+    let dotpos = email.lastIndexOf(".");
+    if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= email.length) {
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Email không đúng định dạng'
+      },()=> {
+        setTimeout(this.hide.bind(this), 3000);
+      })
+    }
+  }
+}
+
 
   render() {
     return (
@@ -139,7 +199,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <input id="ipt-name" type="text" onChange={this.handleChange.bind(this, 'hoVaTen')} value={this.state.hoVaTen} placeholder="Nhập họ và tên" />
+                <input id="ipt-name" type="text" onChange={this.handleChange.bind(this, 'hoVaTen')} value={this.state.hoVaTen} maxLength = {55} placeholder="Nhập họ và tên" />
               </div>
             </div>
             <div className="sub-box-input">
@@ -149,7 +209,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <input id="ipt-phone" onChange={this.handleChange.bind(this, 'soDienThoai')} value={this.state.soDienThoai} type="number" placeholder="Nhập số" />
+                <input id="ipt-phone" type="text" onChange={this.handleChange.bind(this, 'soDienThoai')} value={this.state.soDienThoai} maxLength={11} placeholder="Nhập số" />
               </div>
             </div>
             <div className="sub-box-input">
@@ -159,7 +219,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <input id="ipt-email" onChange={this.handleChange.bind(this, 'email')} value={this.state.email} type="email" placeholder="Nhập email" />
+                <input id="ipt-email" type="text" onChange={this.handleChange.bind(this, 'email')} value={this.state.email} onBlur={this.checkEmail.bind(this)} placeholder="Nhập email" />
               </div>
             </div>
             <div className="sub-box-input">
