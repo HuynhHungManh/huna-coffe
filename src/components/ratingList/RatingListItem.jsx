@@ -83,7 +83,6 @@ constructor(props, context) {
 }
 
   render() {
-    console.log(this.props);
     return (
       <div className="list-scroll">
         <div className="list-info">

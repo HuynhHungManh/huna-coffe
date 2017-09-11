@@ -6,9 +6,9 @@ class RatingItem extends Component {
   }
 
   gotoPage(page) {
-    console.log(this.props);
-    // this.props.history.push(page);
+    this.props.history.push(page);
   }
+
 
   render() {
     return (

@@ -1047,7 +1047,7 @@ span.icon-Arrow{
   top: 30px;
   width: 550px;
 }
-.validation-form .validation-success {
+.validation-form.validation-success {
   background-color: #04b46c;
 }
 .validation-text, .validation-success-text{
