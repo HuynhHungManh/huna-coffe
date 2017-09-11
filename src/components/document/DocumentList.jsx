@@ -9,7 +9,6 @@ class DocumentList extends Component {
     super(props, context);
   }
 
-
   render() {
     return (
       <div className="box-detail-document">

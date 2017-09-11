@@ -8,17 +8,40 @@ class Category extends Component {
   constructor(props, context) {
     super(props, context);
     this.browseDocuments = this.browseDocuments.bind(this);
+    this.state = {
+      categories : ''
+    }
   }
 
-  browseDocuments(category) {
+  browseCategories(category) {
+    console.log(category.slug);
     this.props.dispatch(Documents.actions.documents({catSlug: category.slug}));
+
+    var categories = this.props.categories;
+    categories.forEach(function(item, index) {
+      if(item.id === category.id)
+        item.status = true;
+      else{
+        item.status = false;
+      }
+    });
+    this.setState({categories : categories})
   }
 
-  changeStyleCategories(items) {
-    if(item.length > 0)
-      return true;
-    return false
+  browseDocuments(id,indexParent,slug) {
+    this.props.dispatch(Documents.actions.documents({catSlug: slug}));
+    let categories = this.state.categories;
+    categories[indexParent].children.forEach(function(item, index) {
+      if(item.id === id){
+        item.status = true;
+      }
+      else{
+        item.status = false;
+      }
+    });
+    this.setState({categories : categories})
   }
+
 
   render() {
     return (
@@ -34,18 +57,18 @@ class Category extends Component {
                   <li key={i} className="sub-list-document">
                     <p className={
                       classnames('text-document', {
-                        //'text-active-document' : item.statusClick
+                        'text-active-document' : item.status
                       })}
-                      onClick={this.browseDocuments.bind(this, item)}
+                      onClick={this.browseCategories.bind(this, item)}
                     >
                       {item.name}
                     </p>
-                    { item.children.length > 0 &&
+                    { item.children.length > 0 && item.status === true &&
                        <ul className="sub-list-text-document">
                         {
                           item.children.map((subItem, i1) => {
                             return (
-                              <SubCategory key={i1} data={subItem} browseDocuments ={this.browseDocuments}/>
+                              <SubCategory key={i1} data={subItem} indexParent ={i} browseDocuments ={this.browseDocuments}/>
                             )
                           })
                          }
