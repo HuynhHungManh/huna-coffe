@@ -7,7 +7,7 @@ class ProcedureDetail extends Component {
 
   viewFilePdf() {
     let file = this.props.documents.find((item) => item.id == this.props.match.params.id);
-    return file.acf.file_bieu_mau.url
+    return file.acf.fileBieuMau.url
   }
 
   render() {

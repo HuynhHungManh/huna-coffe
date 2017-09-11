@@ -10,9 +10,9 @@ class SubCategory extends Component {
     return (
       <li className={
         classnames('box-sub-text-document', {
-          // 'text-active-document' : subItem.statusClick
+          'text-active-document' : this.props.data.status
         })}
-       onClick={this.props.browseDocuments.bind(this, this.props.data)}>
+       onClick={this.props.browseDocuments.bind(this, this.props.data.id,this.props.indexParent,this.props.data.slug)}>
         <p className="sub-text-document ">{this.props.data.name} </p>
       </li>
     );
