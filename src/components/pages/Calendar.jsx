@@ -15,9 +15,7 @@ class Calendar extends React.Component {
           <Calendar_Title />
         </div>
         <div className="content custom-procedure">
-          <div className="view-procedure">
-            <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=`} seamless />
-          </div>
+          <Calendar_PDF />
         </div>
       </div>
       </CommonLayout>
