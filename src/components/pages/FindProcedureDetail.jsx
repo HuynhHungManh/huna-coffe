@@ -3,7 +3,14 @@ import {CommonLayout} from 'layouts';
 
 
 class FindProcedureDetail extends Component {
+
+  gotoPage(page) {
+    this.context.router.history.push(page);
+  }
+
+
   render() {
+    console.log(this.props.match.params.id);
     return (
       <CommonLayout>
         <div className="container">
@@ -19,12 +26,14 @@ class FindProcedureDetail extends Component {
             </span>
           </div>
           <div className="scroll-procedure-detail">
-            <table className="table-detail-procedure">
+            <iframe width="100%" height="100%" src={`http://tthc.danang.gov.vn/index.php?option=com_thutuchanhchinh&task=thutucdetailfromdb&view=thutuc&id_hethong=${this.props.match.params.id}`} seamless />
+            {/* <table className="table-detail-procedure">
               <thead>
                 <tr><th colSpan={4}>CẤP SỬA ĐỔI, BỔ SUNG GIẤY PHÉP BÁN LẺ SẢN PHẨM THUỐC LÁ</th>
                 </tr></thead>
-              <tbody>
-                <tr>
+              {/* <tbody> */}
+                {/* <iframe width="100%" height="100%" src="http://tthc.danang.gov.vn/index.php?option=com_thutuchanhchinh&task=thutucdetailfromdb&view=thutuc&id_hethong=21460" seamless /> */}
+                {/* <tr>
                   <td style={{color: '#ef3d19'}}>Mã thủ tục</td>
                   <td>T-DNG-286742-TT</td>
                   <td style={{color: '#ef3d19'}}>Ngày hiệu lực (Dữ liệu chuẩn hóa từ năm 2017)</td>
@@ -90,9 +99,9 @@ class FindProcedureDetail extends Component {
                     <p>Bước 2: Bộ phận tiếp nhận và trả kết quả thuộc Văn phòng UBND cấp huyện tiếp nhận hồ sơ và chuyển sang Phòng Kinh tế hoặc Phòng Kinh tế và Hạ tầng;</p>
                     <p>Bước 3: Chuyên viên xử lý hồ sơ, trình lãnh đạo phòng ký và chuyển giấy phép cho Bộ phận tiếp nhận và trả kết quả để trả cho công dân, tổ chức.</p>
                   </td>
-                </tr>
-              </tbody>
-            </table>
+                </tr> */}
+              {/* </tbody> */} */}
+            {/* </table> */}
           </div>
         </div>
       </div>
