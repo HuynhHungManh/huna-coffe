@@ -62,6 +62,11 @@ const routes = [
         path: '/rating-detail',
       },
       {
+        component: RatingDetail,
+        exact: true,
+        path: '/rating-detail/:id',
+      },
+      {
         component: RatingList,
         exact: true,
         path: '/rating-list',
