@@ -22,7 +22,8 @@ constructor(props, context) {
     return (
       <div className="box-content box-content-rating-detail">
         <div className="box-info">
-          <div className="info-top bg-img-rating">
+          <div className="info-top">
+            <img className="img-rating-detail" src={this.state.data.image} />
           </div>
           <div className="info-bottom">
             <h2 className="header-info">{this.state.data.name}</h2>
