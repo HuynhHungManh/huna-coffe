@@ -14,7 +14,6 @@ class Category extends Component {
   }
 
   browseCategories(category) {
-    console.log(category.slug);
     this.props.dispatch(Documents.actions.documents({catSlug: category.slug}));
 
     var categories = this.props.categories;
