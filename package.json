@@ -29,11 +29,8 @@
     "react-addons-css-transition-group": "^15.5.2",
     "react-dom": "^15.5.4",
     "react-modal": "^2.2.4",
-<<<<<<< HEAD
     "react-moment": "^0.6.5",
-=======
     "react-paginate": "^4.4.3",
->>>>>>> 28817a45e9877c3ea9a382b228e544b32800a910
     "react-redux": "^5.0.5",
     "react-router-config": "^1.0.0-beta.4",
     "react-router-dom": "^4.2.2",
