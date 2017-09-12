@@ -52,6 +52,11 @@ const routes = [
         path: '/find-procedure-detail',
       },
       {
+        component: FindProcedureDetail,
+        exact: true,
+        path: '/find-procedure-detail/:id',
+      },
+      {
         component: Feedback,
         exact: true,
         path: '/feedback',
@@ -70,6 +75,11 @@ const routes = [
         component: RatingList,
         exact: true,
         path: '/rating-list',
+      },
+      {
+        component: SearchDetail,
+        exact: true,
+        path: '/search-detail/:id',
       },
       {
         component: SearchDetail,

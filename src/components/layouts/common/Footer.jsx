@@ -37,6 +37,15 @@ class Footer extends React.Component {
         <div className="container">
           {/* <iframe name="pdf" src={`./lib-pdf/web/viewer.html?file=${"http://192.168.1.196:8080/wp-content/uploads/2017/09/compressed.tracemonkey-pldi-09.pdf"}`}  width="0" height="0"/> */}
           <button className="btn-icon home btn-action-back" id="btn-back-home" onClick={this.showPopupBackHome.bind(this)}><i className="icon icon-home"/><span className="space-home">Trang chủ</span></button>
+          {
+            this.context.router.route.match.path === '/find-procedure-detail/:id' &&
+            <button className="btn-icon back btn-action-send"><i className="icon icon-arrow-left size-back btn-action-send" /><span className="space-back" onClick={this.gotoPage.bind(this,'/find-procedure')}>Trở về</span></button>
+          }
+          {
+            this.context.router.route.match.path === '/search-detail' &&
+            <button className="btn-icon back btn-action-send"><i className="icon icon-arrow-left size-back btn-action-send" /><span className="space-back" onClick={this.gotoPage.bind(this,'/search-file')}>Trở về</span></button>
+          }
+
           { this.context.router.route.match.path === '/procedure-detail/:id' &&
             <div className="box-print">
               <button className="btn print-document left"><span className="icon-print" /><span className="text-print" onClick={this.printPDF.bind(this,'BieuMau')}><span>IN BIỂU MẪU TRẮNG</span></span></button>

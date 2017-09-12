@@ -459,6 +459,31 @@ span.icon-Arrow{
 .detail-rw{
     display: inline-block;
 }
+
+.pagination ul{
+  background-color: red !important;
+  width: 300px;
+  margin-top: 10px;
+}
+.pagination ul li {
+  float: left;
+  font-family: 'Roboto-Regular';
+  display: inline-block;
+  color: #000000;
+  margin-right: 10px;
+  width: 32px;
+  height: 32px;
+  float: left;
+  border-radius: 5px;
+  border: solid 1px #dddddd;
+  background: #ffffff;
+  font-size:16px;
+  text-align: center;
+}
+
+.box-content-rating-detail.validate-phone {
+  font-family: 'Roboto-Regular';
+}
 #errmsg {
   display: inline-block;
   color: red;
@@ -2023,20 +2048,20 @@ background-image: url("../images/icon/calendar.svg");
 .header-procedure-detail {
   position: relative;
   font-family: 'Roboto-Bold';
-  width: 96.1%;
+  width: 100%;
   background: #0080fe;
   text-align: left;
   padding: 17px 20px;
   color: #ffffff;
   font-size: 20px;
   line-height: 26px;
-  z-index: 2;
+  z-index: 1;
 }
 .scroll-procedure-detail {
   width: 100%;
   height: 100%;
   position: relative;
-  overflow-y: auto;
+  /*overflow-y: auto;*/
   top: -59px;
 }
 .scroll-procedure-detail::-webkit-scrollbar {
