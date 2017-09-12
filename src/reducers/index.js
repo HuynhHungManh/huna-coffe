@@ -6,6 +6,7 @@ import {categories} from 'base/reducers/categories';
 import {documents} from 'base/reducers/documents';
 import {calendar} from 'base/reducers/calendar';
 import {ratings} from 'base/reducers/ratings';
+import {searchfile} from 'base/reducers/searchfile';
 
 let rootReducer = combineReducers(
   {
@@ -13,7 +14,8 @@ let rootReducer = combineReducers(
     categories,
     documents,
     calendar,
-    ratings
+    ratings,
+    searchfile
   }
 );
 
