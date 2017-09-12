@@ -219,11 +219,6 @@ module.exports = function (env) {
         port: process.env.PORT || 3000,
         contentBase: './',
         historyApiFallback: true,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-          "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
-        }
       }
     }
   ];
