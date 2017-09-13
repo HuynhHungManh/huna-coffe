@@ -54,6 +54,9 @@ class Category extends Component {
               this.props.categories.map((item, i) => {
                 return (
                   <li key={i} className="sub-list-document">
+                    { item.status && item.children.length > 0 && 
+                      <img className ="icon-drop-down" src={require('assets/images/icon/dropdown.png')} />
+                    }
                     <p className={
                       classnames('text-document', {
                         'text-active-document' : item.status
