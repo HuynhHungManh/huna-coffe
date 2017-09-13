@@ -44,7 +44,7 @@ class Footer extends React.Component {
             <button className="btn-icon back btn-action-send" onClick={this.gotoPage.bind(this,'/find-procedure')}><i className="icon icon-arrow-left size-back btn-action-send" /><span className="space-back" >Trở về</span></button>
           }
           {
-            this.context.router.route.match.path === '/search-detail' &&
+            this.context.router.route.match.path === '/search-detail/:id' &&
             <button className="btn-icon back btn-action-send" onClick={this.gotoPage.bind(this,'/search-file')}><i className="icon icon-arrow-left size-back btn-action-send" /><span className="space-back">Trở về</span></button>
           }
           {
