@@ -44,14 +44,109 @@ class SearchDetailForm extends Component {
           <div className="box-search-detail">
             <div className="content-file">
               <div className="box-content-file">
-                <h2 className="sub-title-file">
-                  Lĩnh vực
-                </h2>
-                <p className="content-param-file">
-                  {this.state.data.nhomThuTucHanhChinhTen ? this.state.data.nhomThuTucHanhChinhTen : ''}
-                </p>
+                <div className="box-content-file-item">
+                  <h2 className="sub-title-file">
+                    Lĩnh vực
+                  </h2>
+                  <p className="content-param-file">
+                    {this.state.data.nhomThuTucHanhChinhTen ? this.state.data.nhomThuTucHanhChinhTen : ''}
+                  </p>
+                </div>
+                <div className="box-content-file-item">
+                  <h2 className="sub-title-file">
+                    Loại hồ sơ
+                  </h2>
+                  <p className="content-param-file">
+                    {this.state.data.tenThuTucHanhChinh ? this.state.data.tenThuTucHanhChinh: ''}
+                  </p>
+                </div>
+                <div className="box-content-file-item">
+                  <h2 className="sub-title-file">
+                    Phí hồ sơ
+                  </h2>
+                  <p className="content-param-file">
+                    {this.state.data.phiHoSo ? this.state.data.phiHoSo: ''}
+                  </p>
+                </div>
               </div>
               <div className="box-content-file">
+                <div className="box-content-file-item">
+                  <h2 className="sub-title-file">
+                    Mã số biên nhận
+                  </h2>
+                  <p className="content-param-file">
+                    {this.state.data.maSoBienNhan ? this.state.data.maSoBienNhan : ''}
+                  </p>
+                </div>
+                <div className="box-content-file-item">
+                  <h2 className="sub-title-file">
+                    Người nộp hồ sơ
+                  </h2>
+                  <p className="content-param-file">
+                    {this.state.data.hoTenNguoiNopHoSo ? this.state.data.hoTenNguoiNopHoSo: ''}
+                  </p>
+                </div>
+                <div className="box-content-file-item">
+                  <h2 className="sub-title-file">
+                    Chủ hồ sơ
+                  </h2>
+                  <p className="content-param-file">
+                    {this.state.data.chuSoHuu ? this.state.data.chuSoHuu: ''}
+                  </p>
+                </div>
+              </div>
+              <div className="box-content-file">
+                <div className="box-content-file-item">
+                  <h2 className="sub-title-file">
+                    Email
+                  </h2>
+                  <p className="content-param-file">
+                    {this.state.data.emailNguoiNop ? this.state.data.emailNguoiNop: ''}
+                  </p>
+                </div>
+                <div className="box-content-file-item">
+                  <h2 className="sub-title-file">
+                    Địa chỉ
+                  </h2>
+                  <p className="content-param-file">
+                    {this.state.data.diaChiThuongTruNguoiNop ? this.state.data.diaChiThuongTruNguoiNop: ''}
+                  </p>
+                </div>
+                <div className="box-content-file-item">
+                  <h2 className="sub-title-file">
+                    Ngày tiếp nhận
+                  </h2>
+                  <p className="content-param-file">
+                    <Moment format="DD/MM/YYYY">
+                      {this.state.data.ngayNhanHoSo}
+                    </Moment>
+                  </p>
+                </div>
+              </div>
+              <div className="box-content-file">
+                <div className="box-content-file-item">
+                  <h2 className="sub-title-file">
+                    Ngày xử lý xong
+                  </h2>
+                  <p className="content-param-file">
+                    <Moment format="DD/MM/YYYY">
+                      {this.state.data.ngayKetThucXuLy}
+                    </Moment>
+
+                  </p>
+                </div>
+                <div className="box-content-file-item">
+                  <h2 className="sub-title-file">
+                    Trạng thái hồ sơ
+                  </h2>
+                  <p className="content-param-file">
+                    {this.state.data.trangThaiHoSoTen ? this.state.data.trangThaiHoSoTen: ''}
+                  </p>
+                </div>
+
+              </div>
+
+              {/* <div className="box-content-file">
                 <h2 className="sub-title-file">
                   Mã số biên nhận
                 </h2>
@@ -77,9 +172,9 @@ class SearchDetailForm extends Component {
                   </Moment>
 
                 </p>
-              </div>
+              </div> */}
             </div>
-            <div className="content-file">
+            {/* <div className="content-file">
               <div className="box-content-file">
                 <h2 className="sub-title-file">
                   Loại hồ sơ
@@ -112,8 +207,8 @@ class SearchDetailForm extends Component {
                   {this.state.data.trangThaiHoSoTen ? this.state.data.trangThaiHoSoTen: ''}
                 </p>
               </div>
-            </div>
-            <div className="content-file">
+            </div> */}
+            {/* <div className="content-file">
               <div className="box-content-file">
                 <h2 className="sub-title-file">
                   Phí hồ sơ
@@ -140,7 +235,7 @@ class SearchDetailForm extends Component {
                   </Moment>
                 </p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
