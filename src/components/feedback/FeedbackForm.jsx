@@ -3,7 +3,6 @@ import {Feedbacks} from 'api';
 import {connect} from 'react-redux';
 
 const PhoneNumber = (input) => {  return input = input.replace(/[^0-9]+/g, "");}
-const FullName = (input) => {  return input = input.replace(/[^A-Za-z]+/g, "");}
 
 class FeedbackForm extends Component {
   constructor(props, context) {
@@ -67,20 +66,6 @@ class FeedbackForm extends Component {
       },()=> {
         setTimeout(this.hide.bind(this), 3000);
       })
-    }else if(this.state.email) {
-      let email = this.state.email;
-      let atpos = email.indexOf("@");
-      let dotpos = email.lastIndexOf(".");
-      if (atpos < 1 || dotpos < atpos + 2 || dotpos + 3 >= email.length) {
-        pass = false;
-        this.setState({
-          error: true,
-          success:false,
-          message: 'Email không đúng định dạng'
-        },()=> {
-          setTimeout(this.hide.bind(this), 3000);
-        })
-      }
     } else if(state.noiDung == '') {
       pass = false;
       this.setState({
@@ -90,6 +75,22 @@ class FeedbackForm extends Component {
       },()=> {
         setTimeout(this.hide.bind(this), 3000);
       })
+    }
+
+    if (this.state.email) {
+      let email = this.state.email;
+      let atpos = email.indexOf("@");
+      let dotpos = email.lastIndexOf(".");
+      if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= email.length) {
+        pass = false;
+        this.setState({
+          error: true,
+          success:false,
+          message: 'Email không đúng định dạng'
+        },()=> {
+          setTimeout(this.hide.bind(this), 3000);
+        })
+      }
     }
     return pass
   }
@@ -127,7 +128,6 @@ class FeedbackForm extends Component {
         error: false
       })
     } else if (name == 'hoVaTen') {
-      e.target.value = FullName(e.target.value)
       this.setState({
         [name]: e.target.value,
         error: false
@@ -159,21 +159,21 @@ class FeedbackForm extends Component {
   }
 
   checkEmail() {
-  if(this.state.email) {
-    let email = this.state.email;
-    let atpos = email.indexOf("@");
-    let dotpos = email.lastIndexOf(".");
-    if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= email.length) {
-      this.setState({
-        error: true,
-        success:false,
-        message: 'Email không đúng định dạng'
-      },()=> {
-        setTimeout(this.hide.bind(this), 3000);
-      })
+    if(this.state.email) {
+      let email = this.state.email;
+      let atpos = email.indexOf("@");
+      let dotpos = email.lastIndexOf(".");
+      if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= email.length) {
+        this.setState({
+          error: true,
+          success:false,
+          message: 'Email không đúng định dạng'
+        },()=> {
+          setTimeout(this.hide.bind(this), 3000);
+        })
+      }
     }
   }
-}
 
 
   render() {

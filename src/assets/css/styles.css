@@ -255,6 +255,7 @@ span.icon-Arrow{
 .contact-content {
   color: #2d6de0;
   position: relative;
+  margin-left: 10px;
 }
 .main-content {
   margin-top: 52px;
@@ -1218,7 +1219,7 @@ span.icon-Arrow{
   margin: 30px 0;
   float: right;
   position: relative;
-  padding-left: 80px;
+  padding-left: 75px;
 }
 .title-hotline::before {
   background: url("../images/icon/phone .svg") no-repeat 0 0;
