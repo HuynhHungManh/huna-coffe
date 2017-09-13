@@ -79,7 +79,7 @@ const routes = [
       {
         component: SearchDetail,
         exact: true,
-        path: '/search-detail',
+        path: '/search-detail/:id',
       },
       {
         component: SearchDetail,
