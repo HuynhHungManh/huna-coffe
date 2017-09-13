@@ -184,7 +184,7 @@ class FeedbackForm extends Component {
         </div>
         <div className="box-input">
           <div className="title-form title-validation">
-            <span className="text-title">Thông tin góp ý</span>
+            <span className="text-title">Thông tin góp ý -  Phản ánh</span>
               { this.state.error ?
                 (<div className="validation-form">
                   <span className="validation-text">{this.state.message}</span>
@@ -196,7 +196,7 @@ class FeedbackForm extends Component {
                 </div>) : null
               }
             <div className="notice-form">
-              <span className="text-title">Thông tin người góp ý - phản ánh được bảo mật</span>
+              <span className="text-title-sub">Thông tin người góp ý - phản ánh được bảo mật</span>
             </div>
           </div>
           <div className="form-fb" action acceptCharset method="post">

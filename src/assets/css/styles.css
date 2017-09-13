@@ -50,6 +50,14 @@ body {
   width: 100% !important;
   height: 140px !important;
 }
+.icon-drop-down{
+  width: 28px;
+  height: 15px;
+  position: absolute;
+  z-index: 1;
+  top: 29px;
+  right: 27px;
+}
 .box-content textarea{
   background:#fff;
   border:1px solid #c3c3c3;
@@ -249,7 +257,7 @@ span.icon-Arrow{
 }
 .icon-hand {
   position: absolute;
-  left: -50px;
+  left: -62px;
   top: 0;
 }
 .contact-content {
@@ -700,6 +708,7 @@ span.icon-Arrow{
   width: 100%;
   margin-bottom: 18px;
   overflow: hidden;
+  position: relative;
 }
 .text-document{
   width: 100%;
@@ -1074,10 +1083,26 @@ span.icon-Arrow{
 .title-validation {
   position: relative;
 }
+.text-title{
+  font-family:'Roboto-Medium';
+  display: block;
+  font-size:31px;
+  color:#006bd7;
+  letter-spacing:0;
+  text-align:left;
+  position: relative;
+  top: -15px;
+}
+.text-title-sub{
+  color:#000;
+  position: relative;
+  top: -14px;
+}
 .notice-form{
   font-size:23px;
-  float: right;
+  float: left;
   text-transform: none;
+  font-style:italic;
 }
 .validation-form{
   background-color: #ee0000;
