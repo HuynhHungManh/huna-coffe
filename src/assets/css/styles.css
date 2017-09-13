@@ -1191,6 +1191,9 @@ span.icon-Arrow{
 .box-search-file{
   margin-top: 128px;
 }
+.validation-search-file{
+  top: 200px;
+}
 /*title-hotline*/
 .title-hotline {
   letter-spacing: 0;
