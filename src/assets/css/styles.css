@@ -1097,12 +1097,23 @@ span.icon-Arrow{
   color:#000;
   position: relative;
   top: -14px;
+  margin-left: 30px;
 }
 .notice-form{
   font-size:23px;
   float: left;
   text-transform: none;
   font-style:italic;
+}
+.img-searchfile-notice::before{
+  content: "";
+  position: absolute;
+  background-image: url("../images/icon/quote.svg");
+  background-size: cover;
+  width: 20px;
+  height: 20px;
+  top: 1px;
+  left: -30px;
 }
 .validation-form{
   background-color: #ee0000;
