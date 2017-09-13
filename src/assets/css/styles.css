@@ -17,6 +17,10 @@ body {
   background-size: cover;
   background-repeat: repeat-x;
 }
+.doc{
+  width: 100%;
+  height: 735px;
+}
 .box-content{
   width: 100%;
   display: inline-block;

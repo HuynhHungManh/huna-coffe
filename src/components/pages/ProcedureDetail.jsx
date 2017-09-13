@@ -21,7 +21,12 @@ class ProcedureDetail extends Component {
           </div>
           <div className="content custom-procedure">
             <div className="view-procedure">
-              <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${this.viewFilePdf()}`} seamless />
+              { this.viewFilePdf().indexOf(".doc") >= 0 &&
+                <iframe className="doc" src="https://docs.google.com/gview?url=http://writing.engr.psu.edu/workbooks/formal_report_template.doc&embedded=true" seamless/>
+              }
+              { this.viewFilePdf().indexOf(".pdf") >= 0 &&
+                <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${this.viewFilePdf()}`} seamless />
+              }
             </div>
           </div>
         </div>
