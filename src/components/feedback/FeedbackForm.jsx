@@ -196,7 +196,7 @@ class FeedbackForm extends Component {
                 </div>) : null
               }
             <div className="notice-form">
-              <span className="text-title-sub">Thông tin người góp ý - phản ánh được bảo mật</span>
+              <span className="text-title-sub img-searchfile-notice">Thông tin người góp ý - phản ánh được bảo mật</span>
             </div>
           </div>
           <div className="form-fb" action acceptCharset method="post">

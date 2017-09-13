@@ -4,6 +4,19 @@ import {connect} from 'react-redux';
 import {Documents} from 'api';
 
 class ProcedureDetail extends Component {
+  constructor(props, context){
+  	super(props, context);
+  	this.state = {
+      title: ''
+    };
+  }
+
+  componentDidMount() {
+    let file = this.props.documents.find((item) => item.id == this.props.match.params.id);
+    this.setState({
+      title: file && file.title && file.title.rendered ? file.title.rendered : ''
+    })
+  }
 
   viewFilePdf() {
     let file = this.props.documents.find((item) => item.id == this.props.match.params.id);
@@ -16,7 +29,7 @@ class ProcedureDetail extends Component {
         <div className="container">
           <div className="header">
             <h2 className="title bg-document">
-              <span className="title-main">Thông Tư 40/2016/tt-btc Của Bộ Tài Chính</span>
+              <span className="title-main">{this.state.title}</span>
             </h2>
           </div>
           <div className="content custom-procedure">
