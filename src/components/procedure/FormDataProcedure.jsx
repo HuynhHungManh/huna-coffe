@@ -15,15 +15,6 @@ constructor(props, context) {
     };
 }
 
-handlePageClick (data){
-    let selected = data.selected;
-    let offset = Math.ceil(selected * this.props.perPage);
-
-    this.setState({offset: offset}, () => {
-      this.loadCommentsFromServer();
-    });
-  };
-
   render() {
     return (
       <div className="procedure-right">

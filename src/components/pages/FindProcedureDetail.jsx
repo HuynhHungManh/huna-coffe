@@ -1,28 +1,31 @@
 import React, { Component } from 'react';
 import {CommonLayout} from 'layouts';
-
+import {connect} from 'react-redux';
 
 class FindProcedureDetail extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.state={
+      data : this.props.procedures.data.find(item => item.id == this.props.match.params.id)
+    }
 
+  }
   gotoPage(page) {
     this.context.router.history.push(page);
   }
-
-
   render() {
-    console.log(this.props.match.params.id);
     return (
       <CommonLayout>
         <div className="container">
         <div className="header">
           <h2 className="title bg-search-document">
-            <span className="title-main">Cấp Sửa Đổi, Bổ Sung Giấy Phép Bán Lẻ Sản Phẩm Thuốc Lá</span>
+            <span className="title-main">{this.state.data && this.state.data.tenthutuc}</span>
           </h2>
         </div>
         <div className="content">
           <div className="header-procedure-detail">
             <span className="title-procedure-detail">
-              CẤP SỬA ĐỔI, BỔ SUNG GIẤY PHÉP BÁN LẺ SẢN PHẨM THUỐC LÁ
+              {this.state.data && this.state.data.tenthutuc}
             </span>
           </div>
           <div className="scroll-procedure-detail">
@@ -110,4 +113,10 @@ class FindProcedureDetail extends Component {
   }
 }
 
-export default FindProcedureDetail;
+const bindStateToProps = (state) => {
+  return {
+    procedures: state.procedures || []
+  }
+}
+
+export default connect(bindStateToProps)(FindProcedureDetail);
