@@ -13,7 +13,7 @@ class HomePage extends React.Component {
         <div className="container">
           <div className="header-content">
             <p className="help">Xin hãy nhấn trực tiếp vào màn hình cảm ứng để sử dụng.</p>
-            <p className="help-phone">Nếu có thắc mắc, xin liên hệ: <span className="contact-content">0236 222 5871</span></p>
+            <p className="help-phone">Nếu có vướng mắc xin liên hệ: <span className="contact-content">0236 222 5871</span></p>
             <img className="icon-hand" src={require('assets/images/icon/hand_gesture.svg')} />
           </div>
           <div className="main-content">
