@@ -1,5 +1,5 @@
 module.exports = {
-  API_URL: 'http://192.168.1.196:8080/wp-json/wp/v2',
-  PHP_URL: 'http://192.168.0.118:8080/wp-search-detail',
+  API_URL: 'http://demo.api.kioskthanhkhe.greenglobal.vn:9973/wp-json/wp/v2',
+  PHP_URL: 'http://demo.api.kioskthanhkhe.greenglobal.vn:9973/wp-search-detail',
   PORT: 9000
 }
