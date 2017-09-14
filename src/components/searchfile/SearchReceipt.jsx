@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {PropTypes} from 'prop-types';
 import {SearchFile} from 'api';
 
-class SearchTeceipt extends Component {
+class SearchReceipt extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -21,20 +21,43 @@ class SearchTeceipt extends Component {
     })
   }
 
-  getidFile(e) {
-    e.preventDefault();
-    SearchFile.actions.searchFiles.request({id: this.state.idFile}).then(res => {
-      if (res.data.return) {
-        this.context.router.history.push('/search-detail/' + this.state.idFile);
-      } else {
-        this.setState({
-          hasValue: false,
-          hasError: true,
-          message: 'Vui lòng nhập đúng số biên nhận'
-        })
-      }
+  hide() {
+    this.setState({
+      hasValue: false,
+      hasError: false
     })
-    return;
+  }
+
+  getIdFile(e) {
+    e.preventDefault();
+    let pass = true;
+    if(this.state.idFile == '') {
+      let pass = false;
+      this.setState({
+        hasValue: false,
+        hasError: true,
+        message: 'Vui lòng nhập số biên nhận'
+      },()=> {
+        setTimeout(this.hide.bind(this), 10000);
+      })
+    } else {
+      SearchFile.actions.searchFiles.request({id: this.state.idFile}).then(res => {
+        if (res.data.return) {
+          let pass = true;
+          this.context.router.history.push('/search-detail/' + this.state.idFile);
+        } else {
+          let pass = false;
+          this.setState({
+            hasValue: false,
+            hasError: true,
+            message: 'Số biên nhận không đúng hoặc không hợp lệ'
+          },()=> {
+            setTimeout(this.hide.bind(this), 10000);
+          })
+        }
+      })
+    }
+    return pass;
   }
 
   clearData() {
@@ -59,7 +82,7 @@ class SearchTeceipt extends Component {
               <h2 className="title-search-file">
                 Tra cứu hồ sơ
               </h2>
-              <form className="form-search-file" onSubmit={this.getidFile.bind(this)}>
+              <form className="form-search-file" onSubmit={this.getIdFile.bind(this)}>
                 <div className="box-search-content">
                   <input className="inp-search-file" name="id" type="text" placeholder="Nhập số biên nhận vào đây" onChange={this.handleChange.bind(this, 'idFile')}/>
                   <button className="btn-search-file icon-zoom btn-action-back">
@@ -71,8 +94,8 @@ class SearchTeceipt extends Component {
     );
   }
 }
-SearchTeceipt.contextTypes = {
+SearchReceipt.contextTypes = {
   router : PropTypes.any
 }
 
-export default SearchTeceipt;
+export default SearchReceipt;
