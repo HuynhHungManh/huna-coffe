@@ -1,5 +1,5 @@
 import SearchDetailForm from './SearchDetailForm.jsx';
-import SearchTeceipt from './SearchTeceipt.jsx';
+import SearchReceipt from './SearchReceipt.jsx';
 
 
-export {SearchDetailForm, SearchTeceipt};
+export {SearchDetailForm, SearchReceipt};

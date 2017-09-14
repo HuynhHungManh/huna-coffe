@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import {CommonLayout} from 'layouts';
-import {SearchTeceipt} from 'components/searchfile';
+import {SearchReceipt} from 'components/searchfile';
 
 class SearchFile extends Component {
 
   render() {
     return (
       <CommonLayout>
-        <SearchTeceipt />
+        <SearchReceipt />
       </CommonLayout>
     );
   }
