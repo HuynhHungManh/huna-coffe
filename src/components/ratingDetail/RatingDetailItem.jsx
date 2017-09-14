@@ -29,7 +29,7 @@ constructor(props, context) {
         </div>
         <div className="box-input">
           <div className="title-form">
-            <span className="text-title">ĐÁNH GIÁ MỨC ĐỘ HÀI LÒNG CỦA TỪNG CÁ NHÂN</span>
+            <span className="text-title text-title-rating-detail">ĐÁNH GIÁ MỨC ĐỘ HÀI LÒNG CỦA TỪNG CÁ NHÂN</span>
           </div>
           <form className="form-fb">
             <div className="sub-box-input">
