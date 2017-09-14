@@ -1920,8 +1920,10 @@ fieldset,.fieldset {
   background:#f99f03;
   border-radius:28px;
   color: #ffffff;
-  padding: 5px 10px;
   display: inline-block;
+  padding: 0 20px;
+  font-size: 14px;
+  margin-left: 10px;
 }
 .table-pro tr:nth-child(even) {background: #f6f6f6}
 .table-pro{
