@@ -9,14 +9,32 @@ class Category extends Component {
     super(props, context);
     this.browseDocuments = this.browseDocuments.bind(this);
     this.state = {
-      categories : ''
+      categories : []
     }
+  }
+
+  componentWillMount(){
+    this.setState({
+      categories : this.props.categories
+    })
+  }
+
+  componentWillUnmount(){
+    this.state.categories.forEach(function(item, index) {
+      if(item.status !== undefined)
+        item.status = undefined;
+      if(item.children.length > 0){
+        item.children.forEach(function(item, index) {
+          if(item.status !== undefined)
+            item.status = undefined;
+        });
+      }
+    });
   }
 
   browseCategories(category) {
     this.props.dispatch(Documents.actions.documents({catSlug: category.slug}));
-
-    var categories = this.props.categories;
+    var categories = this.state.categories;
     categories.forEach(function(item, index) {
       if(item.id === category.id)
         item.status = true;
@@ -41,7 +59,6 @@ class Category extends Component {
     this.setState({categories : categories})
   }
 
-
   render() {
     return (
       <div className="box-list-document">
@@ -50,11 +67,11 @@ class Category extends Component {
         </h2>
         <div className="box-list-scroll resize-box-document ">
           <ul className="list-document">
-            {
-              this.props.categories.map((item, i) => {
+            { this.state.categories !== undefined &&
+              this.state.categories.map((item, i) => {
                 return (
                   <li key={i} className="sub-list-document">
-                    { item.status && item.children.length > 0 && 
+                    { item.status && item.children.length > 0 &&
                       <img className ="icon-drop-down" src={require('assets/images/icon/dropdown.png')} />
                     }
                     <p className={
@@ -65,7 +82,7 @@ class Category extends Component {
                     >
                       {item.name}
                     </p>
-                    { item.children.length > 0 && item.status === true &&
+                    { item.children.length > 0 && item.status == true &&
                        <ul className="sub-list-text-document">
                         {
                           item.children.map((subItem, i1) => {

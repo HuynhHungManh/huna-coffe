@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {Procedures} from 'api';
 
+
 class FormFindProcedure extends Component {
 
 constructor(props, context) {
@@ -27,7 +28,7 @@ handleSearch() {
     linhVuc : this.state.linhVuc,
     coQuan : this.state.coQuan,
   }
-  this.props.dispatch(Feedbacks.actions.feedbacks(null, params));
+  this.props.dispatch(Procedures.actions.searchProcedure(null, params));
 }
   render() {
     return (

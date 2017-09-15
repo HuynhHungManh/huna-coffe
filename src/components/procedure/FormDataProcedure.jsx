@@ -11,7 +11,7 @@ constructor(props, context) {
   super(props, context);
   this.state = {
       totalPage: 0,
-      indexPage : 1,
+      indexPage : 0,
       arrayPage : []
   };
   this.props.dispatch(Procedures.actions.procedures(null,{index:1}));
@@ -19,21 +19,22 @@ constructor(props, context) {
 
 handlePageClick(data) {
   this.props.dispatch(Procedures.actions.procedures(null,{index:data.selected}));
+  this.setState({
+    indexPage : data.selected
+  });
 }
 
 handleChange(e) {
   this.setState({
     indexPage : e.target.value
   });
-
-
-  this.props.dispatch(Procedures.actions.procedures(null,{index:parseInt(e.target.value)}));
+  this.props.dispatch(Procedures.actions.procedures(null,{ index : parseInt(e.target.value) }));
 }
 
 componentDidUpdate(prevProps, prevState) {
     if(prevProps.procedures.totalPage !== this.props.procedures.totalPage){
       let arr = [];
-      for(let i =1; i <= this.props.procedures.totalPage; i++){
+      for(let i = 1; i <= this.props.procedures.totalPage; i++){
         arr.push(i);
       }
       this.setState({
@@ -44,6 +45,7 @@ componentDidUpdate(prevProps, prevState) {
 }
 
   render() {
+    console.log(this.state);
     return (
       <div className="procedure-right">
         <div className="scroll-procedure">
