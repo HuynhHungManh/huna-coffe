@@ -69,7 +69,7 @@ checkResponsive(array) {
           <div className="pagination">
             <div className="pagination-left">
               <span className="text-span">Xem</span>
-              <select className="pagination-dropdown icon-arrow1-bottom" name>
+              <select className="pagination-dropdown">
                 <option value>50</option>
                 <option value>2</option>
                 <option value>3</option>
@@ -79,7 +79,6 @@ checkResponsive(array) {
                 <option value>7</option>
                 <option value>8</option>
               </select>
-              <span className="drop-pro icon-arrow1-bottom" />
               <span className="text-span">Đang xem 1 đến 6 trong tổng số {this.props.procedures.recordsTotal} mục</span>
             </div>
             <div className="pagination-right">
