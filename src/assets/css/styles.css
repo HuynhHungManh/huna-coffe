@@ -131,7 +131,7 @@ body {
   position: absolute;
   background-image: url("../images/icon/rate.svg");
   background-size: cover;
-  width: 54px;
+  width: 53px;
   height: 61px;
   left: 0;
   top: 0;
@@ -1751,7 +1751,7 @@ fieldset,.fieldset {
 .img-rating-detail{
   box-shadow:0 4px 14px 0 rgba(0,0,0,0.32);
   height: 260px;
-  left: 170px;
+  left: 169px;
   position: absolute;
   width: 195px;
   top: 60px;
