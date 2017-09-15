@@ -8,12 +8,12 @@ const rest = reduxApi({
     url: '/thu-tuc',
     options:(url, params, getState) => {
       return {
-        method: "GET",
+        method: "POST",
         headers: {
           //'Content-Type': 'application/json'
           "Authorization": "Basic YWRtaW46MTIzNDU2",
         },
-        data: {}
+        data: params
       };
     },
     postfetch: [

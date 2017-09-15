@@ -30,7 +30,6 @@ handleSearch() {
   this.props.dispatch(Feedbacks.actions.feedbacks(null, params));
 }
   render() {
-    console.log(this.props);
     return (
       <div className="procedure-left">
         <div className="search-procedure" action method="post">

@@ -35,6 +35,11 @@ body {
   height:61px;
   width: 400px;
 }
+
+.pagination li a {
+  padding: 11px 14px;
+  border: none;
+}
 .box-content-rating-detail {
   height: 100%;
 }
@@ -489,14 +494,14 @@ span.icon-Arrow{
 }
 
 .pagination ul{
-  width: 300px;
+  width: 70%;
 }
 .pagination ul li {
   float: left;
   font-family: 'Roboto-Regular';
   display: inline-block;
   color: #000000;
-  margin-right: 10px;
+  margin-right: 7px;
   width: 40px;
   height: 40px;
   float: left;
@@ -2019,6 +2024,7 @@ fieldset,.fieldset {
   float: right;
   line-height: 40px;
   margin-top: 10px;
+  width: 40%;
 }
 .page {
   font-family: 'Roboto-Regular';
@@ -2070,7 +2076,7 @@ fieldset,.fieldset {
 }
 
 .pagination {
-  float: left;
+  float: right;
   width: 94.4%;
   background: #fff;
 }

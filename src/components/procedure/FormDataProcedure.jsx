@@ -9,35 +9,41 @@ class FormDataProcedure extends Component {
 
 constructor(props, context) {
   super(props, context);
-  this.props.dispatch(Procedures.actions.procedures());
   this.state = {
-      data: this.props.procedures && this.props.procedures.data,
-      offset: 0,
-      status : false
-    };
-
+      totalPage: 0,
+      indexPage : 1,
+      arrayPage : []
+  };
+  this.props.dispatch(Procedures.actions.procedures(null,{index:1}));
 }
 
-checkResponsive(array) {
-  if((array.data.length) > 4)
-  {
-    this.setState({
-            status : true
-    })
-  }
+handlePageClick(data) {
+  this.props.dispatch(Procedures.actions.procedures(null,{index:data.selected}));
 }
 
-// componentDidUpdate(prevProps, prevState) {
-//   if(this.props.procedures.data !== this.props.procedures.data){
-//     if(this.props.procedures.data.length > 4){
-//       this.setState({
-//         status : true
-//       })
-//     }
-//   }
-// }
+handleChange(e) {
+  this.setState({
+    indexPage : e.target.value
+  });
+
+
+  this.props.dispatch(Procedures.actions.procedures(null,{index:parseInt(e.target.value)}));
+}
+
+componentDidUpdate(prevProps, prevState) {
+    if(prevProps.procedures.totalPage !== this.props.procedures.totalPage){
+      let arr = [];
+      for(let i =1; i <= this.props.procedures.totalPage; i++){
+        arr.push(i);
+      }
+      this.setState({
+        totalPage : this.props.procedures.totalPage,
+        arrayPage : arr
+      });
+    }
+}
+
   render() {
-
     return (
       <div className="procedure-right">
         <div className="scroll-procedure">
@@ -56,10 +62,10 @@ checkResponsive(array) {
                   <th style={{width: 149}}>LĨNH VỰC</th>
                 </tr></thead>
               <tbody>
-                  {
-                    this.props.procedures && this.props.procedures.data != undefined && this.props.procedures.data.map((item, i) => {
+                  { this.props.procedures && this.props.procedures.data !== undefined &&
+                    this.props.procedures.data.map((item, i) => {
                       return (
-                        <DataProcedureItem key ={i} index={i} data={item}/>
+                        <DataProcedureItem key ={i} index={i} data={item.data}/>
                       )
                     })
                    }
@@ -69,27 +75,30 @@ checkResponsive(array) {
           <div className="pagination">
             <div className="pagination-left">
               <span className="text-span">Xem</span>
-              <select className="pagination-dropdown icon-arrow1-bottom" name>
-                <option value>50</option>
-                <option value>2</option>
-                <option value>3</option>
-                <option value>4</option>
-                <option value>5</option>
-                <option value>6</option>
-                <option value>7</option>
-                <option value>8</option>
+              <select className="pagination-dropdown icon-arrow1-bottom" onChange={this.handleChange.bind(this)} value={this.state.indexPage}>
+              { this.props.procedures && this.props.procedures.totalRecord &&
+                this.state.arrayPage.map((item, i) => {
+                  return (
+                    <option key ={i} value={i}>{i+1}</option>
+                )})
+               }
               </select>
               <span className="drop-pro icon-arrow1-bottom" />
-              <span className="text-span">Đang xem 1 đến 6 trong tổng số {this.props.procedures.recordsTotal} mục</span>
+              <span className="text-span">Đang xem 1 đến 20 trong tổng số {this.props.procedures.totalRecord} mục</span>
             </div>
             <div className="pagination-right">
               <ReactPaginate
-                previousLabel={<span className="icon-double-arrow"></span>}
-                nextLabel={<span className="icon-double-arrow"></span>}
-                pageCount={4}
-                pageRangeDisplayed={5}
-                containerClassName={"react-pagination"}
-              />
+                 previousLabel={<span className="icon-double-arrow"></span>}
+                 nextLabel={<span className="icon-double-arrow"></span>}
+                 breakClassName={"break-me"}
+                 pageCount={this.props.procedures.totalPage}
+                 marginPagesDisplayed={1}
+                 pageRangeDisplayed={1}
+                 onPageChange={this.handlePageClick.bind(this)}
+                 containerClassName={"pagination"}
+                 subContainerClassName={"pages pagination"}
+                 activeClassName={"active"}
+               />
             </div>
           </div>
         </div>
