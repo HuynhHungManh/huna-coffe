@@ -8,6 +8,8 @@ import {calendar} from 'base/reducers/calendar';
 import {ratings} from 'base/reducers/ratings';
 import {searchfile} from 'base/reducers/searchfile';
 import {procedures} from 'base/reducers/procedure';
+import {units} from 'base/reducers/units';
+import {fields} from 'base/reducers/fields';
 
 let rootReducer = combineReducers(
 {
@@ -17,7 +19,9 @@ let rootReducer = combineReducers(
     calendar,
     ratings,
     searchfile,
-    procedures
+    procedures,
+    units,
+    fields
   }
 );
 

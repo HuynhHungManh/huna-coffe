@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {Procedures} from 'api';
 import DataProcedureItem from './DataProcedureItem.jsx';
+import classnames from 'classnames';
 import ReactPaginate from 'react-paginate';
 
 class FormDataProcedure extends Component {
@@ -11,16 +12,42 @@ constructor(props, context) {
   this.props.dispatch(Procedures.actions.procedures());
   this.state = {
       data: this.props.procedures && this.props.procedures.data,
-      offset: 0
+      offset: 0,
+      status : false
     };
+
 }
 
+checkResponsive(array) {
+  if((array.data.length) > 4)
+  {
+    this.setState({
+            status : true
+    })
+  }
+}
+
+// componentDidUpdate(prevProps, prevState) {
+//   if(this.props.procedures.data !== this.props.procedures.data){
+//     if(this.props.procedures.data.length > 4){
+//       this.setState({
+//         status : true
+//       })
+//     }
+//   }
+// }
   render() {
+
     return (
       <div className="procedure-right">
         <div className="scroll-procedure">
           <div className="table-procedure">
-            <table className="table-pro">
+            <table
+                className={
+                  classnames('table-pro', {
+                    'table-pro-res' : this.props.procedures.data
+                  })}
+              >
               <thead>
                 <tr><th style={{width: 65}}>STT</th>
                   <th style={{width: 187}}>MÃ SỐ</th>

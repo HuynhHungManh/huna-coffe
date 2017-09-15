@@ -6,6 +6,8 @@ function procedures(state = initial, action) {
       return action.procedures;
     case 'POST_TITLE':
       return action.title;
+    case 'SEARCH_PROCEDURE':
+      return action.procedures;
     default:
       return state;
   }
