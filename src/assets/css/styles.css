@@ -489,9 +489,7 @@ span.icon-Arrow{
 }
 
 .pagination ul{
-  background-color: red !important;
   width: 300px;
-  margin-top: 10px;
 }
 .pagination ul li {
   float: left;
@@ -499,16 +497,15 @@ span.icon-Arrow{
   display: inline-block;
   color: #000000;
   margin-right: 10px;
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   float: left;
-  border-radius: 5px;
+  border-radius: 2px;
   border: solid 1px #dddddd;
   background: #ffffff;
   font-size:16px;
   text-align: center;
 }
-
 .box-content-rating-detail.validate-phone {
   font-family: 'Roboto-Regular';
 }
@@ -1887,7 +1884,6 @@ fieldset,.fieldset {
   float: right;
   width: 75%;
   height: auto;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
   border-radius: 4px;
 }
 .table-pro table {
@@ -2023,7 +2019,6 @@ fieldset,.fieldset {
   float: right;
   line-height: 40px;
   margin-top: 10px;
-  margin-right: 50px;
 }
 .page {
   font-family: 'Roboto-Regular';
@@ -2038,18 +2033,18 @@ fieldset,.fieldset {
   background: #ffffff;
   font-size:16px;
 }
-.page:focus {
+/*.pagination li:focus {
   background:#1c61ff;
   color: #ffffff !important;
   border: none;
-}
-.page:active {
+}*/
+.pagination li:active {
     background:#1c61ff;
     color: #ffffff !important;
 }
-.previou, .next {
+.previous, .next {
   display: inline-block;
-  color: #000000;
+  background-color: #195fff;
   margin-right: 10px;
   width: 45px;
   height: 45px;
@@ -2059,23 +2054,24 @@ fieldset,.fieldset {
   background: #ffffff;
   font-size: 16px;
 }
-.previou:active, .next:active {
+.next{
+  transform: rotate(180deg);
+-moz-transform: rotate(180deg);
+-webkit-transform: rotate(180deg);
+-o-transform: rotate(180deg);
+}
+.previous:active, .next:active {
   background:#1c61ff;
   color: #ffffff !important;
 }
-.previou:active::before, .next:active::before {
+.previous:active::before, .next:active::before {
   background: transparent;
   color: #ffffff !important;
 }
-.next {
-  transform: rotate(180deg);
-  -moz-transform: rotate(180deg);
-  -webkit-transform: rotate(180deg);
-  -o-transform: rotate(180deg);
-}
+
 .pagination {
   float: left;
-  width: 100%;
+  width: 94.4%;
   background: #fff;
 }
 .pagination::before {
@@ -2084,11 +2080,11 @@ fieldset,.fieldset {
 }
 .pagination::after {
   content: '';
-  display: table;
+  display : table;
   clear:both;
 }
 /*----------------------------*/
-/*style find-procedure-detail*/
+/*style f ind-procedure-detail*/
 .table-detail-procedure {
   position: absolute;
   font-family:'Roboto-Regular';

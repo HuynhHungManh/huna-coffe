@@ -83,26 +83,13 @@ checkResponsive(array) {
               <span className="text-span">Đang xem 1 đến 6 trong tổng số {this.props.procedures.recordsTotal} mục</span>
             </div>
             <div className="pagination-right">
-              <button type="button" className="previou icon-double-arrow" name="button" />
-              <button type="button" className="page" name="button">01</button>
-              <button type="button" className="page" name="button">02</button>
-              <button type="button" className="page active" name="button">03</button>
-              <button type="button" className="next icon-double-arrow" name="button" />
-              {/* <ReactPaginate
-                      //  previousLabel={"previous"}
-                       nextLabel={"next"}
-                       breakLabel={<a href="">...</a>}
-                       breakClassName={"break-me"}
-                       pageCount={5}
-                       marginPagesDisplayed={5}
-                       pageRangeDisplayed={5}
-                       onPageChange={this.handlePageClick.bind(this,this.state.data)}
-                       containerClassName={"test1"}
-                      //  subContainerClassName={"pages pagination"}
-                      //  className="paginate"
-                       activeClassName={"active"}
-
-                {/* />  */}
+              <ReactPaginate
+                previousLabel={<span className="icon-double-arrow"></span>}
+                nextLabel={<span className="icon-double-arrow"></span>}
+                pageCount={4}
+                pageRangeDisplayed={5}
+                containerClassName={"react-pagination"}
+              />
             </div>
           </div>
         </div>
