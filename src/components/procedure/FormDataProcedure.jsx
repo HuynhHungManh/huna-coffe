@@ -34,6 +34,7 @@ handleChange(e) {
 componentDidUpdate(prevProps, prevState) {
     if(prevProps.procedures.totalPage !== this.props.procedures.totalPage){
       let arr = [];
+      console.log(this.props.procedures.totalPage);
       for(let i = 1; i <= this.props.procedures.totalPage; i++){
         arr.push(i);
       }
@@ -45,7 +46,6 @@ componentDidUpdate(prevProps, prevState) {
 }
 
   render() {
-    console.log(this.state);
     return (
       <div className="procedure-right">
         <div className="scroll-procedure">
@@ -85,11 +85,11 @@ componentDidUpdate(prevProps, prevState) {
                 )})
                }
               </select>
-              <span className="text-span">Đang xem 1 đến 20 trong tổng số {this.props.procedures.totalRecord} mục</span>
+              <span className="text-span">Đang xem 1 đến {this.props.procedures.data && this.props.procedures.data.length} trong tổng số {this.props.procedures.totalRecord} mục</span>
             </div>
             <div className="pagination-right">
             {
-              this.props.procedures.totalPage !==0 &&
+              this.props.procedures.totalPage !==1 &&
               <ReactPaginate
                  previousLabel={<span className="icon-double-arrow"></span>}
                  nextLabel={<span className="icon-double-arrow"></span>}

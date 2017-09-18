@@ -494,7 +494,8 @@ span.icon-Arrow{
 }
 
 .pagination ul{
-  width: 70%;
+  float: right;
+  width: 67.4%;
 }
 .pagination ul li {
   float: left;
@@ -2051,7 +2052,7 @@ fieldset,.fieldset {
 -o-transform: rotate(180deg);
 }
 .pagination {
-  float: right;
+  float: left;
   width: 94.4%;
   background-color: #fff;
 }
