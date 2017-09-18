@@ -38,7 +38,7 @@ class ProcedureDetail extends Component {
                 <iframe className="doc" src={`https://docs.google.com/gview?url=${this.viewFilePdf()}&embedded=true`} seamless/>
               }
               { this.viewFilePdf().indexOf(".pdf") >= 0 &&
-                <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${this.viewFilePdf()}`} seamless />
+                <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${this.viewFilePdf()}#page=1&zoom=200`} seamless />
               }
             </div>
           </div>

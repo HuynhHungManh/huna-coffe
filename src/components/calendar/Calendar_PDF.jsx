@@ -17,7 +17,7 @@ class Calendar_PDF extends Component {
           <iframe className="doc" src={`https://docs.google.com/gview?url=${this.props.calendars[0] && this.props.calendars[0].acf.chonFile.url}&embedded=true`} seamless/>
         }
         { this.props.calendars[0] && this.props.calendars[0].acf.chonFile.url.indexOf(".pdf") >= 0 &&
-          <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${this.props.calendars[0] && this.props.calendars[0].acf.chonFile.url}`} seamless />
+          <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${this.props.calendars[0] && this.props.calendars[0].acf.chonFile.url}#page=1&zoom=200`} seamless />
         }
       </div>
     );
