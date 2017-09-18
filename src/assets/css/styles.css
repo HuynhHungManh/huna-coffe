@@ -1856,12 +1856,13 @@ fieldset,.fieldset {
   vertical-align: middle;
   text-align: left;
   padding-left: 20px;
+  padding-right: 75px;
   z-index: 3;
 }
 .menulist.icon-arrow1-bottom:before{
   color: #0080fe !important;
   position: absolute;
-  right: 60px;
+  right: 50px;
   font-size: 10px;
   line-height: 60px;
   z-index: 1;
@@ -1951,7 +1952,6 @@ fieldset,.fieldset {
   float: left;
   width: 100%;
   height: 640px;
-  border: 1px solid #eeeeee;
   overflow-y: auto;
 }
 .table-procedure::-webkit-scrollbar {

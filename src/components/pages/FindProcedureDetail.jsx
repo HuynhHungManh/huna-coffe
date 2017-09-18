@@ -11,12 +11,24 @@ class FindProcedureDetail extends Component {
   }
 
   truncate() {
-    let length = 70;
+    let length = 90;
     let titleName = this.state.data.data && this.state.data.data.tenthutuc;
     let trimmedTitle = '';
-    if(titleName.length < 70 ) {
+    if(titleName.length < 90 ) {
       trimmedTitle = titleName.substring(0, Math.min(length, titleName.length));
-    } else if(titleName.length > 70) {
+    } else if(titleName.length > 90) {
+      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length)) + '.....';
+    }
+    return trimmedTitle;
+  }
+
+  subtruncate() {
+    let length = 175;
+    let titleName = this.state.data.data && this.state.data.data.tenthutuc;
+    let trimmedTitle = '';
+    if(titleName.length < 175 ) {
+      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length));
+    } else if(titleName.length > 175) {
       trimmedTitle = titleName.substring(0, Math.min(length, titleName.length)) + '.....';
     }
     return trimmedTitle;
@@ -38,7 +50,7 @@ class FindProcedureDetail extends Component {
         <div className="content">
           <div className="header-procedure-detail">
             <span className="title-procedure-detail">
-              {this.truncate()}
+              {this.subtruncate()}
             </span>
           </div>
           <div className="scroll-procedure-detail">
