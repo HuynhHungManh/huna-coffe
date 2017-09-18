@@ -10,7 +10,7 @@ class FormDataProcedure extends Component {
 constructor(props, context) {
   super(props, context);
   this.state = {
-      totalPage: 0,
+      totalPage: 1,
       indexPage : 0,
       arrayPage : [1]
   };
@@ -85,7 +85,6 @@ componentDidUpdate(prevProps, prevState) {
                 )})
                }
               </select>
-              <span className="drop-pro icon-arrow1-bottom" />
               <span className="text-span">Đang xem 1 đến 20 trong tổng số {this.props.procedures.totalRecord} mục</span>
             </div>
             <div className="pagination-right">
