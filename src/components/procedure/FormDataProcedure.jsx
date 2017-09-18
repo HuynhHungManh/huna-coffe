@@ -12,7 +12,7 @@ constructor(props, context) {
   this.state = {
       totalPage: 0,
       indexPage : 0,
-      arrayPage : []
+      arrayPage : [1]
   };
   this.props.dispatch(Procedures.actions.procedures(null,{index:1}));
 }
@@ -89,6 +89,8 @@ componentDidUpdate(prevProps, prevState) {
               <span className="text-span">Đang xem 1 đến 20 trong tổng số {this.props.procedures.totalRecord} mục</span>
             </div>
             <div className="pagination-right">
+            {
+              this.props.procedures.totalPage !==0 &&
               <ReactPaginate
                  previousLabel={<span className="icon-double-arrow"></span>}
                  nextLabel={<span className="icon-double-arrow"></span>}
@@ -101,6 +103,8 @@ componentDidUpdate(prevProps, prevState) {
                  subContainerClassName={"pages pagination"}
                  activeClassName={"active"}
                />
+            }
+
             </div>
           </div>
         </div>
