@@ -18,7 +18,7 @@ constructor(props, context) {
 }
 
 handlePageClick(data) {
-  this.props.dispatch(Procedures.actions.procedures(null,{index:data.selected}));
+  this.props.dispatch(Procedures.actions.procedures(null,{index:data.selected+1}));
   this.setState({
     indexPage : data.selected
   });
@@ -34,7 +34,6 @@ handleChange(e) {
 componentDidUpdate(prevProps, prevState) {
     if(prevProps.procedures.totalPage !== this.props.procedures.totalPage){
       let arr = [];
-      console.log(this.props.procedures.totalPage);
       for(let i = 1; i <= this.props.procedures.totalPage; i++){
         arr.push(i);
       }
@@ -81,7 +80,7 @@ componentDidUpdate(prevProps, prevState) {
               { this.props.procedures && this.props.procedures.totalRecord &&
                 this.state.arrayPage.map((item, i) => {
                   return (
-                    <option key ={i} value={i}>{i+1}</option>
+                    <option key ={i} value={i+1}>{i+1}</option>
                 )})
                }
               </select>
