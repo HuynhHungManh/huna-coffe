@@ -6,13 +6,13 @@ class FindProcedureDetail extends Component {
   constructor(props, context) {
     super(props, context);
     this.state={
-      data : this.props.procedures.data.find(item => item.id == this.props.match.params.id)
+      data : this.props.procedures.data.find(item => item.data.id == this.props.match.params.id)
     }
   }
 
   truncate() {
     let length = 70;
-    let titleName = this.state.data && this.state.data.tenthutuc;
+    let titleName = this.state.data.data && this.state.data.data.tenthutuc;
     let trimmedTitle = '';
     if(titleName.length < 70 ) {
       trimmedTitle = titleName.substring(0, Math.min(length, titleName.length));
@@ -38,7 +38,7 @@ class FindProcedureDetail extends Component {
         <div className="content">
           <div className="header-procedure-detail">
             <span className="title-procedure-detail">
-              {this.state.data && this.state.data.tenthutuc}
+              {this.truncate()}
             </span>
           </div>
           <div className="scroll-procedure-detail">
