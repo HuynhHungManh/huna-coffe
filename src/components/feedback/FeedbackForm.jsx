@@ -37,7 +37,7 @@ class FeedbackForm extends Component {
         success:false,
         message: 'Vui lòng nhập họ và tên'
       },()=> {
-        setTimeout(this.hide.bind(this), 3000);
+        setTimeout(this.hide.bind(this), 10000);
       })
     } else if(state.hoVaTen.length < 4) {
       pass = false;
@@ -46,7 +46,7 @@ class FeedbackForm extends Component {
         success:false,
         message: 'Họ và tên ít nhất 4 kí tự'
       },()=> {
-        setTimeout(this.hide.bind(this), 3000);
+        setTimeout(this.hide.bind(this), 10000);
       })
     } else if(state.soDienThoai == '') {
       pass = false;
@@ -55,7 +55,7 @@ class FeedbackForm extends Component {
         success:false,
         message: 'Vui lòng nhập số điện thoại'
       },()=> {
-        setTimeout(this.hide.bind(this), 3000);
+        setTimeout(this.hide.bind(this), 10000);
       })
     }  else if(state.soDienThoai.length < 10 || state.soDienThoai.length > 11) {
       pass = false;
@@ -64,7 +64,7 @@ class FeedbackForm extends Component {
         success:false,
         message: 'Vui lòng nhập lại số điện thoại hợp lệ'
       },()=> {
-        setTimeout(this.hide.bind(this), 3000);
+        setTimeout(this.hide.bind(this), 10000);
       })
     } else if(state.noiDung == '') {
       pass = false;
@@ -73,7 +73,7 @@ class FeedbackForm extends Component {
         success:false,
         message: 'Vui lòng điền góp ý'
       },()=> {
-        setTimeout(this.hide.bind(this), 3000);
+        setTimeout(this.hide.bind(this), 10000);
       })
     }
 
@@ -88,7 +88,7 @@ class FeedbackForm extends Component {
           success:false,
           message: 'Email không đúng định dạng'
         },()=> {
-          setTimeout(this.hide.bind(this), 3000);
+          setTimeout(this.hide.bind(this), 10000);
         })
       }
     }
@@ -114,7 +114,7 @@ class FeedbackForm extends Component {
         email: '',
         noiDung: '',
       }, ()=> {
-        setTimeout(this.hide.bind(this), 3000);
+        setTimeout(this.hide.bind(this), 10000);
       })
     }
     return;
@@ -169,7 +169,7 @@ class FeedbackForm extends Component {
           success:false,
           message: 'Email không đúng định dạng'
         },()=> {
-          setTimeout(this.hide.bind(this), 3000);
+          setTimeout(this.hide.bind(this), 10000);
         })
       }
     }
