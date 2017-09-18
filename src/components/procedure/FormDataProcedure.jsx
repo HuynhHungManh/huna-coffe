@@ -102,7 +102,6 @@ componentDidUpdate(prevProps, prevState) {
                  activeClassName={"active"}
                />
             }
-
             </div>
           </div>
         </div>
