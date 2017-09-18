@@ -8,12 +8,12 @@ gotoPage(page) {
 }
 
 truncate() {
-  let length = 55;
+  let length = 60;
   let titleName = this.props.data.title.rendered;
   let trimmedTitle = '';
-  if(titleName.length < 55 ) {
+  if(titleName.length < 60 ) {
     trimmedTitle = titleName.substring(0, Math.min(length, titleName.length));
-  } else if(titleName.length > 55) {
+  } else if(titleName.length > 60) {
     trimmedTitle = titleName.substring(0, Math.min(length, titleName.length)) + '.....';
   }
   return trimmedTitle;

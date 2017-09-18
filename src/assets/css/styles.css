@@ -2027,9 +2027,7 @@ fieldset,.fieldset {
 .active a:focus{
   background:#1c61ff;
   color: #ffffff;
-  border: 0;
 }
-
 .next{
   transform: rotate(180deg);
 -moz-transform: rotate(180deg);
