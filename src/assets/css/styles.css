@@ -910,6 +910,7 @@ span.icon-Arrow{
 .btn-search:active {
   background :#0059b2 ;
 }
+
 .print-document:active{
   background :#52aa5f ;
 }
@@ -2050,6 +2051,7 @@ fieldset,.fieldset {
 .active a {
   padding: 10px 15px;
 }
+
 .pagination::before {
   content: '';
   display: table;
