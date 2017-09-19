@@ -1872,6 +1872,18 @@ fieldset,.fieldset {
   height: auto;
   border-radius: 4px;
 }
+.notification-procedure{
+  text-align: center;
+  font-family: 'Roboto-Regular';
+  font-size:20px;
+  width: 100%;
+  border: 1px solid #eeeeee;
+  border-collapse: collapse;
+  margin: 0 100px;
+  letter-spacing: 0;
+}
+
+
 .table-pro table {
   font-family: 'Roboto-Regular';
   font-size:20px;
@@ -1912,6 +1924,7 @@ fieldset,.fieldset {
   line-height: 30px;
   width: 98.5%;
   background: #fff;
+  position: relative;
 }
 .table-procedure-header th {
   font-family: 'Roboto-Bold';
@@ -2013,7 +2026,7 @@ fieldset,.fieldset {
   font-size: 18px;
   text-decoration: none;
   transition: background-color .3s;
-  width: 30%;
+  width: 36%;
 }
 #react-paginate ul {
     display: inline-block;
