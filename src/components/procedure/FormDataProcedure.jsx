@@ -11,7 +11,7 @@ constructor(props, context) {
   super(props, context);
   this.state = {
       totalPage: 1,
-      indexPage : 0,
+      indexPage : 1,
       arrayPage : [1]
   };
   this.props.dispatch(Procedures.actions.procedures(null,{index:1}));
@@ -98,6 +98,7 @@ componentDidUpdate(prevProps, prevState) {
                     marginPagesDisplayed={1}
                     pageRangeDisplayed={1}
                     onPageChange={this.handlePageClick.bind(this)}
+                    forcePage={this.state.indexPage-1}
                     containerClassName={"pagination pagination-ex"}
                     subContainerClassName={"pages pagination"}
                     activeClassName={"active active-ex"}
