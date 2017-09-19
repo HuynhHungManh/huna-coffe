@@ -61,31 +61,42 @@ componentDidUpdate(prevProps, prevState) {
                   <th style={{width: 568}}>TÊN THỦ TỤC</th>
                   <th style={{width: 233}}>CƠ QUAN THỰC HIỆN</th>
                   <th style={{width: 149}}>LĨNH VỰC</th>
-                </tr></thead>
+                </tr>
+              </thead>
               <tbody>
-                  { this.props.procedures && this.props.procedures.data !== undefined &&
+                { this.props.procedures && this.props.procedures.data !== undefined &&
                     this.props.procedures.data.map((item, i) => {
                       return (
                         <DataProcedureItem key ={i} index={i} data={item.data}/>
                       )
-                    })
-                   }
+                  })
+                 }
+                 { this.props.procedures && this.props.procedures.data !== undefined &&
+                   this.props.procedures.data.length === 0 &&
+                   <tr>
+                     <td className="notification-procedure" colSpan="5">Không có thủ tục nào được tìm thấy !</td>
+                   </tr>
+                 }
               </tbody>
             </table>
           </div>
           <div className="pagination-procedure">
-            <div className="pagination-left">
-              <span className="text-span">Xem</span>
-              <select className="pagination-dropdown icon-arrow1-bottom" onChange={this.handleChange.bind(this)} value={this.state.indexPage}>
-              { this.props.procedures && this.props.procedures.totalRecord &&
-                this.state.arrayPage.map((item, i) => {
-                  return (
-                    <option key ={i} value={i+1}>{i+1}</option>
-                )})
-               }
-              </select>
-              <span className="text-span">Đang xem 1 đến {this.props.procedures.data && this.props.procedures.data.length} trong tổng số {this.props.procedures.totalRecord} mục</span>
-            </div>
+            {
+              this.props.procedures && this.props.procedures.data !== undefined &&
+              this.props.procedures.data.length !== 0 &&
+              <div className="pagination-left">
+                <span className="text-span">Xem</span>
+                <select className="pagination-dropdown icon-arrow1-bottom" onChange={this.handleChange.bind(this)} value={this.state.indexPage}>
+                { this.props.procedures && this.props.procedures.totalRecord &&
+                  this.state.arrayPage.map((item, i) => {
+                    return (
+                      <option key ={i} value={i+1}>{i+1}</option>
+                  )})
+                 }
+                </select>
+                  <span className="text-span">Đang xem 1 đến {this.props.procedures.data && this.props.procedures.data.length} trong tổng số {this.props.procedures.totalRecord} mục</span>
+              </div>
+            }
             <div className="pagination-right">
               <div id="react-paginate">
                 {
@@ -96,7 +107,7 @@ componentDidUpdate(prevProps, prevState) {
                     breakClassName={"break-me"}
                     pageCount={this.props.procedures.totalPage}
                     marginPagesDisplayed={1}
-                    pageRangeDisplayed={1}
+                    pageRangeDisplayed={2}
                     onPageChange={this.handlePageClick.bind(this)}
                     forcePage={this.state.indexPage-1}
                     containerClassName={"pagination pagination-ex"}
