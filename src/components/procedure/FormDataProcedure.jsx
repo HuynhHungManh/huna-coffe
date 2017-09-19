@@ -18,10 +18,10 @@ constructor(props, context) {
 }
 
 handlePageClick(data) {
-  this.props.dispatch(Procedures.actions.procedures(null,{index:data.selected+1}));
   this.setState({
-    indexPage : data.selected
+    indexPage : data.selected+1
   });
+  this.props.dispatch(Procedures.actions.procedures(null,{index:data.selected+1}));
 }
 
 handleChange(e) {
