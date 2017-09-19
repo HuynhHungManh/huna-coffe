@@ -2027,6 +2027,10 @@ fieldset,.fieldset {
 #react-paginate .pagination-ex li{
   margin-left: 11px;
 }
+.break-me{
+   position: relative;
+   top: -6px;
+}
 #react-paginate .pagination-ex>li>a, .pagination-ex>li>span {
   font-family:'Roboto-Medium';
   position: relative;
