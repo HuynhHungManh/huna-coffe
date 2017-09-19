@@ -488,28 +488,7 @@ span.icon-Arrow{
   margin-left: 15px;
 }
 
-.pagination ul{
-  float: right;
-  width: 67.4%;
-}
-.pagination ul li {
-  float: left;
-  font-family: 'Roboto-Regular';
-  display: inline-block;
-  color: #000000;
-  margin-left: 7px;
-  width: 40px;
-  height: 40px;
-  float: left;
-  border-radius: 2px;
-  border: solid 1px #dddddd;
-  background-color: #ffffff;
-  font-size:18px;
-  text-align: center;
-}
-.pagination ul li a {
-  padding: 9px 14px;
-}
+
 .box-content-rating-detail.validate-phone {
   font-family: 'Roboto-Regular';
 }
@@ -1978,6 +1957,20 @@ fieldset,.fieldset {
 .table-procedure::-webkit-scrollbar-button:vertical:decrement {
   background-image: url("../images/icon/arrow-top.svg");
 }
+.pagination-procedure {
+  float: left;
+  width: 94.4%;
+  background-color: #fff;
+}
+.pagination-procedure ul{
+  display: inline-block;
+}
+.pagination-procedure li{
+  display: inline-block;
+}
+.pagination-procedure .break a {
+    cursor: default;
+}
 .pagination-left {
   font-family: 'Roboto-Regular';
   font-size: 20px;
@@ -2019,46 +2012,55 @@ fieldset,.fieldset {
   font-size: 18px;
   text-decoration: none;
   transition: background-color .3s;
-  width: 40%;
+  width: 30%;
+}
+#react-paginate ul {
+    display: inline-block;
+}
+
+#react-paginate li {
+    display: inline-block;
+}
+
+/*#react-paginate .break a {
+}*/
+#react-paginate .pagination-ex li{
+  margin-left: 11px;
+}
+#react-paginate .pagination-ex>li>a, .pagination-ex>li>span {
+  font-family:'Roboto-Medium';
+  position: relative;
+  float: left;
+  padding: 6px 15px;
+  line-height: 1.42857143;
+  text-decoration: none;
+  border: 1px solid #ddd;
+}
+#react-paginate .pagination-ex>.active-ex>a,
+.pagination-ex>.active-ex>a:focus, .pagination-ex>.active-ex>a:hover,
+.pagination-ex>.active-ex>span, .pagination-ex>.active-ex>span:focus, .pagination-ex>.active-ex>span:hover{
+  z-index: 3;
+  color: #ffffff;
+  background-color: #1c61ff;
+  border-color: #1c61ff;
+  border-radius: 2px;
 }
 .previous a:active, .next a:active{
   background-color: #1c61ff;
-  color: #ffffff !important;
 }
 .previous a:active span::before, .next a:active span::before{
-  color: #fff;
-}
-.active a:focus{
-  background:#1c61ff;
-  color: #ffffff;
+  color: #ffffff ;
 }
 .next{
   transform: rotate(180deg);
--moz-transform: rotate(180deg);
--webkit-transform: rotate(180deg);
--o-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
 }
-.pagination {
-  float: left;
-  width: 94.4%;
-  background-color: #fff;
-}
-.previous a, .next a {
-  padding: 10px 11px;
-}
-.active a {
-  padding: 10px 15px;
+.next.icon-double-arrow::before {
+  top: 5px;
 }
 
-.pagination::before {
-  content: '';
-  display: table;
-}
-.pagination::after {
-  content: '';
-  display : table;
-  clear:both;
-}
 /*----------------------------*/
 /*style f ind-procedure-detail*/
 .table-detail-procedure {
