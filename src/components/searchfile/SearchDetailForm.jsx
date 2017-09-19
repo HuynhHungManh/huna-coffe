@@ -65,7 +65,7 @@ class SearchDetailForm extends Component {
                     Phí hồ sơ
                   </h2>
                   <p className="content-param-file">
-                    {this.state.data.phiHoSo ? this.state.data.phiHoSo: ''}
+                    {this.state.data.phiHoSo ? this.state.data.phiHoSo: ''} VNĐ
                   </p>
                 </div>
               </div>
