@@ -1314,6 +1314,7 @@ span.icon-Arrow{
   width: 57%;
   float: right;
   line-height: 33px;
+  text-align: justify;
 }
 /*Popup*/
 .popup {
