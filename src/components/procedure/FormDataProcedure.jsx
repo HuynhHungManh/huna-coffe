@@ -73,7 +73,7 @@ componentDidUpdate(prevProps, prevState) {
               </tbody>
             </table>
           </div>
-          <div className="pagination">
+          <div className="pagination-procedure">
             <div className="pagination-left">
               <span className="text-span">Xem</span>
               <select className="pagination-dropdown icon-arrow1-bottom" onChange={this.handleChange.bind(this)} value={this.state.indexPage}>
@@ -87,21 +87,23 @@ componentDidUpdate(prevProps, prevState) {
               <span className="text-span">Đang xem 1 đến {this.props.procedures.data && this.props.procedures.data.length} trong tổng số {this.props.procedures.totalRecord} mục</span>
             </div>
             <div className="pagination-right">
-            {
-              this.props.procedures.totalPage !==1 &&
-              <ReactPaginate
-                 previousLabel={<span className="icon-double-arrow"></span>}
-                 nextLabel={<span className="icon-double-arrow"></span>}
-                 breakClassName={"break-me"}
-                 pageCount={this.props.procedures.totalPage}
-                 marginPagesDisplayed={1}
-                 pageRangeDisplayed={1}
-                 onPageChange={this.handlePageClick.bind(this)}
-                 containerClassName={"pagination"}
-                 subContainerClassName={"pages pagination"}
-                 activeClassName={"active"}
-               />
-            }
+              <div id="react-paginate">
+                {
+                  this.props.procedures.totalPage !==1 &&
+                  <ReactPaginate
+                    previousLabel={<span className="icon-double-arrow"></span>}
+                    nextLabel={<span className="icon-double-arrow"></span>}
+                    breakClassName={"break-me"}
+                    pageCount={this.props.procedures.totalPage}
+                    marginPagesDisplayed={1}
+                    pageRangeDisplayed={1}
+                    onPageChange={this.handlePageClick.bind(this)}
+                    containerClassName={"pagination pagination-ex"}
+                    subContainerClassName={"pages pagination"}
+                    activeClassName={"active active-ex"}
+                  />
+                }
+              </div>
             </div>
           </div>
         </div>
