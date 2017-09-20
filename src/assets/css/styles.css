@@ -17,6 +17,10 @@ body {
   background-size: cover;
   background-repeat: repeat-x;
 }
+.loading{
+  top: 259px !important;
+  left: 605px !important;
+}
 .doc{
   width: 100%;
   height: 735px;
