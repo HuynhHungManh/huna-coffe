@@ -4,6 +4,7 @@ import {Procedures} from 'api';
 import DataProcedureItem from './DataProcedureItem.jsx';
 import classnames from 'classnames';
 import ReactPaginate from 'react-paginate';
+import Spinner from 'react-spinkit';
 
 class FormDataProcedure extends Component {
 
@@ -12,7 +13,9 @@ constructor(props, context) {
   this.state = {
       totalPage: 1,
       indexPage : 1,
-      arrayPage : [1]
+      arrayPage : [1],
+      isEmpty : false,
+      isLoading : true
   };
   this.props.dispatch(Procedures.actions.procedures(null,{index:1}));
 }
@@ -43,7 +46,18 @@ componentDidUpdate(prevProps, prevState) {
       });
     }
 }
-
+componentWillReceiveProps(nextProps) {
+  if(nextProps.procedures.data !== this.props.procedures.data){
+    this.setState({
+      isLoading : false
+    });
+    if(nextProps.procedures.data.length === 0){
+      this.setState({
+        isEmpty : true
+      });
+    }
+  }
+}
   render() {
     return (
       <div className="procedure-right">
@@ -64,19 +78,22 @@ componentDidUpdate(prevProps, prevState) {
                 </tr>
               </thead>
               <tbody>
-                { this.props.procedures && this.props.procedures.data !== undefined &&
-                    this.props.procedures.data.map((item, i) => {
-                      return (
-                        <DataProcedureItem key ={i} index={i} data={item.data}/>
-                      )
-                  })
-                 }
-                 { this.props.procedures && this.props.procedures.data !== undefined &&
-                   this.props.procedures.data.length === 0 &&
+                  { this.props.procedures && this.props.procedures.data !== undefined &&
+                      this.props.procedures.data.map((item, i) => {
+                        return (
+                          <DataProcedureItem key ={i} index={i} data={item.data}/>
+                        )
+                    })
+                  }
+                  { this.state.isLoading &&
+                      <Spinner name="line-spin-fade-loader" color="#444" className="loading"/>
+                  }
+                  {
+                   this.state.isEmpty &&
                    <tr>
                      <td className="notification-procedure" colSpan="5">Không có thủ tục nào được tìm thấy !</td>
                    </tr>
-                 }
+                  }
               </tbody>
             </table>
           </div>
