@@ -954,8 +954,8 @@ span.icon-Arrow{
   margin: 15px 24px;
 }
 .print-document{
-  background:#6bc779;
-  border:1px solid #52aa5f;
+  background:#00CD81;
+  border:1px solid #03915D;
   border-radius:6px;
   width:268px;
   height:59px;
@@ -1433,6 +1433,11 @@ fieldset,.fieldset {
   font-size:24px;
   color:#000;
   padding-top: 70px;
+}
+.notification-document{
+  font-family: 'Roboto-Regular';
+  font-size:20px;
+  font-style: italic;
 }
 .message-no{
   background:#fafafa;

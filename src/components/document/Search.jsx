@@ -6,7 +6,7 @@ class Search extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      nameDocuments : ''
+      nameDocuments : '',
      }
   }
 
@@ -15,7 +15,18 @@ class Search extends Component {
   }
 
   searchDocuments() {
-    this.props.dispatch(SearchDocuments.actions.searchDocumenrs({nameDocument: this.state.nameDocuments}));
+    this.props.dispatch(SearchDocuments.actions.searchDocumenrs({nameDocument: this.state.nameDocuments})).then((res) =>{
+      if(res.data.length > 0){
+        this.props.dispatch(this.getCategoriesByPost(res.data));
+      }
+    });
+  }
+
+  getCategoriesByPost(array) {
+    return {
+      type: 'GET_LIST_CATEGORIES_BY_POST',
+      array
+    }
   }
 
   render() {
@@ -30,6 +41,7 @@ class Search extends Component {
 
 const bindStateToProps = (state) => {
   return {
+    documents: state.documents || []
   }
 }
 

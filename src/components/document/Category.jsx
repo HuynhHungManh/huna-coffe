@@ -3,33 +3,32 @@ import classnames from 'classnames';
 import {connect} from 'react-redux';
 import {Documents} from 'api';
 import SubCategory from './SubCategory.jsx';
+import {Categories} from 'api';
+import {PropTypes} from 'prop-types';
 
 class Category extends Component {
   constructor(props, context) {
     super(props, context);
     this.browseDocuments = this.browseDocuments.bind(this);
+    this.storeHistoryCategories = this.storeHistoryCategories.bind(this)
     this.state = {
       categories : []
     }
   }
 
   componentWillMount(){
+    if(window.previousLocation.pathname === "/"){
+      this.props.dispatch(Categories.actions.categories());
+    }
     this.setState({
       categories : this.props.categories
     })
   }
 
-  componentWillUnmount(){
-    this.state.categories.forEach(function(item, index) {
-      if(item.status !== undefined)
-        item.status = undefined;
-      if(item.children.length > 0){
-        item.children.forEach(function(item, index) {
-          if(item.status !== undefined)
-            item.status = undefined;
-        });
-      }
-    });
+  storeHistoryCategories() {
+    this.setState({
+      historyCategories : this.state.categories
+    })
   }
 
   browseCategories(category) {
@@ -59,7 +58,16 @@ class Category extends Component {
     this.setState({categories : categories})
   }
 
+  componentDidUpdate(prevProps, prevState){
+    if(prevProps.categories !== this.props.categories) {
+      this.setState({
+        categories : this.props.categories
+      });
+    }
+  }
+
   render() {
+
     return (
       <div className="box-list-document">
         <h2 className="list-title">
@@ -87,7 +95,7 @@ class Category extends Component {
                         {
                           item.children.map((subItem, i1) => {
                             return (
-                              <SubCategory key={i1} data={subItem} indexParent ={i} browseDocuments ={this.browseDocuments}/>
+                              <SubCategory key={i1} data={subItem} indexParent ={i} browseDocuments ={this.browseDocuments} storeHistory={this.storeHistoryCategories}/>
                             )
                           })
                          }
@@ -102,6 +110,10 @@ class Category extends Component {
       </div>
     );
   }
+}
+
+Category.contextTypes = {
+  router : PropTypes.any
 }
 
 const bindStateToProps = (state) => {
