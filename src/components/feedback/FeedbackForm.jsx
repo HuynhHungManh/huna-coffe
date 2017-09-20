@@ -69,7 +69,7 @@ class FeedbackForm extends Component {
       this.setState({
         error: true,
         success:false,
-        message: 'Vui lòng điền góp ý'
+        message: 'Vui lòng nhập nội dung góp ý'
       })
     }
 
@@ -250,7 +250,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <input id="ipt-name" type="text" onChange={this.handleChange.bind(this, 'hoVaTen')} value={this.state.hoVaTen} maxLength = {55} onBlur={this.checkName.bind(this)} placeholder="Nhập họ và tên" />
+                <input id="ipt-name" type="text" onChange={this.handleChange.bind(this, 'hoVaTen')} value={this.state.hoVaTen} maxLength = {55} onBlur={this.checkName.bind(this)} placeholder="Nhập Họ và tên" />
               </div>
             </div>
             <div className="sub-box-input">
@@ -260,7 +260,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <input id="ipt-phone" type="text" onChange={this.handleChange.bind(this, 'soDienThoai')} value={this.state.soDienThoai} maxLength={11} onBlur={this.checkPhoneNumber.bind(this)} placeholder="Nhập số" />
+                <input id="ipt-phone" type="text" onChange={this.handleChange.bind(this, 'soDienThoai')} value={this.state.soDienThoai} maxLength={11} onBlur={this.checkPhoneNumber.bind(this)} placeholder="Nhập Số điện thoại" />
               </div>
             </div>
             <div className="sub-box-input">
@@ -270,7 +270,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <input id="ipt-email" type="text" onChange={this.handleChange.bind(this, 'email')} value={this.state.email} onBlur={this.checkEmail.bind(this)} placeholder="Nhập email" />
+                <input id="ipt-email" type="text" onChange={this.handleChange.bind(this, 'email')} value={this.state.email} onBlur={this.checkEmail.bind(this)} placeholder="Nhập Email" />
               </div>
             </div>
             <div className="sub-box-input">

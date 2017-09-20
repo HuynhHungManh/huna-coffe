@@ -2,13 +2,13 @@ import React from 'react';
 import {RenderRoutes} from 'base/routes';
 import {connect} from 'react-redux';
 
-import {Categories} from 'api';
-
 class App extends React.Component {
   constructor(props, context) {
     super(props, context);
+  }
 
-    this.props.dispatch(Categories.actions.categories());
+  componentWillReceiveProps() {
+      window.previousLocation = this.props.location
   }
 
   render() {

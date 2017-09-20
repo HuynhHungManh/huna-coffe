@@ -78,7 +78,7 @@ componentWillReceiveProps(nextProps) {
                 </tr>
               </thead>
               <tbody>
-                  { this.props.procedures && this.props.procedures.data !== undefined &&
+                  { this.props.procedures.data && this.props.procedures.data.length > 0 &&
                       this.props.procedures.data.map((item, i) => {
                         return (
                           <DataProcedureItem key ={i} index={i} data={item.data}/>
@@ -86,10 +86,12 @@ componentWillReceiveProps(nextProps) {
                     })
                   }
                   { this.state.isLoading &&
-                      <Spinner name="line-spin-fade-loader" color="#444" className="loading"/>
+                     <tr>
+                      <td> <Spinner name="line-spin-fade-loader" color="#444" className="loading"/> </td>
+                    </tr>
                   }
                   {
-                   this.state.isEmpty &&
+                   this.state.isEmpty && this.props.procedures.data.length === 0 &&
                    <tr>
                      <td className="notification-procedure" colSpan="5">Không có thủ tục nào được tìm thấy !</td>
                    </tr>
@@ -117,7 +119,7 @@ componentWillReceiveProps(nextProps) {
             <div className="pagination-right">
               <div id="react-paginate">
                 {
-                  this.props.procedures.totalPage !==1 &&
+                  !this.state.isEmpty && this.props.procedures.data && this.props.procedures.data.length > 0 &&
                   <ReactPaginate
                     previousLabel={<span className="icon-double-arrow"></span>}
                     nextLabel={<span className="icon-double-arrow"></span>}
