@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {Feedbacks} from 'api';
 import {connect} from 'react-redux';
 
-const PhoneNumber = (input) => {  return input = input.replace(/[^0-9]+/g, "");}
+const PhoneNumber = (input) => { return input = input.replace(/[^0-9]+/g, "");}
 
 class FeedbackForm extends Component {
   constructor(props, context) {
@@ -27,6 +27,12 @@ class FeedbackForm extends Component {
     })
   }
 
+  validateEmail(email) {
+      let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
+    }
+
+
   validate() {
     let state = this.state;
     let pass = true;
@@ -36,8 +42,6 @@ class FeedbackForm extends Component {
         error: true,
         success:false,
         message: 'Vui lòng nhập họ và tên'
-      },()=> {
-        setTimeout(this.hide.bind(this), 10000);
       })
     } else if(state.hoVaTen.length < 4) {
       pass = false;
@@ -45,8 +49,6 @@ class FeedbackForm extends Component {
         error: true,
         success:false,
         message: 'Họ và tên ít nhất 4 kí tự'
-      },()=> {
-        setTimeout(this.hide.bind(this), 10000);
       })
     } else if(state.soDienThoai == '') {
       pass = false;
@@ -54,8 +56,6 @@ class FeedbackForm extends Component {
         error: true,
         success:false,
         message: 'Vui lòng nhập số điện thoại'
-      },()=> {
-        setTimeout(this.hide.bind(this), 10000);
       })
     }  else if(state.soDienThoai.length < 10 || state.soDienThoai.length > 11) {
       pass = false;
@@ -63,8 +63,6 @@ class FeedbackForm extends Component {
         error: true,
         success:false,
         message: 'Vui lòng nhập lại số điện thoại hợp lệ'
-      },()=> {
-        setTimeout(this.hide.bind(this), 10000);
       })
     } else if(state.noiDung == '') {
       pass = false;
@@ -72,8 +70,6 @@ class FeedbackForm extends Component {
         error: true,
         success:false,
         message: 'Vui lòng điền góp ý'
-      },()=> {
-        setTimeout(this.hide.bind(this), 10000);
       })
     }
 
@@ -87,8 +83,6 @@ class FeedbackForm extends Component {
           error: true,
           success:false,
           message: 'Email không đúng định dạng'
-        },()=> {
-          setTimeout(this.hide.bind(this), 10000);
         })
       }
     }
@@ -132,6 +126,11 @@ class FeedbackForm extends Component {
         [name]: e.target.value,
         error: false
       })
+    } else if(name == 'email'){
+      this.setState({
+        [name]: e.target.value,
+        error: false,
+      })
     } else if (name == 'noiDung') {
       this.setState({
         [name]: e.target.value,
@@ -158,23 +157,67 @@ class FeedbackForm extends Component {
     return;
   }
 
+  checkName() {
+    let state = this.state;
+    if(state.hoVaTen == '') {
+      this.setState({
+        error: true,
+        success: false,
+        message: 'Vui lòng nhập họ và tên'
+      })
+    } else if(state.hoVaTen.length < 4) {
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Họ và tên ít nhất 4 kí tự'
+      })
+    }
+  }
+
+  checkPhoneNumber(){
+    let state = this.state;
+    if(state.soDienThoai == '') {
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Vui lòng nhập số điện thoại'
+      })
+    }  else if(state.soDienThoai.length < 10 || state.soDienThoai.length > 11) {
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Vui lòng nhập lại số điện thoại hợp lệ'
+      })
+    }
+  }
+
   checkEmail() {
-    if(this.state.email) {
-      let email = this.state.email;
-      let atpos = email.indexOf("@");
-      let dotpos = email.lastIndexOf(".");
-      if (atpos < 1 || dotpos < atpos + 2 || dotpos + 2 >= email.length) {
+    let email = this.state.email;
+    if(email) {
+      if (this.validateEmail(email)) {
+        this.setState({
+          error: false,
+        })
+      } else {
         this.setState({
           error: true,
-          success:false,
+          success: false,
           message: 'Email không đúng định dạng'
-        },()=> {
-          setTimeout(this.hide.bind(this), 10000);
         })
       }
     }
   }
 
+  checkFeedback() {
+  let state = this.state;
+  if(state.noiDung == '') {
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Vui lòng điền góp ý'
+      })
+    }
+  }
 
   render() {
     return (
@@ -207,7 +250,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <input id="ipt-name" type="text" onChange={this.handleChange.bind(this, 'hoVaTen')} value={this.state.hoVaTen} maxLength = {55} placeholder="Nhập họ và tên" />
+                <input id="ipt-name" type="text" onChange={this.handleChange.bind(this, 'hoVaTen')} value={this.state.hoVaTen} maxLength = {55} onBlur={this.checkName.bind(this)} placeholder="Nhập họ và tên" />
               </div>
             </div>
             <div className="sub-box-input">
@@ -217,7 +260,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <input id="ipt-phone" type="text" onChange={this.handleChange.bind(this, 'soDienThoai')} value={this.state.soDienThoai} maxLength={11} placeholder="Nhập số" />
+                <input id="ipt-phone" type="text" onChange={this.handleChange.bind(this, 'soDienThoai')} value={this.state.soDienThoai} maxLength={11} onBlur={this.checkPhoneNumber.bind(this)} placeholder="Nhập số" />
               </div>
             </div>
             <div className="sub-box-input">
@@ -237,7 +280,7 @@ class FeedbackForm extends Component {
                     </span></span></label>
               </div>
               <div className="input-fb">
-                <textarea id="inp-content" onChange={this.handleChange.bind(this, 'noiDung')} value={this.state.noiDung} placeholder="Nhập nội dung phản ánh, góp ý của bạn" />
+                <textarea id="inp-content" onChange={this.handleChange.bind(this, 'noiDung')} value={this.state.noiDung} onBlur={this.checkFeedback.bind(this)} placeholder="Nhập nội dung phản ánh, góp ý của bạn" />
               </div>
             </div>
             <div className="sub-box-input">

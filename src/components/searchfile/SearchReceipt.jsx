@@ -37,8 +37,6 @@ class SearchReceipt extends Component {
         hasValue: false,
         hasError: true,
         message: 'Vui lòng nhập số biên nhận'
-      },()=> {
-        setTimeout(this.hide.bind(this), 10000);
       })
     } else {
       SearchFile.actions.searchFiles.request({id: this.state.idFile}).then(res => {
@@ -51,8 +49,6 @@ class SearchReceipt extends Component {
             hasValue: false,
             hasError: true,
             message: 'Số biên nhận không đúng hoặc không hợp lệ'
-          },()=> {
-            setTimeout(this.hide.bind(this), 10000);
           })
         }
       })
