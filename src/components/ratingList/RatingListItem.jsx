@@ -12,7 +12,6 @@ constructor(props, context) {
   this.props.dispatch(Ratings.actions.ratings());
 }
   render() {
-    console.log(this.props);
     return (
       <div className="list-scroll">
         <div className="list-info">

@@ -1764,9 +1764,9 @@ fieldset,.fieldset {
 }
 .center-info {
   display: inline-block;
-  margin: 25px 247px;
+  margin: 25px 237px;
   border:2px solid #2f87de;
-  width:51px;
+  width:60px;
   height:0px;
 }
 /*----------------------------*/
@@ -1802,7 +1802,6 @@ fieldset,.fieldset {
   vertical-align: middle;
   text-align: left;
   font-size: 20px;
-  font-weight: bold;
   line-height: 24px;
   margin: 12px 20px 0;
   margin-right: 9px;
