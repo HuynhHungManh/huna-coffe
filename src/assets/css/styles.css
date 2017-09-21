@@ -899,7 +899,7 @@ span.icon-Arrow{
 }
 
 .print-document:active{
-  background :#cd5b00 ;
+  background :#03915D ;
 }
 .btn-search, .icon-zoom{
   font-size: 28px;
@@ -958,8 +958,8 @@ span.icon-Arrow{
   margin: 15px 24px;
 }
 .print-document{
-  background:#ff8a2e;
-  border:1px solid #cd5b00;
+  background:#00CD81;
+  border:1px solid #03915D;
   border-radius:6px;
   width:268px;
   height:59px;
