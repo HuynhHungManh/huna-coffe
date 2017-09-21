@@ -2,19 +2,78 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {Ratings} from 'api';
 
+const PhoneNumber = (input) => { return input = input.replace(/[^0-9]+/g, "");}
+
 class RatingDetailItem extends Component {
 
-constructor(props, context) {
-  super(props, context);
-  this.state = {
-    data: this.props.ratings.find(item => item.id == this.props.id)
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      data: this.props.ratings.find(item => item.id == this.props.id),
+      selectedOption: 'argee',
+      soDienThoai: '',
+      error: false,
+      success: false,
+      message: ''
+    }
   }
-}
+
+  handleChange(name, e) {
+    if (name == 'soDienThoai') {
+      e.target.value = PhoneNumber(e.target.value)
+      this.setState({
+        [name]: e.target.value,
+        error: false
+      })
+    }
+  }
+
+  handleFormSubmit(formSubmitEvent) {
+    formSubmitEvent.preventDefault();
+    let state = this.state;
+    if(state.soDienThoai == '') {
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Vui lòng nhập số điện thoại'
+      })
+    }  else if(state.soDienThoai.length < 10 || state.soDienThoai.length > 11) {
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Vui lòng nhập lại số điện thoại hợp lệ'
+      })
+    } else {
+      this.setState({
+        success: true,
+        message: 'Gửi đánh giá thành công.',
+        soDienThoai: '',
+      })
+    }
+    return;
+  }
+
+  checkPhoneNumber(){
+    let state = this.state;
+    if(state.soDienThoai == '') {
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Vui lòng nhập số điện thoại'
+      })
+    }  else if(state.soDienThoai.length < 10 || state.soDienThoai.length > 11) {
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Vui lòng nhập lại số điện thoại hợp lệ'
+      })
+    }
+  }
 
   render() {
     // console.log(this.props);
     return (
-      <div className="box-content box-content-rating-detail">
+      <div className="box-content box-content-rating-detail box-content-rating">
         <div className="box-info">
           <div className="info-top">
             <img className="img-rating-detail" src={this.state.data.image} />
@@ -31,15 +90,26 @@ constructor(props, context) {
           <div className="title-form">
             <span className="text-title text-title-rating-detail">ĐÁNH GIÁ MỨC ĐỘ HÀI LÒNG CỦA TỪNG CÁ NHÂN</span>
           </div>
-          <form className="form-fb">
+          <form className="form-fb" onSubmit={this.handleFormSubmit.bind(this)}>
             <div className="sub-box-input">
               <div className="title-input">
                 <label className="label-input">
                   <span className="phone-fb">Số điện thoại của bạn</span></label>
               </div>
               <div className="input-fb inp-rating-detail">
-                <input type="text" placeholder="Nhập số " onFocus={this.numberInput} id="phone" />&nbsp;<span id="errmsg" />
-                {/* <span className ="validate-phone"> Vui lòng nhập số điện thoại hợp lệ </span> */}
+                <input type="text" placeholder="Nhập số " onChange={this.handleChange.bind(this, 'soDienThoai')} value={this.state.soDienThoai} maxLength={11} onBlur={this.checkPhoneNumber.bind(this)} />
+              </div>
+              <div>
+              { this.state.error ?
+                (<div className="validation-form-rating">
+                  <span className="validation-text-rating">{this.state.message}</span>
+                </div>) : null
+              }
+              { this.state.success ?
+                (<div className="validation-form validation-success validation-success-rating">
+                  <span className="validation-success-text">{this.state.message}</span>
+                </div>) : null
+              }
               </div>
             </div>
             <div className="sub-box-input">
@@ -48,19 +118,21 @@ constructor(props, context) {
               </p>
               <ul>
                 <li className="radio-rating">
-                  <input type="radio" name="review" id="agree" defaultChecked="true" />
+                  <input type="radio" name="review" id="agree" defaultChecked="true"
+                      onChange={this.handleOptionChange} />
                   <label htmlFor="agree" className="label-radio-agree">
                     <span />
                     <p className="detail-rw">Hài lòng</p>
                   </label>
-                  <input type="radio" name="review" id="disagree" />
+                  <input type="radio" name="review" id="disagree"
+                      onChange={this.handleOptionChange} />
                   <label htmlFor="disagree" className="label-radio-disagree">
                     <span />
                     <p className="detail-rw">Chưa hài lòng</p>
                   </label>
                 </li>
               </ul>
-              <button className="btn-send-rating">Gửi Đánh Giá</button>
+              <button className="btn-send-rating" type="submit">Gửi Đánh Giá</button>
             </div>
           </form>
         </div>

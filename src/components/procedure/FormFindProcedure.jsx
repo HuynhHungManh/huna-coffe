@@ -40,7 +40,7 @@ handleSearch() {
               <input type="text" placeholder="Nhập tên thủ tục" name="tenThuTuc" />
             </li>
             <li>
-              <p>cơ quan thực hiên</p>
+              <p>cơ quan thực hiện</p>
               <div className="menulist icon-arrow1-bottom">
                 <select type ="select" onChange={this.handleChange} name="coQuan" value={this.state.coQuan}>
                   {this.props.units.map((item, i) => {
