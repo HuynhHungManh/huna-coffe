@@ -1144,8 +1144,27 @@ span.icon-Arrow{
   float:left;
   margin-bottom: 28px
 }
+.validation-form-rating{
+  color: #ee0000;
+  left: auto;
+  line-height: 50px;
+  font-family:'Roboto-Medium';
+  font-size: 23px;
+  font-style: italic;
+  position: absolute;
+  right: 110px;
+  text-transform: none;
+  text-align: center;
+  width: 450px;
+}
+.validation-text-rating{
+  color: #ee0000;
+}
+.validation-success-rating{
+  position: none;
+}
 .title-input{
-  width: 27%;
+  width: 25%;
   float: left;
   padding: 15px 0;
 }
