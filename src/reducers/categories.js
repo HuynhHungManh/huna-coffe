@@ -13,12 +13,19 @@ function categories(state = initial, action) {
     case 'GET_LIST_CATEGORIES_BY_POST':
       let array=[];
       action.array.forEach(function(value, i) {
-        if(state.find(item => item.id === value.categories[0]) !== undefined){
-          array.push(state.find(item => item.id === value.categories[0]));
-        }
+        state.forEach(function(value1, i1) {
+          if(value1.children.find(item => item.id === value.categories[0])){
+            if(!array.find(item => item.id === value1.id)){
+              array.push(value1);
+            }
+          }
+          if(value1.id === value.categories[0]){
+            if(!array.find(item => item.id === value1.id)){
+              array.push(value1);
+            }
+          }
+        });
       });
-      console.log(state);
-      console.log(array);
       return [
         ...array
       ];

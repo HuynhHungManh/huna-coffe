@@ -27,16 +27,16 @@ class DocumentList extends Component {
   }
 
   componentWillMount(){
-    console.log(window.previousLocation.pathname);
-    if(window.previousLocation.pathname === "/"){
+    let previousLocation = 'procedure-detail';
+    if(window.previousLocation.pathname.indexOf(previousLocation) >= 0) {
       this.setState({
-        documents : []
+        documents : this.props.documents
       })
     }
   }
 
   render() {
-    console.log(this.state.documents);
+    console.log(this.props.documents);
     return (
       <div className="box-detail-document">
         <h2 className="list-title">
@@ -48,7 +48,7 @@ class DocumentList extends Component {
           }
           <ul className="list-detail-document">
               {this.state.documents.map((item, i) => {
-                return (<DocumentListItem key={i} data={item} storeHistory={this.props.storeHistory}/>)
+                return (<DocumentListItem key={i} data={item} />)
               })
             }
           </ul>
