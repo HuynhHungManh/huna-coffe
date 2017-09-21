@@ -25,6 +25,10 @@ body {
   width: 100%;
   height: 735px;
 }
+.display-border{
+  padding: 0 !important;
+  border: 0 !important;
+}
 .box-content{
   width: 100%;
   display: inline-block;
@@ -683,7 +687,7 @@ span.icon-Arrow{
   background-color: #fff;
   padding-right: 20px;
   padding: 25px 20px;
-  box-shadow:0 2px 9px 0 rgba(0,0,0,0.03);
+  box-shadow:0 2px 9px 0 rgba(0, 0, 0, 0.16);
   border-radius:6px;
 }
 .box-list-document .list-document{
@@ -895,7 +899,7 @@ span.icon-Arrow{
 }
 
 .print-document:active{
-  background :#cd5b00 ;
+  background :#03915D ;
 }
 .btn-search, .icon-zoom{
   font-size: 28px;
@@ -928,7 +932,7 @@ span.icon-Arrow{
   overflow: hidden;
   float: right;
   padding: 25px 30px;
-  box-shadow:0 2px 9px 0 rgba(0,0,0,0.03);
+  box-shadow:0 2px 9px 0 rgba(0, 0, 0, 0.16);
   border-radius:6px;
 }
 .fields-name{
@@ -954,8 +958,8 @@ span.icon-Arrow{
   margin: 15px 24px;
 }
 .print-document{
-  background:#ff8a2e;
-  border:1px solid #cd5b00;
+  background:#00CD81;
+  border:1px solid #03915D;
   border-radius:6px;
   width:268px;
   height:59px;

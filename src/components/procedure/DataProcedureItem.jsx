@@ -14,7 +14,7 @@ gotoPage(page) {
   render() {
     return (
       <tr>
-        <td>{this.props.index +1}</td>
+        <td>{this.props.index}</td>
         <td>{this.props.data.maso}</td>
         <td style={{color: '#0080fe'}} onClick={this.gotoPage.bind(this,`/find-procedure-detail/${this.props.data.id}`)}>{this.props.data.tenthutuc}<span className="level-procedure"> Mức {this.props.data.tructuyen}</span></td>
         <td>{this.props.data.donvi}</td>

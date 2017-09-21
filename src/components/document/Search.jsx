@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {SearchDocuments} from 'api';
+import {Categories} from 'api';
 
 class Search extends Component {
   constructor(props, context) {
@@ -15,6 +16,7 @@ class Search extends Component {
   }
 
   searchDocuments() {
+    this.props.dispatch(Categories.actions.categories());
     this.props.dispatch(SearchDocuments.actions.searchDocumenrs({nameDocument: this.state.nameDocuments})).then((res) =>{
       if(res.data.length > 0){
         this.props.dispatch(this.getCategoriesByPost(res.data));
@@ -29,11 +31,17 @@ class Search extends Component {
     }
   }
 
+  // componentDidUpdate(prevProps, prevState){
+  //   if(prevState.documents !== this.props.nameDocuments) {
+  //     this.props.dispatch(Categories.actions.categories());
+  //   }
+  // }
+
   render() {
     return (
       <div className="form-search">
         <button className="btn-search icon-zoom" onClick={this.searchDocuments.bind(this)}/>
-        <input className="inp-search" type="text" placeholder="Tìm kiếm tên thủ tục" onChange={this.getNameDocuments.bind(this)} />
+        <input className="inp-search" type="text" placeholder="Tìm kiếm tên biểu mẫu" onChange={this.getNameDocuments.bind(this)} />
       </div>
     );
   }
