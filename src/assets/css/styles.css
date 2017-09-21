@@ -665,7 +665,7 @@ span.icon-Arrow{
 }
 .box-list-info .item {
   float: left;
-  height: 336px;
+  height: 334px;
   width: 526px;
   margin: 0 15px 30px 15px;
   background: #fff;
@@ -895,7 +895,7 @@ span.icon-Arrow{
 }
 
 .print-document:active{
-  background :#52aa5f ;
+  background :#cd5b00 ;
 }
 .btn-search, .icon-zoom{
   font-size: 28px;
@@ -954,8 +954,8 @@ span.icon-Arrow{
   margin: 15px 24px;
 }
 .print-document{
-  background:#00CD81;
-  border:1px solid #03915D;
+  background:#ff8a2e;
+  border:1px solid #cd5b00;
   border-radius:6px;
   width:268px;
   height:59px;
@@ -2023,13 +2023,13 @@ fieldset,.fieldset {
 }
 .pagination-dropdown {
   font-family:'Roboto-Regular';
-  font-size:20px;
-  width: 110px;
+  font-size: 23px;
+  width: 80px;
   height: 41px;
   border:1px solid #dddddd;
   background-color: #ffffff;
-  background-size: 20px;
-  background-position:  right 20px center;
+  background-size: 14px;
+  background-position:  right 12px top 17px;
   background-image: url("../images/icon/arrow-blue.svg");
   background-repeat: no-repeat;
   -webkit-appearance: none;
@@ -2037,11 +2037,11 @@ fieldset,.fieldset {
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
   border-radius: 2px;
-  vertical-align: middle;
   text-align: left;
-  padding-left: 20px;
+  padding-left: 15px;
   position: relative;
-  margin: 0 15px;
+  margin-left: 15px;
+  top: 3px;
 }
 .pagination-dropdown>select {
   margin: 10px;
@@ -2101,9 +2101,6 @@ fieldset,.fieldset {
   -moz-transform: rotate(180deg);
   -webkit-transform: rotate(180deg);
   -o-transform: rotate(180deg);
-}
-.next.icon-double-arrow::before {
-  top: 5px;
 }
 
 /*----------------------------*/
