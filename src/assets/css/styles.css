@@ -1984,8 +1984,9 @@ fieldset,.fieldset {
 .table-procedure {
   float: left;
   width: 100%;
-  height: 640px;
+  height: 700px;
   overflow-y: auto;
+  padding-bottom: 60px;
 }
 .table-procedure::-webkit-scrollbar {
   width: 50px;
@@ -2013,9 +2014,12 @@ fieldset,.fieldset {
   background-image: url("../images/icon/arrow-top.svg");
 }
 .pagination-procedure {
-  float: left;
-  width: 94.4%;
   background-color: #fff;
+  float: left;
+  position: relative;
+  top: -61px;
+  width: 94.4%;
+
 }
 .pagination-procedure ul{
   display: inline-block;
