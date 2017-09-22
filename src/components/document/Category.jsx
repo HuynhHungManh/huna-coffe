@@ -10,7 +10,6 @@ class Category extends Component {
   constructor(props, context) {
     super(props, context);
     this.browseDocuments = this.browseDocuments.bind(this);
-    this.storeHistoryCategories = this.storeHistoryCategories.bind(this)
     this.state = {
       categories : []
     }
@@ -22,12 +21,6 @@ class Category extends Component {
     }
     this.setState({
       categories : this.props.categories
-    })
-  }
-
-  storeHistoryCategories() {
-    this.setState({
-      historyCategories : this.state.categories
     })
   }
 
@@ -75,7 +68,7 @@ class Category extends Component {
         </h2>
         <div className="box-list-scroll resize-box-document ">
           <ul className="list-document">
-            { this.state.categories !== undefined &&
+            { this.state.categories &&
               this.state.categories.map((item, i) => {
                 return (
                   <li key={i} className="sub-list-document">
@@ -118,7 +111,8 @@ Category.contextTypes = {
 
 const bindStateToProps = (state) => {
   return {
-    categories: state.categories
+    categories: state.categories,
+    documents : state.documents
   }
 }
 

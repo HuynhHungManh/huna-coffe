@@ -28,8 +28,25 @@ handleSearch() {
     linhVuc : this.state.linhVuc,
     coQuan : this.state.coQuan,
   }
-  this.props.dispatch(Procedures.actions.searchProcedure(null, params));
+  if(this.state.tenThuTuc === '' && this.state.linhVuc === '' && this.state.coQuan ===''){
+    params = {
+      index: 1
+    };
+    this.props.dispatch(Procedures.actions.procedures(null, params));
+  }
+  else{
+    this.props.dispatch(Procedures.actions.searchProcedure(null, params));
+    this.props.dispatch(this.searchByFieldAndUnit(params));
+  }
 }
+
+searchByFieldAndUnit(data) {
+  return {
+    type: 'STORE_FIELD_AND_UNIT',
+    data
+  }
+}
+
   render() {
     return (
       <div className="procedure-left">
@@ -37,7 +54,7 @@ handleSearch() {
           <ul>
             <li>
               <p>tên thủ tục</p>
-              <input type="text" placeholder="Nhập tên thủ tục" name="tenThuTuc" />
+              <input type="text" placeholder="Nhập tên thủ tục" name="tenThuTuc" onChange={this.handleChange} />
             </li>
             <li>
               <p>cơ quan thực hiện</p>

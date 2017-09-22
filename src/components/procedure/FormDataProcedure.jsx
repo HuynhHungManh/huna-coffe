@@ -24,14 +24,30 @@ handlePageClick(data) {
   this.setState({
     indexPage : data.selected+1
   });
-  this.props.dispatch(Procedures.actions.procedures(null,{index:data.selected+1}));
+  let params = {
+    index:data.selected+1,
+  }
+  if(this.props.dataSearch){
+    params.coQuan = this.props.dataSearch.coQuan;
+    params.linhVuc = this.props.dataSearch.linhVuc;
+    params.tenThuTuc = this.props.dataSearch.tenThuTuc;
+  }
+  this.props.dispatch(Procedures.actions.procedures(null,params));
 }
 
 handleChange(e) {
   this.setState({
     indexPage : e.target.value
   });
-  this.props.dispatch(Procedures.actions.procedures(null,{ index : parseInt(e.target.value) }));
+  let params = {
+    index : parseInt(e.target.value)
+  }
+  if(this.props.dataSearch){
+    params.coQuan = this.props.dataSearch.coQuan;
+    params.linhVuc = this.props.dataSearch.linhVuc;
+    params.tenThuTuc = this.props.dataSearch.tenThuTuc;
+  }
+  this.props.dispatch(Procedures.actions.procedures(null,params));
 }
 
 componentDidUpdate(prevProps, prevState) {
@@ -42,7 +58,8 @@ componentDidUpdate(prevProps, prevState) {
       }
       this.setState({
         totalPage : this.props.procedures.totalPage,
-        arrayPage : arr
+        arrayPage : arr,
+        indexPage : 1
       });
     }
 }
@@ -82,13 +99,16 @@ componentWillReceiveProps(nextProps) {
                   { this.props.procedures.data && this.props.procedures.data.length > 0 &&
                       this.props.procedures.data.map((item, i) => {
                         return (
-                          <DataProcedureItem key ={i} index={i} data={item.data}/>
+                          <DataProcedureItem key ={i} index={item.stt} data={item.data}/>
                         )
                     })
                   }
-                  { this.state.isLoading &&
-                     <tr>
-                      <td> <Spinner name="line-spin-fade-loader" color="#444" className="loading"/> </td>
+                  {
+                    this.state.isLoading &&
+                    <tr>
+                        <td className ="display-border">
+                          <Spinner name="line-spin-fade-loader" color="#444" className="loading"/>
+                        </td>
                     </tr>
                   }
                   {
@@ -100,10 +120,8 @@ componentWillReceiveProps(nextProps) {
               </tbody>
             </table>
           </div>
+          {this.props.procedures.data && this.props.procedures.data.length > 0 &&
           <div className="pagination-procedure">
-            {
-              this.props.procedures && this.props.procedures.data !== undefined &&
-              this.props.procedures.data.length !== 0 &&
               <div className="pagination-left">
                 <span className="text-span">Xem</span>
                 <select className="pagination-dropdown icon-arrow1-bottom" onChange={this.handleChange.bind(this)} value={this.state.indexPage}>
@@ -114,13 +132,13 @@ componentWillReceiveProps(nextProps) {
                   )})
                  }
                 </select>
-                  <span className="text-span">Đang xem 1 đến {this.props.procedures.data && this.props.procedures.data.length} trong tổng số {this.props.procedures.totalRecord} mục</span>
+                  <span className="text-span">Đang xem {this.props.procedures.fromPage} đến {this.props.procedures.toPage} trong tổng số {this.props.procedures.totalRecord} mục</span>
               </div>
-            }
+
             <div className="pagination-right">
               <div id="react-paginate">
                 {
-                  !this.state.isEmpty && this.props.procedures.data && this.props.procedures.data.length > 0 &&
+                  this.props.procedures && this.props.procedures.totalPage > 1 &&
                   <ReactPaginate
                     previousLabel={<span className="icon-double-arrow"></span>}
                     nextLabel={<span className="icon-double-arrow"></span>}
@@ -138,6 +156,7 @@ componentWillReceiveProps(nextProps) {
               </div>
             </div>
           </div>
+          }
         </div>
       </div>
     );
@@ -146,7 +165,8 @@ componentWillReceiveProps(nextProps) {
 
 const bindStateToProps = (state) => {
   return {
-    procedures: state.procedures
+    procedures: state.procedures,
+    dataSearch : state.searchProcedure
   }
 }
 
