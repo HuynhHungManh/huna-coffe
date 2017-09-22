@@ -87,7 +87,8 @@ componentWillReceiveProps(nextProps) {
                   })}
               >
               <thead>
-                <tr><th style={{width: 65}}>STT</th>
+                <tr>
+                  <th style={{width: 65}}>STT</th>
                   <th style={{width: 187}}>MÃ SỐ</th>
                   <th style={{width: 568}}>TÊN THỦ TỤC</th>
                   <th style={{width: 233}}>CƠ QUAN THỰC HIỆN</th>
