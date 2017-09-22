@@ -43,6 +43,13 @@ class FeedbackForm extends Component {
         success:false,
         message: 'Vui lòng nhập họ và tên'
       })
+    } else if(state.hoVaTen.trim() == '') {
+      pass = false;
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Vui lòng nhập họ và tên'
+      })
     } else if(state.hoVaTen.length < 4) {
       pass = false;
       this.setState({
@@ -65,6 +72,13 @@ class FeedbackForm extends Component {
         message: 'Vui lòng nhập lại số điện thoại hợp lệ'
       })
     } else if(state.noiDung == '') {
+      pass = false;
+      this.setState({
+        error: true,
+        success:false,
+        message: 'Vui lòng nhập nội dung góp ý'
+      })
+    } else if(state.noiDung.trim() == '') {
       pass = false;
       this.setState({
         error: true,
