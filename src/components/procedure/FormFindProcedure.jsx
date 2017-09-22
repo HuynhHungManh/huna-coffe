@@ -29,10 +29,9 @@ handleSearch() {
     coQuan : this.state.coQuan,
   }
   if(this.state.tenThuTuc === '' && this.state.linhVuc === '' && this.state.coQuan ===''){
-    params = {
-      index: 1
-    };
+    params = {index: 1};
     this.props.dispatch(Procedures.actions.procedures(null, params));
+    this.props.dispatch(this.searchByFieldAndUnit({}));
   }
   else{
     this.props.dispatch(Procedures.actions.searchProcedure(null, params));

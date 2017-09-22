@@ -16,12 +16,18 @@ class Search extends Component {
   }
 
   searchDocuments() {
-    this.props.dispatch(Categories.actions.categories());
-    this.props.dispatch(SearchDocuments.actions.searchDocumenrs({nameDocument: this.state.nameDocuments})).then((res) =>{
-      if(res.data.length > 0){
-        this.props.dispatch(this.getCategoriesByPost(res.data));
-      }
-    });
+    if(this.state.nameDocuments === ''){
+      this.props.dispatch(SearchDocuments.actions.searchDocumenrs({nameDocument: ''}));
+      this.props.dispatch(Categories.actions.categories());
+    }
+    else{
+      this.props.dispatch(Categories.actions.categories());
+      this.props.dispatch(SearchDocuments.actions.searchDocumenrs({nameDocument: this.state.nameDocuments})).then((res) =>{
+        if(res.data.length > 0){
+          this.props.dispatch(this.getCategoriesByPost(res.data));
+        }
+      });
+    }
   }
 
   getCategoriesByPost(array) {

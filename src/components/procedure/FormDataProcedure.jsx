@@ -28,6 +28,7 @@ handlePageClick(data) {
     index:data.selected+1,
   }
   if(this.props.dataSearch){
+    console.log(this.props.dataSearch);
     params.coQuan = this.props.dataSearch.coQuan;
     params.linhVuc = this.props.dataSearch.linhVuc;
     params.tenThuTuc = this.props.dataSearch.tenThuTuc;
