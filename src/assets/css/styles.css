@@ -29,6 +29,29 @@ body {
   padding: 0 !important;
   border: 0 !important;
 }
+.icon1::before {
+  position: absolute;
+  z-index: 1;
+  top: 29px;
+  right: 31px;
+  color: #ffd05b;
+}
+.icon2::before{
+  position: absolute;
+  z-index: 1;
+  top: 29px;
+  right: 31px;
+  color: #fff;
+}
+
+.transform-icon::before {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
 .box-content{
   width: 100%;
   display: inline-block;
