@@ -62,7 +62,7 @@ searchByFieldAndUnit(data) {
                 <select type ="select" onChange={this.handleChange} name="coQuan" value={this.state.coQuan}>
                   {this.props.units.map((item, i) => {
                     return (
-                      <option key={i} value={item.name}>{item.name}</option>
+                      <option key={i} value={item.value}>{item.name}</option>
                       )
                     })
                   }
@@ -77,7 +77,7 @@ searchByFieldAndUnit(data) {
                   {
                     this.props.fields.map((item, i) => {
                     return (
-                      <option key={i} value={item.name}>{item.name}</option>
+                      <option key={i} value={item.value}>{item.name}</option>
                       )
                     })
                   }
