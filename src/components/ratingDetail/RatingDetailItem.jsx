@@ -18,6 +18,14 @@ class RatingDetailItem extends Component {
     }
   }
 
+  hide() {
+    this.setState({
+      success: false,
+      error: false
+    })
+  }
+
+
   handleChange(name, e) {
     if (name == 'soDienThoai') {
       e.target.value = PhoneNumber(e.target.value)
@@ -46,8 +54,10 @@ class RatingDetailItem extends Component {
     } else {
       this.setState({
         success: true,
-        message: 'Gửi đánh giá thành công.',
+        message: 'Gửi đánh giá thành công',
         soDienThoai: '',
+      }, ()=> {
+        setTimeout(this.hide.bind(this), 5000);
       })
     }
     return;

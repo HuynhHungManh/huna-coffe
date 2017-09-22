@@ -1091,6 +1091,7 @@ span.icon-Arrow{
   line-height: 39px;
   padding: 39px 60px;
   border-bottom: 1px solid #e5e5e5;
+  position: relative;
 }
 /*---Validation-Feedback-Page-----*/
 .text-title{
@@ -2029,10 +2030,11 @@ fieldset,.fieldset {
 }
 .pagination-procedure {
   background-color: #fff;
+  border: 1px solid #eeeeee;
   float: left;
   position: relative;
   top: -61px;
-  width: 94.4%;
+  width: 94.6%;
 
 }
 .pagination-procedure ul{
