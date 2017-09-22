@@ -1953,6 +1953,9 @@ fieldset,.fieldset {
   font-size: 14px;
   margin-left: 10px;
 }
+.numerical-order-procedure{
+  text-align: center;
+}
 .table-pro tr:nth-child(even) {background: #f6f6f6}
 .table-pro{
   line-height: 30px;
@@ -1982,7 +1985,7 @@ fieldset,.fieldset {
 }
 .table-procedure::-webkit-scrollbar {
   width: 50px;
-  height: 10px;
+  height: 900px;
   padding: 18px 14px;
   background:#ffffff;
   border:1px solid #e9e9e9;

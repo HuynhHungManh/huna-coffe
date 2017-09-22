@@ -23,13 +23,25 @@ class ProcedureDetail extends Component {
     return file.acf.fileBieuMauTrang.url
   }
 
+  truncate() {
+    let length = 85;
+    let titleName = this.state.title;
+    let trimmedTitle = '';
+    if(titleName.length < 85 ) {
+      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length));
+    } else if(titleName.length > 85) {
+      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length)) + '.....';
+    }
+    return trimmedTitle;
+  }
+
   render() {
     return (
       <CommonLayout>
         <div className="container">
           <div className="header">
             <h2 className="title bg-document">
-              <span className="title-main">{this.state.title}</span>
+              <span className="title-main">{this.truncate()}</span>
             </h2>
           </div>
           <div className="content custom-procedure">
