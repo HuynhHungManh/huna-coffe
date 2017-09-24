@@ -76,7 +76,7 @@ class Category extends Component {
       if(item.id === id){
         item.status = true;
       }
-      else{
+      else {
         item.status = false;
       }
     });
@@ -102,7 +102,7 @@ class Category extends Component {
             { this.state.categories &&
               this.state.categories.map((item, i) => {
                 return (
-                  <li key={i} className={
+                  <li key={i} onClick={this.browseCategories.bind(this, item)} className={
                       classnames('sub-list-document', {
                         'icon1-Arrow icon1' : !item.status && item.children.length > 0 ,
                         'icon1-Arrow icon2 transform-icon' : item.status === true && item.children.length > 0 && !item.selectStatus,
@@ -113,7 +113,7 @@ class Category extends Component {
                       classnames('text-document', {
                         'text-active-document' : item.status,
                       })}
-                      onClick={this.browseCategories.bind(this, item)}
+
                     >
                       {item.name}
                     </p>

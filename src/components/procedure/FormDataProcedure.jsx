@@ -63,6 +63,19 @@ componentDidUpdate(prevProps, prevState) {
       });
     }
 }
+
+// componentWillMount(){
+//   let arr = [];
+//   for(let i = 1; i <= this.props.procedures.totalPage; i++){
+//     arr.push(i);
+//   }
+//   this.setState({
+//     totalPage : this.props.procedures.totalPage,
+//     arrayPage : arr,
+//     indexPage : 1
+//   });
+// }
+
 componentWillReceiveProps(nextProps) {
   if(nextProps.procedures.data !== this.props.procedures.data){
     this.setState({
