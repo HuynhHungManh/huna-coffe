@@ -27,7 +27,7 @@ class Footer extends React.Component {
   printPDF(typeDoc) {
     const mainProcess = window.require("electron").remote.require('./print.js');
     if(typeDoc === 'BieuMau'){
-      mainProcess.print(this.props.documents[0] && this.props.documents[0].acf.fileBieuMau.url);
+      mainProcess.print(this.props.documents[0] && this.props.documents[0].acf.fileBieuMauSan.url);
     }
     else if(typeDoc === 'BieuMauTrang'){
       mainProcess.print(this.props.documents[0] && this.props.documents[0].acf.fileBieuMauTrang.url);

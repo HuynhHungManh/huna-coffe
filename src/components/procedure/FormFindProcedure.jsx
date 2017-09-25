@@ -46,6 +46,18 @@ searchByFieldAndUnit(data) {
   }
 }
 
+componentWillMount(){
+  let previousLocation = 'find-procedure-detail';
+  if(window.previousLocation.pathname.indexOf(previousLocation) >= 0) {
+    if(this.props.dataSearch.tenThuTuc !== undefined && this.props.dataSearch.linhVuc !== undefined && this.props.dataSearch.coQuan !== undefined){
+      this.setState({
+        tenThuTuc : this.props.dataSearch.tenThuTuc,
+        linhVuc: this.props.dataSearch.linhVuc,
+        coQuan: this.props.dataSearch.coQuan,
+      })
+    }
+  }
+}
   render() {
     return (
       <div className="procedure-left">
@@ -94,7 +106,8 @@ searchByFieldAndUnit(data) {
 const bindStateToProps = (state) => {
   return {
     units: state.units,
-    fields: state.fields
+    fields: state.fields,
+    dataSearch : state.searchProcedure
   }
 }
 

@@ -30,7 +30,14 @@ body {
   border: 0 !important;
 }
 
-
+.hideButtonBack{
+  width: 100%;
+  height: 91px;
+  background-color: #fff;
+  position: relative;
+  z-index: 1;
+  top: -92px;
+}
 .box-content{
   width: 100%;
   display: inline-block;
@@ -2106,7 +2113,7 @@ fieldset,.fieldset {
   font-size: 18px;
   text-decoration: none;
   transition: background-color .3s;
-  width: 36%;
+  width: 39%;
 }
 #react-paginate ul {
     display: inline-block;

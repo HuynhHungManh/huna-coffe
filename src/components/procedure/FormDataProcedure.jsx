@@ -12,7 +12,7 @@ constructor(props, context) {
   super(props, context);
   this.state = {
       totalPage: 1,
-      indexPage : 1,
+      indexPage : this.props.procedures && this.props.procedures.indexPage,
       arrayPage : [1],
       isEmpty : false,
       isLoading : true
@@ -58,24 +58,28 @@ countPage(){
   this.setState({
     totalPage : this.props.procedures.totalPage,
     arrayPage : arr,
-    indexPage : 1
   });
 }
 
 componentDidUpdate(prevProps, prevState) {
-    if(prevProps.procedures.totalPage !== this.props.procedures.totalPage){
+    if(prevProps.procedures !== this.props.procedures){
       this.countPage();
+      if(this.props.procedures && this.props.procedures.indexPage){
+        this.setState({
+          indexPage : this.props.procedures && this.props.procedures.indexPage
+        })
+      }
     }
 }
 
 componentWillMount(){
   if(window.previousLocation.pathname === "/"){
     this.props.dispatch(Procedures.actions.procedures(null,{index:1}));
-    this.countPage();
     this.setState({
       categories : this.props.categories
     })
   }
+  this.countPage();
 }
 
 componentWillReceiveProps(nextProps) {

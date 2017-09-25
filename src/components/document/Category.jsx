@@ -101,7 +101,6 @@ class Category extends Component {
   }
 
   render() {
-    console.log(this.props);
     return (
       <div className="box-list-document">
         <h2 className="list-title" onClick={this.searchDocuments.bind(this)}>
