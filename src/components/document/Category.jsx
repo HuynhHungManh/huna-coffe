@@ -16,11 +16,17 @@ class Category extends Component {
   }
 
   componentWillMount(){
+
     if(window.previousLocation.pathname === "/"){
       this.props.dispatch(Categories.actions.categories()).then((res) =>{
         if(res.data.length > 0){
           let categories = this.state.categories;
           categories[0].status = true;
+          categories.forEach(function(item, index) {
+              if(item.children.length >0){
+                item.selectStatus = false;
+              }
+            });
           this.setState({
             categories : categories
           })
@@ -41,22 +47,24 @@ class Category extends Component {
   browseCategories(category) {
     this.props.dispatch(Documents.actions.documents({catSlug: category.slug}));
     let categories = this.state.categories;
-    // let cateSelect = categories.find(val => val.status === true);
-    // if(cateSelect && cateSelect.children){
-    //   cateSelect.children.forEach(function(item, index) {
-    //     item.status = false;
-    //   });
-    // }
     categories.forEach(function(item, index) {
       if(item.id === category.id){
         if(item.children.length > 0 && item.status === true){
-          item.status = !item.status;
-        }else{
+          item.status = true;
+          item.selectStatus = !item.selectStatus;
+        }
+        else{
           item.status = true;
         }
       }
       else{
         item.status = false;
+        if(item.children.length > 0){
+          let children = item.children.find(x => x.status === true);
+          if(children && children.status)
+            children.status = false;
+          item.selectStatus = false;
+        }
       }
     });
     this.setState({categories : categories})
@@ -69,7 +77,7 @@ class Category extends Component {
       if(item.id === id){
         item.status = true;
       }
-      else {
+      else{
         item.status = false;
       }
     });
@@ -95,22 +103,22 @@ class Category extends Component {
             { this.state.categories &&
               this.state.categories.map((item, i) => {
                 return (
-                  <li key={i} onClick={this.browseCategories.bind(this, item)} className={
+                  <li key={i} className={
                       classnames('sub-list-document', {
-                        'icon1-Arrow icon1' : !item.status && item.children.length > 0,
-                        'icon1-Arrow icon2 transform-icon' : item.status === false && item.children.length > 0,
-                        'icon1-Arrow icon2 transform-icon' : item.status === true && item.children.length > 0
+                        'icon1-Arrow icon1' : !item.status && item.children.length > 0 ,
+                        'icon1-Arrow icon2 transform-icon' : item.status === true && item.children.length > 0 && !item.selectStatus,
+                        'icon1-Arrow icon2' : item.status && item.children.length > 0 && item.selectStatus
                       })}
                     >
                     <p className={
                       classnames('text-document', {
                         'text-active-document' : item.status,
                       })}
-
+                      onClick={this.browseCategories.bind(this, item)}
                     >
                       {item.name}
                     </p>
-                    { item.children.length > 0 && item.status == true &&
+                    { item.children.length > 0 && item.status == true && item.selectStatus === false &&
                        <ul className="sub-list-text-document">
                         {
                           item.children.map((subItem, i1) => {

@@ -17,8 +17,8 @@ constructor(props, context) {
       isEmpty : false,
       isLoading : true
   };
-  this.props.dispatch(Procedures.actions.procedures(null,{index:1}));
 }
+
 
 handlePageClick(data) {
   this.setState({
@@ -50,31 +50,33 @@ handleChange(e) {
   this.props.dispatch(Procedures.actions.procedures(null,params));
 }
 
+countPage(){
+  let arr = [];
+  for(let i = 1; i <= this.props.procedures.totalPage; i++){
+    arr.push(i);
+  }
+  this.setState({
+    totalPage : this.props.procedures.totalPage,
+    arrayPage : arr,
+    indexPage : 1
+  });
+}
+
 componentDidUpdate(prevProps, prevState) {
     if(prevProps.procedures.totalPage !== this.props.procedures.totalPage){
-      let arr = [];
-      for(let i = 1; i <= this.props.procedures.totalPage; i++){
-        arr.push(i);
-      }
-      this.setState({
-        totalPage : this.props.procedures.totalPage,
-        arrayPage : arr,
-        indexPage : 1
-      });
+      this.countPage();
     }
 }
 
-// componentWillMount(){
-//   let arr = [];
-//   for(let i = 1; i <= this.props.procedures.totalPage; i++){
-//     arr.push(i);
-//   }
-//   this.setState({
-//     totalPage : this.props.procedures.totalPage,
-//     arrayPage : arr,
-//     indexPage : 1
-//   });
-// }
+componentWillMount(){
+  if(window.previousLocation.pathname === "/"){
+    this.props.dispatch(Procedures.actions.procedures(null,{index:1}));
+    this.countPage();
+    this.setState({
+      categories : this.props.categories
+    })
+  }
+}
 
 componentWillReceiveProps(nextProps) {
   if(nextProps.procedures.data !== this.props.procedures.data){
