@@ -3,6 +3,8 @@ import {Feedbacks} from 'api';
 import {connect} from 'react-redux';
 
 const PhoneNumber = (input) => { return input = input.replace(/[^0-9]+/g, "");}
+const Name = (input) => { return input = input.replace(/[^a-zA-ZàáãạảăắằẳẵặâấầẩẫậèéẹẻẽêềếểễệđìíĩỉịòóõọỏôốồổỗộơớờởỡợùúũụủưứừửữựỳỵỷỹýÀÁÃẠẢĂẮẰẲẴẶÂẤẦẨẪẬÈÉẸẺẼÊỀẾỂỄỆĐÌÍĨỈỊÒÓÕỌỎÔỐỒỔỖỘƠỚỜỞỠỢÙÚŨỤỦƯỨỪỬỮỰỲỴỶỸÝ\s]+/g, "");}
+const Space = (input) => { return input = input.replace(/^[^\S]+/g, "");}
 
 class FeedbackForm extends Component {
   constructor(props, context) {
@@ -43,13 +45,6 @@ class FeedbackForm extends Component {
         success:false,
         message: 'Vui lòng nhập họ và tên'
       })
-    } else if(state.hoVaTen.trim() == '') {
-      pass = false;
-      this.setState({
-        error: true,
-        success:false,
-        message: 'Vui lòng nhập họ và tên'
-      })
     } else if(state.hoVaTen.length < 4) {
       pass = false;
       this.setState({
@@ -78,16 +73,7 @@ class FeedbackForm extends Component {
         success:false,
         message: 'Vui lòng nhập nội dung góp ý'
       })
-    } else if(state.noiDung.trim() == '') {
-      pass = false;
-      this.setState({
-        error: true,
-        success:false,
-        message: 'Vui lòng nhập nội dung góp ý'
-      })
-    }
-
-    if (this.state.email) {
+    } else if (this.state.email) {
       let email = this.state.email;
       let atpos = email.indexOf("@");
       let dotpos = email.lastIndexOf(".");
@@ -136,16 +122,20 @@ class FeedbackForm extends Component {
         error: false
       })
     } else if (name == 'hoVaTen') {
+      e.target.value = Name(e.target.value)
+      e.target.value = Space(e.target.value)
       this.setState({
         [name]: e.target.value,
         error: false
       })
     } else if(name == 'email'){
+      e.target.value = Space(e.target.value)
       this.setState({
         [name]: e.target.value,
         error: false,
       })
     } else if (name == 'noiDung') {
+      e.target.value = Space(e.target.value)
       this.setState({
         [name]: e.target.value,
         error: false
