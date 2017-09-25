@@ -19,7 +19,7 @@ class Document extends Component {
             <Search />
           </div>
           <div className="content">
-          <Category />
+          <Category/>
           <DocumentList/>
           </div>
         </div>

@@ -19,9 +19,11 @@ class Search extends Component {
     if(this.state.nameDocuments === ''){
       this.props.dispatch(SearchDocuments.actions.searchDocumenrs({nameDocument: ''}));
       this.props.dispatch(Categories.actions.categories());
+      this.props.dispatch(this.changeStatusSearch(false));
     }
     else{
       this.props.dispatch(Categories.actions.categories());
+      this.props.dispatch(this.changeStatusSearch(true));
       this.props.dispatch(SearchDocuments.actions.searchDocumenrs({nameDocument: this.state.nameDocuments})).then((res) =>{
         if(res.data.length > 0){
           this.props.dispatch(this.getCategoriesByPost(res.data));
@@ -34,6 +36,13 @@ class Search extends Component {
     return {
       type: 'GET_LIST_CATEGORIES_BY_POST',
       array
+    }
+  }
+
+  changeStatusSearch(status) {
+    return {
+      type: 'CHANGE_STATUS_SEARCH_DOCUMENT',
+      status
     }
   }
 

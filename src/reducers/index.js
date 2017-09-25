@@ -11,6 +11,7 @@ import {procedures} from 'base/reducers/procedure';
 import {units} from 'base/reducers/units';
 import {fields} from 'base/reducers/fields';
 import {searchProcedure} from 'base/reducers/searchProcedure';
+import {status} from 'base/reducers/status';
 
 let rootReducer = combineReducers(
 {
@@ -23,7 +24,8 @@ let rootReducer = combineReducers(
     procedures,
     units,
     fields,
-    searchProcedure
+    searchProcedure,
+    status
   }
 );
 

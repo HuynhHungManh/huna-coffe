@@ -11,12 +11,12 @@ class Category extends Component {
     super(props, context);
     this.browseDocuments = this.browseDocuments.bind(this);
     this.state = {
-      categories : []
+      categories : [],
+      statusSearch : false
     }
   }
 
   componentWillMount(){
-
     if(window.previousLocation.pathname === "/"){
       this.props.dispatch(Categories.actions.categories()).then((res) =>{
         if(res.data.length > 0){
@@ -86,6 +86,23 @@ class Category extends Component {
 
   componentDidUpdate(prevProps, prevState){
     if(prevProps.categories !== this.props.categories) {
+       this.props.categories.forEach(function(item, index) {
+          if(item.children.length >0){
+            item.selectStatus = false;
+          }
+        });
+      this.setState({
+        categories : this.props.categories
+      });
+    }
+    if(prevProps.status !== this.props.status && this.props.status === true) {
+      this.props.categories.forEach(function(item, index) {
+         if(item.children.length >0){
+           item.selectStatus = false;
+           item.status = true;
+           console.log(item);
+         }
+       });
       this.setState({
         categories : this.props.categories
       });
@@ -93,6 +110,7 @@ class Category extends Component {
   }
 
   render() {
+    console.log(this.props);
     return (
       <div className="box-list-document">
         <h2 className="list-title" onClick={this.searchDocuments.bind(this)}>
@@ -109,12 +127,12 @@ class Category extends Component {
                         'icon1-Arrow icon2 transform-icon' : item.status === true && item.children.length > 0 && !item.selectStatus,
                         'icon1-Arrow icon2' : item.status && item.children.length > 0 && item.selectStatus
                       })}
+                      onClick={this.browseCategories.bind(this, item)}
                     >
                     <p className={
                       classnames('text-document', {
-                        'text-active-document' : item.status,
+                        'text-active-document' : item.status
                       })}
-                      onClick={this.browseCategories.bind(this, item)}
                     >
                       {item.name}
                     </p>
@@ -147,7 +165,8 @@ Category.contextTypes = {
 const bindStateToProps = (state) => {
   return {
     categories: state.categories,
-    documents : state.documents
+    documents : state.documents,
+    status : state.status
   }
 }
 
