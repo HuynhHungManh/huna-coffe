@@ -11,8 +11,7 @@ class Category extends Component {
     super(props, context);
     this.browseDocuments = this.browseDocuments.bind(this);
     this.state = {
-      categories : [],
-      statusSearch : false
+      categories : []
     }
   }
 
@@ -55,6 +54,7 @@ class Category extends Component {
         }
         else{
           item.status = true;
+          item.selectStatus = false;
         }
       }
       else{
@@ -86,23 +86,14 @@ class Category extends Component {
 
   componentDidUpdate(prevProps, prevState){
     if(prevProps.categories !== this.props.categories) {
-       this.props.categories.forEach(function(item, index) {
+      if(this.props.status === true){
+        this.state.categories.forEach(function(item, index) {
           if(item.children.length >0){
             item.selectStatus = false;
+              item.status = true;
           }
         });
-      this.setState({
-        categories : this.props.categories
-      });
-    }
-    if(prevProps.status !== this.props.status && this.props.status === true) {
-      this.props.categories.forEach(function(item, index) {
-         if(item.children.length >0){
-           item.selectStatus = false;
-           item.status = true;
-           console.log(item);
-         }
-       });
+      }
       this.setState({
         categories : this.props.categories
       });
@@ -121,18 +112,15 @@ class Category extends Component {
             { this.state.categories &&
               this.state.categories.map((item, i) => {
                 return (
-                  <li key={i} className={
-                      classnames('sub-list-document', {
-                        'icon1-Arrow icon1' : !item.status && item.children.length > 0 ,
-                        'icon1-Arrow icon2 transform-icon' : item.status === true && item.children.length > 0 && !item.selectStatus,
-                        'icon1-Arrow icon2' : item.status && item.children.length > 0 && item.selectStatus
-                      })}
-                      onClick={this.browseCategories.bind(this, item)}
-                    >
+                  <li key={i} className="sub-list-document">
                     <p className={
                       classnames('text-document', {
-                        'text-active-document' : item.status
+                        'text-active-document' : item.status,
+                        'arrow-down-default' : !item.status && item.children.length > 0,
+                        'text-active-document arrow-down' : item.status && item.children.length > 0,
+                        'text-active-document arrow-up' : item.status && item.children.length > 0 && item.selectStatus
                       })}
+                      onClick={this.browseCategories.bind(this, item)}
                     >
                       {item.name}
                     </p>
