@@ -10,11 +10,11 @@ class RatingDetailItem extends Component {
     super(props, context);
     this.state = {
       data: this.props.ratings.find(item => item.id == this.props.id),
-      selectedOption: 'argee',
       soDienThoai: '',
       error: false,
       success: false,
-      message: ''
+      message: '',
+      check: 'agree'
     }
   }
 
@@ -56,6 +56,7 @@ class RatingDetailItem extends Component {
         success: true,
         message: 'Gửi đánh giá thành công',
         soDienThoai: '',
+        check: 'agree'
       }, ()=> {
         setTimeout(this.hide.bind(this), 5000);
       })
@@ -78,6 +79,12 @@ class RatingDetailItem extends Component {
         message: 'Vui lòng nhập lại số điện thoại hợp lệ'
       })
     }
+  }
+
+  handleOptionChange(name) {
+    this.setState({
+      check: name
+    })
   }
 
   render() {
@@ -128,14 +135,14 @@ class RatingDetailItem extends Component {
               </p>
               <ul>
                 <li className="radio-rating">
-                  <input type="radio" name="review" id="agree" defaultChecked="true"
-                      onChange={this.handleOptionChange} />
+                  <input type="radio" name="review" id="agree" checked={this.state.check == 'agree' ? true : false}
+                      onChange={this.handleOptionChange.bind(this, 'agree')} />
                   <label htmlFor="agree" className="label-radio-agree">
                     <span />
                     <p className="detail-rw">Hài lòng</p>
                   </label>
-                  <input type="radio" name="review" id="disagree"
-                      onChange={this.handleOptionChange} />
+                  <input type="radio" name="review" id="disagree" checked={this.state.check == 'disagree' ? true : false}
+                      onChange={this.handleOptionChange.bind(this, 'disagree')} />
                   <label htmlFor="disagree" className="label-radio-disagree">
                     <span />
                     <p className="detail-rw">Chưa hài lòng</p>

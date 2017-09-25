@@ -17,7 +17,7 @@ class FindProcedureDetail extends Component {
     if(titleName.length < 90 ) {
       trimmedTitle = titleName.substring(0, Math.min(length, titleName.length));
     } else if(titleName.length > 90) {
-      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length)) + '.....';
+      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length)) + '...';
     }
     return trimmedTitle;
   }
@@ -29,7 +29,7 @@ class FindProcedureDetail extends Component {
     if(titleName.length < 175 ) {
       trimmedTitle = titleName.substring(0, Math.min(length, titleName.length));
     } else if(titleName.length > 175) {
-      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length)) + '.....';
+      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length)) + '...';
     }
     return trimmedTitle;
   }
