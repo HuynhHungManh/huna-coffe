@@ -54,7 +54,8 @@ class FindProcedureDetail extends Component {
             </span>
           </div>
           <div className="scroll-procedure-detail">
-            <iframe width="100%" height="100%" src={`http://tthc.danang.gov.vn/index.php?option=com_thutuchanhchinh&task=thutucdetailfromdb&view=thutuc&id_hethong=${this.props.match.params.id}`} seamless />
+            <iframe name='iframe1' id="iframe1"  width="100%" height="100%" src={`http://tthc.danang.gov.vn/index.php?option=com_thutuchanhchinh&task=thutucdetailfromdb&view=thutuc&id_hethong=${this.props.match.params.id}`} seamless />
+            <div className="hideButtonBack"></div>
           </div>
         </div>
       </div>
