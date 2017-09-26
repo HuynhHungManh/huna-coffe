@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {SearchDocuments} from 'api';
 import {Categories} from 'api';
+import {Documents} from 'api';
 
 class Search extends Component {
   constructor(props, context) {
@@ -17,7 +18,7 @@ class Search extends Component {
 
   searchDocuments() {
     if(this.state.nameDocuments === ''){
-      this.props.dispatch(SearchDocuments.actions.searchDocumenrs({nameDocument: ''}));
+      this.props.dispatch(Documents.actions.documentsAll());
       this.props.dispatch(Categories.actions.categories());
       this.props.dispatch(this.changeStatusSearch(false));
     }

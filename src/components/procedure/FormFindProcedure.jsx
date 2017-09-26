@@ -48,6 +48,7 @@ searchByFieldAndUnit(data) {
 
 componentWillMount(){
   let previousLocation = 'find-procedure-detail';
+  console.log(this.props.dataSearch);
   if(window.previousLocation.pathname.indexOf(previousLocation) >= 0) {
     if(this.props.dataSearch.tenThuTuc !== undefined && this.props.dataSearch.linhVuc !== undefined && this.props.dataSearch.coQuan !== undefined){
       this.setState({
@@ -65,7 +66,7 @@ componentWillMount(){
           <ul>
             <li>
               <p>tên thủ tục</p>
-              <input type="text" placeholder="Nhập tên thủ tục" name="tenThuTuc" onChange={this.handleChange} />
+              <input type="text" placeholder="Nhập tên thủ tục" name="tenThuTuc" onChange={this.handleChange} value={this.state.tenThuTuc}/>
             </li>
             <li>
               <p>cơ quan thực hiện</p>
