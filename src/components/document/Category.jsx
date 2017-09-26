@@ -33,6 +33,11 @@ class Category extends Component {
         }
       });
     }
+    else{
+      this.setState({
+        categories : this.state.keySearch
+      })
+    }
     this.setState({
       categories : this.props.categories
     })

@@ -9,7 +9,7 @@ class Search extends Component {
     super(props, context);
     this.state = {
       nameDocuments : '',
-     }
+    }
   }
 
   getNameDocuments(e){
@@ -17,6 +17,7 @@ class Search extends Component {
   }
 
   searchDocuments() {
+    this.props.dispatch(this.storeKeySearch(this.state.nameDocuments));
     if(this.state.nameDocuments === ''){
       this.props.dispatch(Documents.actions.documentsAll());
       this.props.dispatch(Categories.actions.categories());
@@ -47,17 +48,23 @@ class Search extends Component {
     }
   }
 
-  // componentDidUpdate(prevProps, prevState){
-  //   if(prevState.documents !== this.props.nameDocuments) {
-  //     this.props.dispatch(Categories.actions.categories());
-  //   }
-  // }
+  storeKeySearch(key) {
+    return {
+      type: 'STORE_KEY_SEARCH',
+      key
+    }
+  }
+
+  componentWillMount(){
+    this.setState({'nameDocuments' : this.props.keySearch})
+  }
 
   render() {
+    console.log(this.props);
     return (
       <div className="form-search">
         <button className="btn-search icon-zoom" onClick={this.searchDocuments.bind(this)}/>
-        <input className="inp-search" type="text" placeholder="Tìm kiếm tên biểu mẫu" onChange={this.getNameDocuments.bind(this)} />
+        <input className="inp-search" type="text" placeholder="Tìm kiếm tên biểu mẫu" value={this.state.nameDocuments} onChange={this.getNameDocuments.bind(this)} />
       </div>
     );
   }
@@ -65,7 +72,8 @@ class Search extends Component {
 
 const bindStateToProps = (state) => {
   return {
-    documents: state.documents || []
+    documents: state.documents || [],
+    keySearch : state.storeKeySearch
   }
 }
 
