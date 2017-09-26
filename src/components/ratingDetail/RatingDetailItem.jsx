@@ -111,7 +111,8 @@ class RatingDetailItem extends Component {
             <div className="sub-box-input">
               <div className="title-input">
                 <label className="label-input">
-                  <span className="phone-fb">Số điện thoại của bạn</span></label>
+                  <span className="phone-fb">Số điện thoại của bạn<span className="star-red"> *
+                    </span></span></label>
               </div>
               <div className="input-fb inp-rating-detail">
                 <input type="text" placeholder="Nhập số " onChange={this.handleChange.bind(this, 'soDienThoai')} value={this.state.soDienThoai} maxLength={11} onBlur={this.checkPhoneNumber.bind(this)} />

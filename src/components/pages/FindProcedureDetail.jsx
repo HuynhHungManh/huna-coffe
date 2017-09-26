@@ -10,26 +10,38 @@ class FindProcedureDetail extends Component {
     }
   }
 
-  truncate() {
-    let length = 90;
+  Truncate() {
+    let len = 0;
     let titleName = this.state.data.data && this.state.data.data.tenthutuc;
     let trimmedTitle = '';
-    if(titleName.length < 90 ) {
-      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length));
-    } else if(titleName.length > 90) {
-      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length)) + '...';
+    let count=0;
+    let i=0;
+    for (i = 0, len = titleName.length; i < len; i++) {
+      if(titleName[i]==' ') count++;
+      if(count==21){
+        trimmedTitle = titleName.substring(0, i) + " ...";
+      break;
+    } else {
+        trimmedTitle = titleName.substring(0, i+1);
+      }
     }
     return trimmedTitle;
   }
 
-  subtruncate() {
-    let length = 175;
+  Subtruncate() {
+    let len = 0;
     let titleName = this.state.data.data && this.state.data.data.tenthutuc;
     let trimmedTitle = '';
-    if(titleName.length < 175 ) {
-      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length));
-    } else if(titleName.length > 175) {
-      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length)) + '...';
+    let count=0;
+    let i=0;
+    for (i = 0, len = titleName.length; i < len; i++) {
+      if(titleName[i]==' ') count++;
+      if(count==37){
+        trimmedTitle = titleName.substring(0, i) + " ...";
+      break;
+      } else {
+          trimmedTitle = titleName.substring(0, i+1);
+        }
     }
     return trimmedTitle;
   }
@@ -44,13 +56,13 @@ class FindProcedureDetail extends Component {
         <div className="container">
         <div className="header">
           <h2 className="title bg-search-document">
-            <span className="title-main">{this.truncate()}</span>
+            <span className="title-main">{this.Truncate()}</span>
           </h2>
         </div>
         <div className="content">
           <div className="header-procedure-detail">
             <span className="title-procedure-detail">
-              {this.subtruncate()}
+              {this.Subtruncate()}
             </span>
           </div>
           <div className="scroll-procedure-detail">
