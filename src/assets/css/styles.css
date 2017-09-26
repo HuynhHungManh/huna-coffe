@@ -1215,7 +1215,7 @@ span.icon-Arrow{
   color: #ee0000;
 }
 .title-input{
-  width: 25%;
+  width: 26%;
   float: left;
   padding: 15px 0;
 }
@@ -2205,7 +2205,7 @@ fieldset,.fieldset {
 .header-procedure-detail {
   position: relative;
   font-family: 'Roboto-Bold';
-  width: 99.9%;
+  width: 100%;
   background: #0080fe;
   text-align: left;
   padding: 17px 20px;
