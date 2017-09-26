@@ -56,11 +56,12 @@ class Search extends Component {
   }
 
   componentWillMount(){
-    this.setState({'nameDocuments' : this.props.keySearch})
+    if(window.previousLocation.pathname !== "/" && this.props.keySearch !== []){
+      this.setState({'nameDocuments' : this.props.keySearch})
+    }
   }
 
   render() {
-    console.log(this.props);
     return (
       <div className="form-search">
         <button className="btn-search icon-zoom" onClick={this.searchDocuments.bind(this)}/>
