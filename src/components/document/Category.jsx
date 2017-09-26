@@ -60,6 +60,9 @@ class Category extends Component {
       else{
         item.status = false;
         if(item.children.length > 0){
+          // if(item.selectStatus === false ){
+          //   item.status = true;
+          // }
           let children = item.children.find(x => x.status === true);
           if(children && children.status)
             children.status = false;

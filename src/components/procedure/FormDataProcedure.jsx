@@ -79,6 +79,13 @@ componentWillMount(){
       categories : this.props.categories
     })
   }
+  else{
+    if(this.props.procedures.data && this.props.procedures.data.length > 0){
+      this.setState({
+        isLoading : false
+      })
+    }
+  }
   this.countPage();
 }
 
