@@ -25,6 +25,9 @@ body {
   width: 100%;
   height: 735px;
 }
+.pagination-res{
+  width: 100% !important;
+}
 .display-border{
   padding: 0 !important;
   border: 0 !important;

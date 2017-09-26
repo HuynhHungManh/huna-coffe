@@ -5,7 +5,7 @@ import CONFIG from 'base/constants/config';
 // Example
 const rest = reduxApi({
   searchDocumenrs: {
-    url: '/posts?search=:nameDocument',
+    url: '/posts?per_page=100&search=:nameDocument',
     options:(url, params, getState) => {
       return {
         method: "GET",

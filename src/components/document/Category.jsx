@@ -29,7 +29,7 @@ class Category extends Component {
           this.setState({
             categories : categories
           })
-          this.props.dispatch(Documents.actions.documents({catSlug: categories[0].slug}));
+          this.props.dispatch(Documents.actions.documents({idCat: categories[0].id}));
         }
       });
     }
@@ -38,13 +38,13 @@ class Category extends Component {
     })
   }
 
-  searchDocuments() {
-      this.props.dispatch(SearchDocuments.actions.searchDocumenrs({nameDocument: ''}));
+  resetData() {
+      this.props.dispatch(Documents.actions.documentsAll());
       this.props.dispatch(Categories.actions.categories());
   }
 
   browseCategories(category) {
-    this.props.dispatch(Documents.actions.documents({catSlug: category.slug}));
+    this.props.dispatch(Documents.actions.documents({idCat: category.id}));
     let categories = this.state.categories;
     categories.forEach(function(item, index) {
       if(item.id === category.id){
@@ -70,8 +70,8 @@ class Category extends Component {
     this.setState({categories : categories})
   }
 
-  browseDocuments(id,indexParent,slug) {
-    this.props.dispatch(Documents.actions.documents({catSlug: slug}));
+  browseDocuments(id,indexParent,idCat) {
+    this.props.dispatch(Documents.actions.documents({idCat: idCat}));
     var categories = this.state.categories;
     categories[indexParent].children.forEach(function(item, index) {
       if(item.id === id){
@@ -103,7 +103,7 @@ class Category extends Component {
   render() {
     return (
       <div className="box-list-document">
-        <h2 className="list-title" onClick={this.searchDocuments.bind(this)}>
+        <h2 className="list-title" onClick={this.resetData.bind(this)}>
         Lĩnh vực biểu mẫu
         </h2>
         <div className="box-list-scroll resize-box-document ">

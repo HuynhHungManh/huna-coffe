@@ -6,8 +6,8 @@ function documents(state = initial, action) {
       return action.documents;
     case 'GET_DOCUMENT_BY_NAME':
       return action.searchDocumenrs;
-    case 'POST_FEEDBACK':
-      return action.feedbacks;
+    case 'GET_ALL_DOCUMENT':
+      return action.documents;
     default:
       return state;
   }

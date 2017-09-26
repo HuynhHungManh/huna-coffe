@@ -10,9 +10,8 @@ const rest = reduxApi({
       return {
         method: "POST",
         headers: {
-          //'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
           "Authorization": "Basic YWRtaW46MTIzNDU2",
-          
         },
         data: params
       };

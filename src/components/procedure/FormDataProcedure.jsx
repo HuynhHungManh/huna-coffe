@@ -140,7 +140,11 @@ componentWillReceiveProps(nextProps) {
             </table>
           </div>
           {this.props.procedures.data && this.props.procedures.data.length > 0 &&
-          <div className="pagination-procedure">
+          <div className={
+            classnames('pagination-procedure', {
+              'pagination-res' : this.props.procedures.data.length < 5
+            })}
+            >
               <div className="pagination-left">
                 <span className="text-span">Xem</span>
                 <select className="pagination-dropdown icon-arrow1-bottom" onChange={this.handleChange.bind(this)} value={this.state.indexPage}>
