@@ -239,7 +239,7 @@ class FeedbackForm extends Component {
               }
               { this.state.success ?
                 (<div className="validation-form validation-success">
-                  <span className="validation-success-text">{this.state.message}</span>
+                  <span className="validation-text">{this.state.message}</span>
                 </div>) : null
               }
             <div className="notice-form">
