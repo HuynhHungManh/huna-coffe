@@ -99,17 +99,57 @@ class FeedbackForm extends Component {
         noiDung: this.state.noiDung,
         status: this.state.status
       }
-      this.props.dispatch(Feedbacks.actions.feedbacks(null, params));
-      this.setState({
-        success: true,
-        message: 'Gửi góp ý thành công',
-        hoVaTen: '',
-        soDienThoai: '',
-        email: '',
-        noiDung: '',
-      }, ()=> {
-        setTimeout(this.hide.bind(this), 10000);
-      })
+
+      this.props.dispatch(Feedbacks.actions.feedbacks(null, params))
+        .then((res)=>{
+          if(res.status === 200 || res.status === 201 || res.status === 202){
+            this.setState({
+              success: true,
+              message: 'Gửi góp ý thành công',
+              hoVaTen: '',
+              soDienThoai: '',
+              email: '',
+              noiDung: '',
+            }, ()=> {
+              setTimeout(this.hide.bind(this), 10000);
+            })
+          }
+        })
+        .catch((error) => {
+          if(error.response.status === 500){
+            this.setState({
+                error: true,
+                success:false,
+                message: 'Lỗi máy chủ vui lòng thử lại'
+              })
+          }else if(error.response.status === 501){
+            this.setState({
+                error: true,
+                success:false,
+                message: 'Không thể gửi góp ý vui lòng thử lại'
+              })
+          }else if(error.response.status === 502){
+            this.setState({
+                error: true,
+                success:false,
+                message: 'Không thể kết nối đến máy chủ'
+              })
+          }
+          else if(error.response.status === 503){
+            this.setState({
+                error: true,
+                success:false,
+                message: 'Máy chủ đang quá tải vui lòng đợi vài phút'
+              })
+          }
+          else{
+            this.setState({
+                error: true,
+                success:false,
+                message: 'Gửi góp ý không thành công vui lòng thử lại'
+              })
+            }
+          })
     }
     return;
   }
