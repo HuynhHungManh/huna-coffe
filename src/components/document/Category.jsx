@@ -43,9 +43,17 @@ class Category extends Component {
     })
   }
 
+  storeKeySearch(key) {
+    return {
+      type: 'STORE_KEY_SEARCH',
+      key
+    }
+  }
+
   resetData() {
       this.props.dispatch(Documents.actions.documentsAll());
       this.props.dispatch(Categories.actions.categories());
+      this.props.dispatch(this.storeKeySearch([]));
   }
 
   browseCategories(category) {
@@ -65,9 +73,6 @@ class Category extends Component {
       else{
         item.status = false;
         if(item.children.length > 0){
-          // if(item.selectStatus === false ){
-          //   item.status = true;
-          // }
           let children = item.children.find(x => x.status === true);
           if(children && children.status)
             children.status = false;
