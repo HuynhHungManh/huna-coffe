@@ -124,8 +124,8 @@ class RatingDetailItem extends Component {
                 </div>) : null
               }
               { this.state.success ?
-                (<div className="validation-form validation-success validation-success-rating">
-                  <span className="validation-success-text">{this.state.message}</span>
+                (<div className="validation-form validation-success">
+                  <span className="validation-text">{this.state.message}</span>
                 </div>) : null
               }
               </div>

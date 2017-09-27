@@ -1120,7 +1120,6 @@ span.icon-Arrow{
   line-height: 39px;
   padding: 39px 60px;
   border-bottom: 1px solid #e5e5e5;
-  position: relative;
 }
 /*---Validation-Feedback-Page-----*/
 .text-title{
@@ -1166,16 +1165,16 @@ span.icon-Arrow{
   font-family:'Roboto-Medium';
   font-size: 23px;
   position: absolute;
-  right: 40px;
+  right: 100px;
   text-transform: none;
   text-align: center;
-  top: 30px;
+  top: 170px;
   width: 550px;
 }
 .validation-form.validation-success {
   background-color: #04b46c;
 }
-.validation-text, .validation-success-text{
+.validation-text{
   color: #ffffff;
   padding: 0 20px;
 }
@@ -1844,7 +1843,7 @@ fieldset,.fieldset {
   width:60px;
   height:0px;
 }
-.validation-success-rating{
+.validation-success{
   top: 170px;
   right: 100px;
 }
