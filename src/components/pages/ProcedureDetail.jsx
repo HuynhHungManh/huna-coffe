@@ -23,14 +23,20 @@ class ProcedureDetail extends Component {
     return file.acf.fileBieuMauTrang.url
   }
 
-  truncate() {
-    let length = 85;
+  Truncate() {
+    let len = 0;
     let titleName = this.state.title;
     let trimmedTitle = '';
-    if(titleName.length < 85 ) {
-      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length));
-    } else if(titleName.length > 85) {
-      trimmedTitle = titleName.substring(0, Math.min(length, titleName.length)) + '.....';
+    let count=0;
+    let i=0;
+    for (i = 0, len = titleName.length; i < len; i++) {
+      if(titleName[i]==' ') count++;
+      if(count==15){
+        trimmedTitle = titleName.substring(0, i) + " ...";
+      break;
+    } else {
+        trimmedTitle = titleName.substring(0, i+1);
+      }
     }
     return trimmedTitle;
   }
@@ -41,7 +47,7 @@ class ProcedureDetail extends Component {
         <div className="container">
           <div className="header">
             <h2 className="title bg-document">
-              <span className="title-main">{this.truncate()}</span>
+              <span className="title-main">{this.Truncate()}</span>
             </h2>
           </div>
           <div className="content custom-procedure">
