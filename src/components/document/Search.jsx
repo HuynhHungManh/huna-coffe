@@ -56,18 +56,14 @@ class Search extends Component {
   }
 
   componentWillMount(){
-    if(this.props.keySearch !== []){
+    if(window.previousLocation.pathname !== "/" && typeof(this.props.keySearch) === 'string'){
       this.setState({'nameDocuments' : this.props.keySearch})
-    }else{
-      this.setState({'nameDocuments' : ''})
     }
   }
 
   componentDidUpdate(prevProps, prevState){
     if(prevProps.documents !== this.props.documents && this.props.keySearch.length === 0) {
-      if(this.props.keySearch.length === 0){
         this.setState({'nameDocuments' : ''})
-      }
     }
   }
 
