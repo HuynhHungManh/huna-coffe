@@ -20,7 +20,7 @@ class ProcedureDetail extends Component {
 
   viewFilePdf() {
     let file = this.props.documents.find((item) => item.id == this.props.match.params.id);
-    return file.acf.fileBieuMauTrang.url
+    return file.acf.fileBieuMau.url
   }
 
   Truncate() {
@@ -53,7 +53,7 @@ class ProcedureDetail extends Component {
           <div className="content custom-procedure">
             <div className="view-procedure">
               { this.viewFilePdf().indexOf(".doc") >= 0 &&
-                <iframe className="doc" src={`https://docs.google.com/gview?url=${this.viewFilePdf()}&embedded=true`} seamless/>
+                <iframe className="doc" src={`https://docs.google.com/gview?url=${this.viewFilePdf()}&embedded=true&zoom=30`} seamless/>
               }
               { this.viewFilePdf().indexOf(".pdf") >= 0 &&
                 <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${this.viewFilePdf()}#page=1&zoom=200`} seamless />

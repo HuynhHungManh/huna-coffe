@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {PropTypes} from 'prop-types';
+import classnames from 'classnames';
 
 class DocumentListItem extends Component {
 
@@ -25,10 +26,20 @@ Truncate() {
   return trimmedTitle;
 }
 
+  checkFile(file) {
+    if(file && file.indexOf(".doc")>= 0)
+      return false;
+    return true;
+  }
+
   render() {
     return (
       <li className="sub-detail-document" onClick={this.gotoPage.bind(this,`/procedure-detail/${this.props.data.id}`)}>
-        <p className="text-detail-document">{this.Truncate()}</p>
+        <p className={
+            classnames('text-detail-document', {
+              'check-pdf' : this.checkFile(this.props.data.acf && this.props.data.acf.fileBieuMau.url)
+            })}
+          >{this.Truncate()}</p>
       </li>
     );
   }
