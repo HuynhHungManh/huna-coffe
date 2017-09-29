@@ -153,6 +153,11 @@ class RatingDetailItem extends Component {
               <button className="btn-send-rating" type="submit">Gửi Đánh Giá</button>
             </div>
           </form>
+          <div className="box-message-rating">
+            <p className="message-rating">
+              Chức năng đang phát triển. Để đánh giá công chức vui lòng gửi đánh giá tại địa chỉ http://motcua.danang.gov.vn
+            </p>
+          </div>
         </div>
       </div>
     );

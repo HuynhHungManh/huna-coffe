@@ -28,6 +28,7 @@
     "react": "^15.6.1",
     "react-addons-css-transition-group": "^15.5.2",
     "react-dom": "^15.5.4",
+    "react-file-viewer": "^0.3.48",
     "react-modal": "^2.2.4",
     "react-moment": "^0.6.5",
     "react-paginate": "^4.4.4",

@@ -28,6 +28,12 @@ body {
 .pagination-res{
   width: 100% !important;
 }
+.print-document-center{
+  padding-left: 22px;
+}
+.print-guild{
+    width: 320px !important;
+}
 .display-border{
   padding: 0 !important;
   border: 0 !important;
@@ -269,7 +275,7 @@ span.icon-Arrow{
   color: #000000;
   letter-spacing: 0;
   line-height: 1.5;
-  margin: 41px auto 0;
+  margin: 26px auto 0;
   position: relative;
 }
 .header-content p {
@@ -286,7 +292,7 @@ span.icon-Arrow{
   margin-left: 10px;
 }
 .main-content {
-  margin-top: 52px;
+  margin-top: 29px;
   overflow: hidden;
 }
 /*home-page*/
@@ -304,11 +310,72 @@ span.icon-Arrow{
   display: inline-block;
 }
 .sub-tab {
-  margin-bottom: 42px;
+  margin-bottom: 36px;
   width: 48.55%;
   float: left;
   padding: 0 24px;
 }
+.new-message{
+  width: 100%;
+  margin-top: 32px;
+  height: 83px;
+  background-color: #cb1902;
+}
+
+.box-message{
+  text-align: center;
+  font-family: 'Roboto-Bold';
+  font-size: 26px;
+  color: #fff;
+  letter-spacing: 0;
+  line-height: 3.2;
+  overflow: hidden;
+  position: relative;
+  margin: 0 24px;
+}
+
+
+.box-message h3 {
+  color: #fff;
+ text-align: center;
+
+ -moz-transform:translateX(100%);
+ -webkit-transform:translateX(100%);
+ transform:translateX(100%);
+ /* Apply animation to this element */
+ -moz-animation: box-message 12s linear infinite;
+ -webkit-animation: box-message 12s linear infinite;
+ animation: box-message 12s linear infinite;
+}
+/* Move it (define the animation) */
+@-moz-keyframes box-message {
+ 0%   { -moz-transform: translateX(100%); }
+ 100% { -moz-transform: translateX(-100%); }
+}
+@-webkit-keyframes box-message {
+ 0%   { -webkit-transform: translateX(100%); }
+ 100% { -webkit-transform: translateX(-100%); }
+}
+@keyframes box-message {
+ 0%   {
+ -moz-transform: translateX(100%); /* Firefox bug fix */
+ -webkit-transform: translateX(100%); /* Firefox bug fix */
+ transform: translateX(100%);
+ }
+ 100% {
+ -moz-transform: translateX(-100%); /* Firefox bug fix */
+ -webkit-transform: translateX(-100%); /* Firefox bug fix */
+ transform: translateX(-100%);
+ }
+}
+
+.box-tab .sub-tab:nth-child(6) {
+    margin-bottom : 0;
+}
+.box-tab .sub-tab:nth-child(5) {
+    margin-bottom : 0;
+}
+
 .box-tab{
   overflow: hidden;
 }
@@ -729,11 +796,22 @@ span.icon-Arrow{
   content: "\E900";
   font-family: 'icomoon1';
   position: absolute;
-  font-size: 18px;
+  font-size: 16px;
   right: 31px;
   top: 22px;
+  color: #aba9a5;
 }
-
+.box-message-rating{
+  width: 100%;
+  height: auto;
+  text-align: center;
+}
+.message-rating{
+  font-family: 'Roboto-Regular';
+  line-height: 26px;
+  font-size: 22px;
+  margin-top: 22px;
+}
 .arrow-up:after {
   content: "\E900";
   font-family: 'icomoon1';
@@ -752,10 +830,10 @@ span.icon-Arrow{
   content: "\E900";
   font-family: 'icomoon1';
   position: absolute;
-  font-size: 18px;
+  font-size: 16px;
   right: 31px;
   top: 22px;
-  color: #ffd05b;
+  color: #aba9a5;
 }
 
 .box-sub-text-document{
@@ -779,16 +857,14 @@ span.icon-Arrow{
   top: 18px;
 }
 .text-active-document {
-  background:#f9b54c;
-  border:1px solid #e9e9e9;
+  background: rgb(242, 242, 241);;
+  border:1px solid #d6d2d2;
   border-radius:5px;
-  color : #fff;
 }
 .text-active-document1{
   background:#f9b54c;
   border:1px solid #e9e9e9;
   border-radius:5px;
-  color : #fff;
 }
 .text-active-document .text-document{
   color : #fff !important;
@@ -857,10 +933,15 @@ span.icon-Arrow{
   background-image: url("../images/icon/file-doc.svg");
   background-size: cover;
   width: 41px;
-  height: 51px;
+  height: 53px;
   left: -63px;
-  top: 18px;
+  top: 20px;
 }
+
+.check-pdf::before {
+  background-image: url("../images/icon/pdf.svg") !important;
+}
+
 .box-detail-scroll>ul{
   overflow: hidden;
 }
