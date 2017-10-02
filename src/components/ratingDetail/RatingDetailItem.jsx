@@ -150,7 +150,7 @@ class RatingDetailItem extends Component {
                   </label>
                 </li>
               </ul>
-              <button className="btn-send-rating" type="submit">Gửi Đánh Giá</button>
+              {/* <button className="btn-send-rating" type="submit">Gửi Đánh Giá</button> */}
             </div>
           </form>
           <div className="box-message-rating">

@@ -1,17 +1,31 @@
 import React from 'react';
+import {connect} from 'react-redux';
+import {Notification} from 'api';
 
 class Footer extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      notifications : ''
+    }
+    this.props.dispatch(Notification.actions.notifications());
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+      if(prevProps.notifications !== this.props.notifications){
+        this.setState({
+          notifications : this.props.notifications[0].title.rendered
+        });
+      }
+  }
 
   render() {
     return (
       <footer className="footer new-message">
         <div className="container">
           <div className="box-message">
-            <h3>Chào mừng Ngày giải phóng Miền Nam 30/4 và Quốc tế lao động 1/5</h3>
+            <h3>{this.state && this.state.notifications}</h3>
           </div>
-          {/* <div className="example1">
-              <h3>Scrolling text... </h3>
-          </div> */}
         </div>
       </footer>
     );
@@ -19,4 +33,11 @@ class Footer extends React.Component {
 }
 
 
-export default Footer;
+
+const bindStateToProps = (state) => {
+  return {
+    notifications: state.notifications || []
+  }
+}
+
+export default connect(bindStateToProps)(Footer);

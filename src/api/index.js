@@ -6,4 +6,5 @@ import Calendars from 'api/calendar';
 import Ratings from 'api/rating';
 import SearchFile from 'api/searchFile';
 import Procedures from 'api/procedure';
-export {Categories, Documents, SearchDocuments, Feedbacks, Calendars, Ratings, Procedures, SearchFile};
+import Notification from 'api/notification';
+export {Categories, Documents, SearchDocuments, Feedbacks, Calendars, Ratings, Procedures, SearchFile, Notification};

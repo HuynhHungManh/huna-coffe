@@ -325,16 +325,19 @@ span.icon-Arrow{
 .box-message{
   text-align: center;
   font-family: 'Roboto-Bold';
-  font-size: 26px;
+  font-size: 33px;
   color: #fff;
   letter-spacing: 0;
-  line-height: 3.2;
+  line-height: 2.5;
   overflow: hidden;
   position: relative;
   margin: 0 24px;
 }
 
-
+.view-doc{
+  width: 100%;
+  height: 754px;
+}
 .box-message h3 {
   color: #fff;
  text-align: center;
@@ -343,9 +346,9 @@ span.icon-Arrow{
  -webkit-transform:translateX(100%);
  transform:translateX(100%);
  /* Apply animation to this element */
- -moz-animation: box-message 12s linear infinite;
- -webkit-animation: box-message 12s linear infinite;
- animation: box-message 12s linear infinite;
+ -moz-animation: box-message 15s linear infinite;
+ -webkit-animation: box-message 15s linear infinite;
+ animation: box-message 15s linear infinite;
 }
 /* Move it (define the animation) */
 @-moz-keyframes box-message {
@@ -810,7 +813,10 @@ span.icon-Arrow{
   font-family: 'Roboto-Regular';
   line-height: 26px;
   font-size: 22px;
-  margin-top: 22px;
+  margin-top: 25px;
+}
+.text-print-guide{
+  margin-left: 11px;
 }
 .arrow-up:after {
   content: "\E900";
@@ -846,15 +852,18 @@ span.icon-Arrow{
   font-size: 20px;
   position: relative;
 }
+.document-total{
+  color: #ff0000;
+}
 .box-sub-text-document:before{
   content: "";
   position: absolute;
-  background-image: url("../images/icon/folder_yellow.svg");
+  background-image: url("../images/icon/folder_sub.svg");
   background-size: cover;
   width: 40px;
-  height: 31px;
-  left: 24px;
-  top: 18px;
+  height: 39px;
+  left: 22px;
+  top: 13px;
 }
 .text-active-document {
   background: rgb(242, 242, 241);;
