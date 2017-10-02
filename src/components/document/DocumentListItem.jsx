@@ -16,7 +16,7 @@ Truncate() {
   let i=0;
   for (i = 0, len = titleName.length; i < len; i++) {
     if(titleName[i]==' ') count++;
-    if(count==10){
+    if(count==15){
       trimmedTitle = titleName.substring(0, i) + " ...";
     break;
   } else {

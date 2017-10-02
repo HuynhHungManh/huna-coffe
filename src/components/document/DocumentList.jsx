@@ -39,7 +39,7 @@ class DocumentList extends Component {
     return (
       <div className="box-detail-document">
         <h2 className="list-title">
-          Tệp biểu mẫu
+          Tệp biểu mẫu <span className="document-total">({this.state.documents && this.state.documents.length})</span>
         </h2>
         <div className="box-detail-scroll resize-box-document">
           { this.state.status &&

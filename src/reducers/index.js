@@ -13,6 +13,7 @@ import {fields} from 'base/reducers/fields';
 import {searchProcedure} from 'base/reducers/searchProcedure';
 import {status} from 'base/reducers/status';
 import {storeKeySearch} from 'base/reducers/storeKeySearch';
+import {notifications} from 'base/reducers/notification';
 
 
 let rootReducer = combineReducers(
@@ -28,7 +29,8 @@ let rootReducer = combineReducers(
     fields,
     searchProcedure,
     status,
-    storeKeySearch
+    storeKeySearch,
+    notifications
   }
 );
 

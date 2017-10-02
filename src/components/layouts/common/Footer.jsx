@@ -60,7 +60,7 @@ class Footer extends React.Component {
           { this.context.router.route.match.path === '/procedure-detail/:id' &&
             <div className="box-print">
               <button className="btn print-document left" onClick={this.printPDF.bind(this,'BieuMauTrang')}><span className="icon-print" /><span className="text-print print-document-center" >IN BIỂU MẪU</span></button>
-              <button className="btn print-document left print-guild" onClick={this.printPDF.bind(this,'BieuMau')}><span className="icon-print" /><span className="text-print">IN BIỂU MẪU HƯỚNG DẪN</span></button>
+              <button className="btn print-document left print-guild" onClick={this.printPDF.bind(this,'BieuMau')}><span className="icon-print" /><span className="text-print-guide">IN MẪU HƯỚNG DẪN</span></button>
             </div>
           }
         </div>
