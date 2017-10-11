@@ -21,6 +21,14 @@ body {
   top: 259px !important;
   left: 605px !important;
 }
+.notification-empty{
+  text-align: center;
+  font-size: 37px;
+  font-family: 'Roboto-Regular';
+  margin-top: 258px;
+  font-style: italic;
+  color: red;
+}
 .doc{
   width: 100%;
   height: 735px;
@@ -29,7 +37,7 @@ body {
   width: 100% !important;
 }
 .print-document-center{
-  padding-left: 22px;
+  padding-left: 30px;
 }
 .print-guild{
     width: 320px !important;
@@ -325,10 +333,10 @@ span.icon-Arrow{
 .box-message{
   text-align: center;
   font-family: 'Roboto-Bold';
-  font-size: 33px;
+  font-size: 41px;
   color: #fff;
   letter-spacing: 0;
-  line-height: 2.5;
+  line-height: 2.1;
   overflow: hidden;
   position: relative;
   margin: 0 24px;
@@ -816,8 +824,9 @@ span.icon-Arrow{
   margin-top: 25px;
 }
 .text-print-guide{
-  margin-left: 11px;
+  margin-left: 5px;
 }
+
 .arrow-up:after {
   content: "\E900";
   font-family: 'icomoon1';
@@ -913,6 +922,7 @@ span.icon-Arrow{
 }
 
 .sub-detail-document{
+  position: relative;
   background: #fff;
   border: 1px solid #0080fe;
   border-radius: 5px;
@@ -947,8 +957,26 @@ span.icon-Arrow{
   top: 20px;
 }
 
-.check-pdf::before {
+.check-file::before {
   background-image: url("../images/icon/pdf.svg") !important;
+}
+
+.check-empty-file::before {
+  background-image: url("../images/icon/close.svg") !important;
+  width: 32px !important;
+  height: 32px !important;
+  left: -58px !important;
+  top: 31px !important;
+}
+
+.notification-file-empty::after {
+  content: "File biểu mẫu rỗng, yêu cầu cập nhập file !";
+  position: absolute;
+  top: 104px;
+  font-style: italic;
+  top: 102px;
+  left: 9px;
+  color : red;
 }
 
 .box-detail-scroll>ul{

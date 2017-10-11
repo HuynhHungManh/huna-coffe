@@ -7,20 +7,44 @@ class ProcedureDetail extends Component {
   constructor(props, context){
   	super(props, context);
   	this.state = {
-      title: ''
+      title: '',
+      typeFile: '',
+      urlFile: ''
     };
   }
 
   componentDidMount() {
     let file = this.props.documents.find((item) => item.id == this.props.match.params.id);
     this.setState({
-      title: file && file.title && file.title.rendered ? file.title.rendered : ''
+      title: file && file.title && file.title.rendered ? file.title.rendered : '',
     })
+    if(this.state.typeFile === 'BieuMau' || this.state.typeFile === ''){
+      this.setState({
+        urlFile: file.acf.fileBieuMau.url
+      })
+    }else{
+      this.setState({
+        urlFile: file.acf.fileBieuMauHuongDan.url
+      })
+    }
   }
 
-  viewFilePdf() {
-    let file = this.props.documents.find((item) => item.id == this.props.match.params.id);
-    return file.acf.fileBieuMau.url
+  componentDidUpdate(prevProps, prevState) {
+      let file = this.props.documents.find((item) => item.id == this.props.match.params.id);
+      if(prevProps.changeFile !== this.props.changeFile){
+        this.setState({
+          typeFile : this.props.changeFile
+        });
+        if(this.props.changeFile === 'BieuMau' || this.props.changeFile === ''){
+          this.setState({
+            urlFile: file.acf.fileBieuMau.url
+          })
+        }else if(this.props.changeFile === 'BieuMauTrang'){
+          this.setState({
+            urlFile: file.acf.fileBieuMauHuongDan.url
+          })
+        }
+      }
   }
 
   Truncate() {
@@ -42,7 +66,7 @@ class ProcedureDetail extends Component {
   }
 
   render() {
-    console.log(this.viewFilePdf());
+    console.log(this.state.urlFile);
     return (
       <CommonLayout>
         <div className="container">
@@ -53,11 +77,14 @@ class ProcedureDetail extends Component {
           </div>
           <div className="content custom-procedure">
             <div className="view-procedure">
-            { this.viewFilePdf().indexOf(".doc") >= 0 &&
-                  <iframe className="view-doc" src={`https://view.officeapps.live.com/op/embed.aspx?src=${this.viewFilePdf()}&widget=false`} />
+            { this.state.urlFile && this.state.urlFile.indexOf(".doc") >= 0 &&
+                  <iframe className="view-doc" src={`https://view.officeapps.live.com/op/embed.aspx?src=${this.state.urlFile}&widget=false`} />
             }
-            { this.viewFilePdf().indexOf(".pdf") >= 0 &&
-                <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${this.viewFilePdf()}#page=1&zoom=200`} seamless />
+            { this.state.urlFile && this.state.urlFile.indexOf(".pdf") >= 0 &&
+                <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${this.state.urlFile}#page=1&zoom=200`} seamless />
+            }
+            { !this.state.urlFile &&
+              <p className="notification-empty">Bạn chưa cập nhập file biểu mẫu cho tệp biểu mẫu này !</p>
             }
             </div>
           </div>
@@ -69,7 +96,8 @@ class ProcedureDetail extends Component {
 
 const bindStateToProps = (state) => {
   return {
-    documents: state.documents || []
+    documents: state.documents || [],
+    changeFile : state.changeFile || ''
   }
 }
 

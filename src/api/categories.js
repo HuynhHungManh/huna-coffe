@@ -5,7 +5,7 @@ import CONFIG from 'base/constants/config';
 // Example
 const rest = reduxApi({
   categories: {
-    url: '/categories',
+    url: '/get-all-category',
     options:(url, params, getState) => {
       return {
         method: "GET",
