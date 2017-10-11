@@ -10,11 +10,10 @@ class Calendar_PDF extends Component {
   }
 
   render(){
-    console.log(this.props.calendars[0] && this.props.calendars[0].acf.chonFile.url);
     return(
       <div className="view-procedure" >
         { this.props.calendars[0] && this.props.calendars[0].acf.chonFile.url.indexOf(".doc") >= 0 &&
-          <iframe className="doc" src={`https://docs.google.com/gview?url=${this.props.calendars[0] && this.props.calendars[0].acf.chonFile.url}&embedded=true`} seamless/>
+          <iframe className="view-doc" src={`https://view.officeapps.live.com/op/embed.aspx?src=${this.props.calendars[0] && this.props.calendars[0].acf.chonFile.url}&widget=false`} />
         }
         { this.props.calendars[0] && this.props.calendars[0].acf.chonFile.url.indexOf(".pdf") >= 0 &&
           <iframe className="view-pdf" src={`./lib-pdf/web/viewer.html?file=${this.props.calendars[0] && this.props.calendars[0].acf.chonFile.url}#page=1&zoom=200`} seamless />

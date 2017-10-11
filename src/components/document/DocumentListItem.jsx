@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {PropTypes} from 'prop-types';
 import classnames from 'classnames';
+import {connect} from 'react-redux';
 
 class DocumentListItem extends Component {
 
@@ -27,17 +28,28 @@ Truncate() {
 }
 
   checkFile(file) {
-    if(file && file.indexOf(".doc")>= 0)
-      return false;
-    return true;
+    if(file && file.indexOf(".pdf")>= 0)
+      return true;
+    return false;
+  }
+
+  checkEmpty(file) {
+    if(!file)
+      return true;
+    return false;
   }
 
   render() {
     return (
-      <li className="sub-detail-document" onClick={this.gotoPage.bind(this,`/procedure-detail/${this.props.data.id}`)}>
+      <li className={
+        classnames('sub-detail-document', {
+        'notification-file-empty' : this.checkEmpty(this.props.data.acf && this.props.data.acf.fileBieuMau.url)
+      })}
+      onClick={this.gotoPage.bind(this,`/procedure-detail/${this.props.data.id}`)}>
         <p className={
             classnames('text-detail-document', {
-              'check-pdf' : this.checkFile(this.props.data.acf && this.props.data.acf.fileBieuMau.url)
+              'check-file' : this.checkFile(this.props.data.acf && this.props.data.acf.fileBieuMau.url),
+              'check-empty-file' : this.checkEmpty(this.props.data.acf && this.props.data.acf.fileBieuMau.url)
             })}
           >{this.Truncate()}</p>
       </li>
@@ -50,4 +62,4 @@ DocumentListItem.contextTypes = {
   router : PropTypes.any
 }
 
-export default DocumentListItem;
+export default connect()(DocumentListItem);

@@ -48,7 +48,6 @@ searchByFieldAndUnit(data) {
 
 componentWillMount(){
   let previousLocation = 'find-procedure-detail';
-  console.log(this.props.dataSearch);
   if(window.previousLocation.pathname.indexOf(previousLocation) >= 0) {
     if(this.props.dataSearch.tenThuTuc !== undefined && this.props.dataSearch.linhVuc !== undefined && this.props.dataSearch.coQuan !== undefined){
       this.setState({
