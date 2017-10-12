@@ -35,9 +35,11 @@ class Footer extends React.Component {
   printPDF(typeDoc) {
     const mainProcess = window.require("electron").remote.require('./print.js');
     if(typeDoc === 'BieuMau'){
+      console.log(this.props.documents[0] && this.props.documents[0].acf.fileBieuMau.url);
       mainProcess.print(this.props.documents[0] && this.props.documents[0].acf.fileBieuMau.url);
     }
     else if(typeDoc === 'BieuMauTrang'){
+      console.log(this.props.documents[0] && this.props.documents[0].acf.fileBieuMauHuongDan.url);
       mainProcess.print(this.props.documents[0] && this.props.documents[0].acf.fileBieuMauHuongDan.url);
     }
   }
@@ -65,6 +67,7 @@ class Footer extends React.Component {
   }
 
   render() {
+
     return (
       <footer className="footer footer-pdf">
         <div className="container">
@@ -87,10 +90,9 @@ class Footer extends React.Component {
           }
           { this.context.router.route.match.path === '/procedure-detail/:id' &&
             <div className="box-print">
-              <button className="btn print-document left" onClick={this.viewDocument.bind(this,'BieuMau')}><span className="icon-print" /><span className="text-print print-document-center" >BIỂU MẪU</span></button>
-              <button className="btn print-document left" onClick={this.viewDocument.bind(this,'BieuMauTrang')}><span className="icon-print" /><span className="text-print-guide">MẪU HƯỚNG DẪN</span></button>
+              <button className="btn print-document left" onClick={this.viewDocument.bind(this,'BieuMau')}><span className="icon2-eye-outline" /><span className="text-print print-document-center" >BIỂU MẪU</span></button>
+              <button className="btn print-document left" onClick={this.viewDocument.bind(this,'BieuMauTrang')}><span className="icon2-eye-outline" /><span className="text-print-guide">MẪU HƯỚNG DẪN</span></button>
               <button className="btn print-document left" onClick={this.printPDF.bind(this,this.state.typeFile)}><span className="icon-print" /><span className="text-print-guide">IN FILE BIỂU MẪU</span></button>
-              {/* <button className="btn print-document left" onClick={this.printPDF.bind(this,{this.state.typeFile})}><span className="icon-print" /><span className="text-print-guide">IN FILE BIỂU MẪU</span></button> */}
             </div>
           }
         </div>

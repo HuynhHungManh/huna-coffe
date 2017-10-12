@@ -1148,6 +1148,12 @@ span.icon-Arrow{
   position: relative;
   right: 15px;
 }
+.icon2-eye-outline{
+  font-size: 26px;
+  vertical-align: text-bottom;
+  position: relative;
+  right: 15px;
+}
 /*document-page*/
 .box-list{
   width: 46%;

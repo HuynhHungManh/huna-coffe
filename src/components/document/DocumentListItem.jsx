@@ -40,6 +40,7 @@ Truncate() {
   }
 
   render() {
+    console.log(this.props.data.acf && this.props.data.acf);
     return (
       <li className={
         classnames('sub-detail-document', {
