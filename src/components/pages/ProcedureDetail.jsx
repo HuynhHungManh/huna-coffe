@@ -66,7 +66,6 @@ class ProcedureDetail extends Component {
   }
 
   render() {
-    console.log(this.state.urlFile);
     return (
       <CommonLayout>
         <div className="container">

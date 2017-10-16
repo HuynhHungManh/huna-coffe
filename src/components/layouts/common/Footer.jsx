@@ -1,17 +1,25 @@
-import React from 'react';
+import React ,{ Component } from 'react';
 import Modal from 'react-modal';
 import {connect} from 'react-redux';
 
-class Footer extends React.Component {
+class Footer extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
       statusPopup : false,
-      typeFile : ''
+      typeFile : '',
+      document : ''
     }
   }
 
   componentWillMount(){
+    if(this.context.router.route.match.path === '/procedure-detail/:id'){
+      let file = this.props.documents.find((item) => item.id == this.context.router.route.match.params.id);
+      this.setState({
+        document : file
+      })
+    }
+
     this.setState({
       typeFile : 'BieuMau'
     })
@@ -33,15 +41,22 @@ class Footer extends React.Component {
   }
 
   printPDF(typeDoc) {
-    const mainProcess = window.require("electron").remote.require('./print.js');
-    if(typeDoc === 'BieuMau'){
-      console.log(this.props.documents[0] && this.props.documents[0].acf.fileBieuMau.url);
-      mainProcess.print(this.props.documents[0] && this.props.documents[0].acf.fileBieuMau.url);
-    }
-    else if(typeDoc === 'BieuMauTrang'){
-      console.log(this.props.documents[0] && this.props.documents[0].acf.fileBieuMauHuongDan.url);
-      mainProcess.print(this.props.documents[0] && this.props.documents[0].acf.fileBieuMauHuongDan.url);
-    }
+    var myWebview = document.getElementById('myWebview');
+    console.log("myWebview: ",myWebview);
+
+    console.log("prototype: ",Object.getPrototypeOf(myWebview)); //=> HTMLElement
+    myWebview.print({silent: false});
+    // setTimeout(function(){
+    //   console.log('123');
+    //     myWebview.print({silent: false});
+    // }, 4000);
+    // const mainProcess = window.require("electron").remote.require('./print.js');
+    // if(typeDoc === 'BieuMau' || typeDoc === ''){
+    //   mainProcess.print(this.props.documents[0] && this.props.documents[0].acf.fileBieuMau.url);
+    // }
+    // else{
+    //   mainProcess.print(this.props.documents[0] && this.props.documents[0].acf.fileBieuMauHuongDan.url);
+    // }
   }
 
   viewDocument(typeDoc) {
@@ -71,6 +86,7 @@ class Footer extends React.Component {
     return (
       <footer className="footer footer-pdf">
         <div className="container">
+          <webview id="myWebview" src={`https://view.officeapps.live.com/op/embed.aspx?src=${this.props.documents[0] && this.props.documents[0].acf.fileBieuMau.url}`} width="500px" height="500px"></webview>
           <button className="btn-icon home btn-action-back" id="btn-back-home" onClick={this.showPopupBackHome.bind(this)}><i className="icon icon-home"/><span className="space-home">Trang chủ</span></button>
           {
             this.context.router.route.match.path === '/find-procedure-detail/:id' &&
