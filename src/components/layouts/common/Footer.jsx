@@ -1,12 +1,15 @@
 import React ,{ Component } from 'react';
 import Modal from 'react-modal';
 import {connect} from 'react-redux';
+import Spinner from 'react-spinkit';
 
 class Footer extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
       statusPopup : false,
+      statusPopupPrint : false,
+      statusNotiPrint : 'Ứng dụng đang xử lý file',
       typeFile : '',
       document : ''
     }
@@ -40,23 +43,31 @@ class Footer extends Component {
     }
   }
 
-  printPDF(typeDoc) {
-    var myWebview = document.getElementById('myWebview');
-    console.log("myWebview: ",myWebview);
+  hidePopupPrint() {
+    this.setState({
+      statusPopupPrint : false
+    })
+  }
 
-    console.log("prototype: ",Object.getPrototypeOf(myWebview)); //=> HTMLElement
-    myWebview.print({silent: false});
-    // setTimeout(function(){
-    //   console.log('123');
-    //     myWebview.print({silent: false});
-    // }, 4000);
-    // const mainProcess = window.require("electron").remote.require('./print.js');
-    // if(typeDoc === 'BieuMau' || typeDoc === ''){
-    //   mainProcess.print(this.props.documents[0] && this.props.documents[0].acf.fileBieuMau.url);
-    // }
-    // else{
-    //   mainProcess.print(this.props.documents[0] && this.props.documents[0].acf.fileBieuMauHuongDan.url);
-    // }
+
+  printPDF(typeDoc) {
+    this.setState({
+      statusPopupPrint : true
+    });
+    let time = 5000;
+    if(this.state.document && this.state.document.acf.fileBieuMau.url.indexOf(".pdf") >= 0){
+      time = 4000;
+    }
+
+    const mainProcess = window.require("electron").remote.require('./print.js');
+    if(typeDoc === 'BieuMau' || typeDoc === ''){
+      mainProcess.print(this.state.document && this.state.document.acf.fileBieuMau.url);
+      setTimeout(function() { this.setState({statusPopupPrint: false}); }.bind(this), time);
+    }
+    else{
+      mainProcess.print(this.state.document && this.state.document.acf.fileBieuMauHuongDan.url);
+      setTimeout(function() { this.setState({statusPopupPrint: false}); }.bind(this), time);
+    }
   }
 
   viewDocument(typeDoc) {
@@ -86,7 +97,6 @@ class Footer extends Component {
     return (
       <footer className="footer footer-pdf">
         <div className="container">
-          <webview id="myWebview" src={`https://view.officeapps.live.com/op/embed.aspx?src=${this.props.documents[0] && this.props.documents[0].acf.fileBieuMau.url}`} width="500px" height="500px"></webview>
           <button className="btn-icon home btn-action-back" id="btn-back-home" onClick={this.showPopupBackHome.bind(this)}><i className="icon icon-home"/><span className="space-home">Trang chủ</span></button>
           {
             this.context.router.route.match.path === '/find-procedure-detail/:id' &&
@@ -127,6 +137,27 @@ class Footer extends Component {
               <button className="btn message-no btn-action-cancel btn-cancel" onClick={this.showPopupBackHome.bind(this)}>Không</button>
               <button className="btn message-yes btn-action-back" onClick={this.gotoPage.bind(this,'/')}>Có</button>
             </div>
+          </div>
+        </Modal>
+        <Modal
+          isOpen={this.state.statusPopupPrint}
+          contentLabel="Modal"
+          className="modal popup"
+          overlayClassName={{}}
+        >
+          <div className="modal-back-home">
+            <img className="btn-close-modal close-modal" src={require('assets/images/icon/close.svg')} onClick={this.hidePopupPrint.bind(this)}/>
+            <h3 className="notification-print">
+              {this.state.statusNotiPrint !== 'error' &&
+                <div>{this.state.statusNotiPrint} ,<br/>
+                <span>vui lòng đợi vài giây !</span>
+              </div>
+              }
+              {this.state.statusNotiPrint === 'error' &&
+                <div>Lỗi xử lý file  ,<br/><span>vui lòng thử lại !</span></div>
+              }
+            </h3>
+            <Spinner name="three-bounce" color="#444" className="loading-print" />
           </div>
         </Modal>
       </footer>
