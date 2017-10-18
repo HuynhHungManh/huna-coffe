@@ -175,7 +175,7 @@ module.exports = function (env) {
         ],
       },
       output: {
-        path: path.join(__dirname, '../electron-boilerplate/build'),
+        path: path.join(__dirname, '../kiosk-electron-installer/build'),
         filename: 'bundle.js',
         publicPath: ''
       },
