@@ -15,8 +15,8 @@ import {status} from 'base/reducers/status';
 import {storeKeySearch} from 'base/reducers/storeKeySearch';
 import {notifications} from 'base/reducers/notification';
 import {changeFile} from 'base/reducers/changeFile';
-
-
+import {plans} from 'base/reducers/plans';
+import {categoryplans} from 'base/reducers/categoryplans';
 
 let rootReducer = combineReducers(
 {
@@ -33,7 +33,9 @@ let rootReducer = combineReducers(
     status,
     storeKeySearch,
     notifications,
-    changeFile
+    changeFile,
+    categoryplans,
+    plans
   }
 );
 

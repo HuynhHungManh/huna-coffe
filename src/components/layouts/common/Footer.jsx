@@ -2,6 +2,7 @@ import React ,{ Component } from 'react';
 import Modal from 'react-modal';
 import {connect} from 'react-redux';
 import Spinner from 'react-spinkit';
+Modal.setAppElement('body');
 
 class Footer extends Component {
   constructor(props, context) {
@@ -111,6 +112,10 @@ class Footer extends Component {
             <button className="btn-icon back btn-action-send" onClick={this.gotoPage.bind(this,'/document')} ><i className="icon icon-arrow-left size-back btn-action-send" /><span className="space-back">Trở về</span></button>
           }
           {
+             this.context.router.route.match.path === '/view-project/:id' &&
+            <button className="btn-icon back btn-action-send" onClick={this.gotoPage.bind(this,'/plan')} ><i className="icon icon-arrow-left size-back btn-action-send" /><span className="space-back">Trở về</span></button>
+          }
+          {
              this.context.router.route.match.path === '/rating-detail/:id' &&
             <button className="btn-icon back btn-action-send" onClick={this.gotoPage.bind(this,'/rating-list')} ><i className="icon icon-arrow-left size-back btn-action-send" /><span className="space-back">Trở về</span></button>
           }
@@ -126,7 +131,6 @@ class Footer extends Component {
           isOpen={this.state.statusPopup}
           contentLabel="Modal"
           className="modal popup"
-          overlayClassName={{}}
         >
           <div className="modal-back-home">
             <img className="btn-close-modal close-modal" src={require('assets/images/icon/close.svg')} onClick={this.showPopupBackHome.bind(this)}/>
@@ -143,7 +147,6 @@ class Footer extends Component {
           isOpen={this.state.statusPopupPrint}
           contentLabel="Modal"
           className="modal popup"
-          overlayClassName={{}}
         >
           <div className="modal-back-home">
             <img className="btn-close-modal close-modal" src={require('assets/images/icon/close.svg')} onClick={this.hidePopupPrint.bind(this)}/>

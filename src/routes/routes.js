@@ -6,12 +6,13 @@ import ProcedureDetail from 'components/pages/ProcedureDetail.jsx';
 import FindProcedure from 'components/pages/FindProcedure.jsx';
 import FindProcedureDetail from 'components/pages/FindProcedureDetail.jsx';
 import Feedback from 'components/pages/Feedback.jsx';
+import Plan from 'components/pages/Plan.jsx';
+import ViewMapPlan from 'components/pages/ViewMapPlan.jsx';
 
 import RatingList from 'components/pages/RatingList.jsx';
 import RatingDetail from 'components/pages/RatingDetail.jsx';
 import SearchFile from 'components/pages/SearchFile.jsx';
 import SearchDetail from 'components/pages/SearchDetail.jsx';
-
 const routes = [
   {
     component: App,
@@ -61,6 +62,17 @@ const routes = [
         exact: true,
         path: '/feedback',
       },
+      {
+        component: Plan,
+        exact: true,
+        path: '/plan',
+      },
+      {
+        component: ViewMapPlan,
+        exact: true,
+        path: '/view-project/:id',
+      },
+
       {
         component: RatingDetail,
         exact: true,
