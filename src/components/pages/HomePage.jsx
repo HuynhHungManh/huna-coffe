@@ -70,12 +70,12 @@ class HomePage extends React.Component {
                   </button>
                 </li>
                 <li className="sub-tab">
-                  <button className="btn-tab feedback" onClick={this.gotoPage.bind(this, '/feedback')}>
+                  <button className="btn-tab feedback" onClick={this.gotoPage.bind(this, '/plan')}>
                     <span className="icon-tab">
                       <img className="resize-feedback center" src={require('assets/images/icon/feedback.svg')} />
                     </span>
                     <div className="content-tab">
-                      <span className="title-tab">Góp Ý - Phản Ánh</span>
+                      <span className="title-tab">Thông Tin Quy Hoạch</span>
                     </div>
                   </button>
                 </li>

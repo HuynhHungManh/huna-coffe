@@ -960,6 +960,7 @@ span.icon-Arrow{
   position: relative;
   padding: 20px 16px 20px 0px;
 }
+
 .text-detail-document::before{
   content: "";
   position: absolute;
@@ -2398,4 +2399,86 @@ fieldset,.fieldset {
 .scroll-procedure-detail::-webkit-scrollbar-button:vertical:decrement {
   background-size: 23px;
   background-image: url("../images/icon/arrow-top.svg");
+}
+
+/* Plan Items */
+.list-detail-plan {
+  width: 100%;
+}
+
+/* Button View Map */
+.btn-view-map {
+  background: #1489ff;
+  border: 1px solid #0059b2;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90px;
+  height: 59px;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-family: 'Roboto-Medium';
+  font-size: 20px;
+  color: #fff;
+  letter-spacing: 0;
+  position: absolute;
+  top: 50%;
+  right: 4%;
+  -webkit-transform: translate(-4%,-50%);
+  -moz-transform: translate(-4%,-50%);
+  -o-transform: translate(-4%,-50%);
+  transform: translate(-4%,-50%);
+}
+
+/* Plan List Items */
+.sub-detail-plan {
+  display: flex;
+  align-items: center;
+}
+.text-detail-plan {
+  font-family:'Roboto-Regular';
+  font-size:20px;
+  color:#000;
+  width: 76%;
+  letter-spacing:0;
+  text-align:left;
+  line-height: 27px;
+  position: relative;
+  padding: 20px;
+}
+
+/* Image Zoom Viewer */
+.modal-image {
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+.view-image {
+  width: 100%;
+  height: 700px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.ReactModal__Overlay--after-open {
+  z-index: 1;
+}
+
+/* Image zoom */
+.leaflet-container {
+  min-height: 700px;
+}
+.leaflet-control a {
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 35px !important;
+}
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out {
+  font-size: 30px !important;
 }

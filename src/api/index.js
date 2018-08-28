@@ -7,4 +7,7 @@ import Ratings from 'api/rating';
 import SearchFile from 'api/searchFile';
 import Procedures from 'api/procedure';
 import Notification from 'api/notification';
-export {Categories, Documents, SearchDocuments, Feedbacks, Calendars, Ratings, Procedures, SearchFile, Notification};
+import CategoryPlans from 'api/categoryplans';
+import Plans from 'api/plan.js';
+
+export {Categories, Documents, SearchDocuments, Feedbacks, Calendars, Ratings, Procedures, SearchFile, Notification, CategoryPlans, Plans};

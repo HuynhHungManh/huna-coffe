@@ -11,6 +11,8 @@ import RatingDetail from './RatingDetail.jsx';
 import RatingList from './RatingList.jsx';
 import SearchDetail from './SearchDetail.jsx';
 import SearchFile from './SearchFile.jsx';
+import Plan from './Plan.jsx';
+import ViewMapPlan from './ViewMapPlan.jsx';
 
 
-export {HomePage, Root, Calendar, Document, Feedback, FindProcedure, FindProcedureDetail, ProcedureDetail, RatingDetail, RatingList, SearchDetail, SearchFile};
+export {HomePage, Root, Calendar, Document, Feedback, FindProcedure, FindProcedureDetail, ProcedureDetail, RatingDetail, RatingList, SearchDetail, SearchFile, Plan, ViewMapPlan};
