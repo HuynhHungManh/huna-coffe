@@ -30,6 +30,7 @@
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
     "react-addons-css-transition-group": "^15.5.2",
+    "react-autocomplete": "^1.8.1",
     "react-dom": "^15.5.4",
     "react-file-viewer": "^0.3.48",
     "react-leaflet": "1.9.1",

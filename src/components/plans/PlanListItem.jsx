@@ -61,7 +61,6 @@ class PlanListItem extends Component {
                 'notification-file-empty' : this.checkEmpty(this.props.data.acf && this.props.data.acf.map_plan.url)
               })
             }
-
           to={`/view-project/${ this.props.data.id }`}>
           Xem
         </Link>

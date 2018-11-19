@@ -18,7 +18,7 @@ body {
   height: 127px;
   box-shadow: 0 -2px 13px 0;
   background: #0072e4;
-  background-image: url("../images/background/Background-Header.png");
+  background-image: url("../images/background/background-header.png");
   background-size: cover;
   background-repeat: repeat-x;
 }
@@ -2482,3 +2482,64 @@ fieldset,.fieldset {
 .leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out {
   font-size: 30px !important;
 }
+.search-input{
+  position: relative;
+  z-index: 99;
+  display: inline-block;
+  float: right;
+}
+.search-input >div{
+  float: right;
+}
+.search-input input{
+  font-size: 16px;
+  padding: 0px 10px;
+}
+.search-input::before,.search-input::after{
+  content: '';
+  clear: both;
+  display: table;
+}
+.leaflet-popup-content {
+  margin: 15px 20px 15px 15px;
+}
+@media screen and (min-width: 992px) {
+  .leaflet-popup-content {min-width: 300px;}
+}
+.leaflet-popup-content .ggmap-popup{
+  display:block;
+  color:#000;
+  text-decoration: none;
+  max-width: 100%;
+}
+.leaflet-popup-content .ggmap-popup::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+.leaflet-popup-content .ggmap-popup .ggmap-contentleft{
+  float: left;
+  width: 90px;
+  margin-right: 15px;
+  height: 90px;
+  background-size: cover;
+  background-position: center;
+}
+.leaflet-popup-content .ggmap-popup .ggmap-contentright{
+  overflow: hidden;
+}
+.leaflet-popup-content .ggmap-popup .ggmap-contentright .ggmap-title{
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+
+.leaflet-container a.leaflet-popup-close-button{
+  padding: 0;
+  margin: 7px 7px 0 0;
+}
+.leaflet-popup-content p{
+  margin: 0 !important;
+  font-size: 13px;
+}
+

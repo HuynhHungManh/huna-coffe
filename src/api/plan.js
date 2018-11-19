@@ -22,6 +22,25 @@ const rest = reduxApi({
       }
     ]
   },
+  locations: {
+    url: 'get-location',
+    options:(url, params, getState) => {
+      return {
+        method: "GET",
+        headers: {
+        },
+        data: {}
+      };
+    },
+    postfetch: [
+      function({data, actions, dispatch, getState, request}) {
+        dispatch({
+          type: 'GET_LOCATION_BY_ID',
+          plans: data.data
+        });
+      }
+    ]
+  },
   plansAll: {
     url: '/all-project',
     options:(url, params, getState) => {
