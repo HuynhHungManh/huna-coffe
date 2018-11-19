@@ -168,7 +168,7 @@ class ViewMapPlan extends Component {
                 renderItem={(item, highlighted) =>
                   <div
                     key={item.id}
-                    style={{ backgroundColor: highlighted ? '#eee' : 'transparent',padding: '7px',fontSize: '16px'}}
+                    style={{ backgroundColor: highlighted ? '#eee' : 'transparent',padding: '10px',fontSize: '16px'}}
                   >
                     {item.label}
                   </div>
@@ -176,6 +176,7 @@ class ViewMapPlan extends Component {
                 value={this.state.search}
                 onChange={this.handleChange}
                 onSelect={this.handleSelect}
+                inputProps={{ placeholder: 'Nhập từ khóa tìm kiếm' }}
               />
             </div>
           </div>
