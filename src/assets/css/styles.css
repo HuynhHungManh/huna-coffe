@@ -2499,12 +2499,26 @@ fieldset,.fieldset {
   top: 50%;
   transform: translateY(-50%);
 }
+.search-input .btn-submit{
+  width: 45px;
+  height: 100%;
+  right: 0px;
+  position: absolute;
+  opacity: 0;
+  z-index: 99;
+}
 .search-input >div{
   float: right;
+  position: relative;
 }
-.search-input >div>div{
-  box-shadow: none !important;
-  padding: 0px !important;
+.search-input .menu{
+  position: absolute;
+  top: 100%;
+  background: #fff;
+  width: 100%;
+  padding: 0px;
+  max-height: 450px;
+  overflow-y: scroll;
 }
 .search-input input{
   font-size: 16px;
