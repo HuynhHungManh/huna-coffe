@@ -26,6 +26,7 @@ class ViewMapPlan extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
   componentWillMount(){ 
     let file = this.props.plans.find((item) => item.id == this.props.match.params.id);    
@@ -54,7 +55,9 @@ class ViewMapPlan extends Component {
       zoomControl: true,
       dragging: true,
       touch: true,
-      tap: true,      
+      tap: true,  
+      attributionControl: false,  
+      fullscreenControl: true,  
     });
     let northEast = L.latLng(this.state.northEast.lat,this.state.northEast.lng);
     let southWest = L.latLng(this.state.southWest.lat, this.state.southWest.lng);
@@ -141,6 +144,23 @@ class ViewMapPlan extends Component {
       }
     })
   }
+  handleClick(e){
+    e.preventDefault();
+    let params = {
+      id: this.state.id,
+      name : this.state.search
+    }
+    this.setState({search: this.state.search});
+    Plans.actions.locations.request(params).then(res => {
+      if (res.data) {
+        this.layer.clearLayers();
+        res.data.forEach(item => {
+          this.updateMarkers(item);
+          this.map.setView(item.locations[0],3, {pan:{ animate:true}});
+        });
+      }
+    })
+  }
   render() {
     const items=[];
     delete L.Icon.Default.prototype._getIconUrl;
@@ -173,11 +193,19 @@ class ViewMapPlan extends Component {
                     {item.label}
                   </div>
                 }
+                renderMenu={(items, value) => (
+                  <div className="menu">
+                    {items.length === 0 ? (
+                      <div className="item" style={{padding: '10px'}}>Không tìm thấy địa điểm</div>
+                    ) : items}
+                  </div>
+                )}
                 value={this.state.search}
                 onChange={this.handleChange}
                 onSelect={this.handleSelect}
                 inputProps={{ placeholder: 'Nhập từ khóa tìm kiếm' }}
               />
+              <button className="btn-submit" onClick={this.handleClick}>Tìm kiếm</button>
             </div>
           </div>
           <div className="content custom-procedure">
