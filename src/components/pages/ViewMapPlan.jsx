@@ -20,16 +20,17 @@ class ViewMapPlan extends Component {
       southWest: '',
       urlFile: '',
       isOpen: false,
-      draggable: false,  
-      search: '',    
-      data: [], 
+      draggable: false,
+      search: '',
+      data: [],
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
     this.handleClick = this.handleClick.bind(this);
   }
-  componentWillMount(){ 
-    let file = this.props.plans.find((item) => item.id == this.props.match.params.id);    
+  componentWillMount(){
+    let file = this.props.plans.find((item) => item.id == this.props.match.params.id);
+    console.log(file);
     this.setState({
       id: file && file.id || '',
       title: file && file.title && file.title.rendered ? file.title.rendered : '',
@@ -41,23 +42,23 @@ class ViewMapPlan extends Component {
   }
   componentDidMount() {
     let tiles = L.tileLayer(this.state.imagePath, {
-      minZoom: 3,
-      maxZoom: 5,
+      minZoom: this.state.zoom ? this.state.zoom.min : 3,
+      maxZoom: this.state.zoom ? this.state.zoom.max : 5,
       noWrap: true,
       tms: true
     });
     this.map = L.map('map', {
       center: [0, 0],
       zoom: 3,
-      minZoom: 3,
-      maxZoom: 5,
+      minZoom: this.state.zoom ? this.state.zoom.min : 3,
+      maxZoom: this.state.zoom ? this.state.zoom.max : 5,
       layers:[tiles],
       zoomControl: true,
       dragging: true,
       touch: true,
-      tap: true,  
-      attributionControl: false,  
-      fullscreenControl: true,  
+      tap: true,
+      attributionControl: false,
+      fullscreenControl: true,
     });
     let northEast = L.latLng(this.state.northEast.lat,this.state.northEast.lng);
     let southWest = L.latLng(this.state.southWest.lat, this.state.southWest.lng);
@@ -79,7 +80,7 @@ class ViewMapPlan extends Component {
     // options.offset = new L.Point(10, 10);
     return options;
   }
-  updateMarkers(markersData) { 
+  updateMarkers(markersData) {
     // this.layer.clearLayers();
     const contentMarker = `<div class="ggmap-popup"><div class="ggmap-contentleft" style="background-image: url(${markersData.image});"></div><div class="ggmap-contentright"><h3 class="ggmap-title">${markersData.title}</h3><div class="ggmap-desc">${markersData.description}</div></div></div>`;
 
@@ -128,7 +129,7 @@ class ViewMapPlan extends Component {
   handleChange(event) {
     this.setState({search: event.target.value});
   }
-  handleSelect(value){ 
+  handleSelect(value){
     let params = {
       id: this.state.id,
       name : value
