@@ -1,11 +1,14 @@
 import React from 'react';
 import {RenderRoutes} from 'base/routes';
+import {connect} from 'react-redux';
+
 class App extends React.Component {
   constructor(props, context) {
     super(props, context);
-    this.state = {
-      count: 0,
-    };
+  }
+
+  componentWillReceiveProps() {
+      window.previousLocation = this.props.location
   }
 
   render() {
@@ -21,4 +24,4 @@ App.contextTypes = {
   router: React.PropTypes.object
 };
 
-export default App;
+export default connect()(App);

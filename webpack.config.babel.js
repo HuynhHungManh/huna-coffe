@@ -16,7 +16,7 @@ const {
 var _module = {
   rules: [
     {
-      test: /\.(ico|jpg|jpeg|png|gif|eot|ttf|woff|svg)/,
+      test: /\.(ico|jpg|jpeg|png|gif|eot|ttf|woff|svg|pdf)/,
       use: [
         {
           loader: 'file-loader',
@@ -54,7 +54,7 @@ var _module = {
           loader: "css-loader"
         }]
       })
-    }
+    },
   ],
 };
 
@@ -71,6 +71,7 @@ var resolve = {
     'assets': path.resolve(__dirname, './src/assets/'),
     'constants': path.resolve(__dirname, './src/constants'),
     'api': path.resolve(__dirname, './src/api/'),
+    'libs': path.resolve(__dirname, './src/libs/'),
     'app': path.resolve(__dirname, './src/components/app'),
     'pages': path.resolve(__dirname, './src/components/pages'),
     'layouts': path.resolve(__dirname, './src/components/layouts'),
@@ -174,7 +175,7 @@ module.exports = function (env) {
         ],
       },
       output: {
-        path: path.join(__dirname, '../electron-boilerplate/build'),
+        path: path.join(__dirname, '../electron-boilerplate/app'),
         filename: 'bundle.js',
         publicPath: ''
       },
@@ -217,7 +218,7 @@ module.exports = function (env) {
         host: '0.0.0.0',
         port: process.env.PORT || 3000,
         contentBase: './',
-        historyApiFallback: true
+        historyApiFallback: true,
       }
     }
   ];

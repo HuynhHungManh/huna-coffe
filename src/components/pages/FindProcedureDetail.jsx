@@ -1,98 +1,73 @@
 import React, { Component } from 'react';
 import {CommonLayout} from 'layouts';
-
+import {connect} from 'react-redux';
 
 class FindProcedureDetail extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.state={
+      data : this.props.procedures.data.find(item => item.data.id == this.props.match.params.id)
+    }
+  }
+
+  Truncate() {
+    let len = 0;
+    let titleName = this.state.data.data && this.state.data.data.tenthutuc;
+    let trimmedTitle = '';
+    let count=0;
+    let i=0;
+    for (i = 0, len = titleName.length; i < len; i++) {
+      if(titleName[i]==' ') count++;
+      if(count==21){
+        trimmedTitle = titleName.substring(0, i) + " ...";
+      break;
+    } else {
+        trimmedTitle = titleName.substring(0, i+1);
+      }
+    }
+    return trimmedTitle;
+  }
+
+  Subtruncate() {
+    let len = 0;
+    let titleName = this.state.data.data && this.state.data.data.tenthutuc;
+    let trimmedTitle = '';
+    let count=0;
+    let i=0;
+    for (i = 0, len = titleName.length; i < len; i++) {
+      if(titleName[i]==' ') count++;
+      if(count==37){
+        trimmedTitle = titleName.substring(0, i) + " ...";
+      break;
+      } else {
+          trimmedTitle = titleName.substring(0, i+1);
+        }
+    }
+    return trimmedTitle;
+  }
+
+  gotoPage(page) {
+    this.context.router.history.push(page);
+  }
+
   render() {
     return (
       <CommonLayout>
         <div className="container">
         <div className="header">
           <h2 className="title bg-search-document">
-            <span className="title-main">Cấp Sửa Đổi, Bổ Sung Giấy Phép Bán Lẻ Sản Phẩm Thuốc Lá</span>
+            <span className="title-main">{this.Truncate()}</span>
           </h2>
         </div>
         <div className="content">
           <div className="header-procedure-detail">
             <span className="title-procedure-detail">
-              CẤP SỬA ĐỔI, BỔ SUNG GIẤY PHÉP BÁN LẺ SẢN PHẨM THUỐC LÁ
+              {this.Subtruncate()}
             </span>
           </div>
           <div className="scroll-procedure-detail">
-            <table className="table-detail-procedure">
-              <thead>
-                <tr><th colSpan={4}>CẤP SỬA ĐỔI, BỔ SUNG GIẤY PHÉP BÁN LẺ SẢN PHẨM THUỐC LÁ</th>
-                </tr></thead>
-              <tbody>
-                <tr>
-                  <td style={{color: '#ef3d19'}}>Mã thủ tục</td>
-                  <td>T-DNG-286742-TT</td>
-                  <td style={{color: '#ef3d19'}}>Ngày hiệu lực (Dữ liệu chuẩn hóa từ năm 2017)</td>
-                  <td style={{width: 294}}>01/06/2016</td>
-                </tr>
-                <tr>
-                  <td style={{color: '#ef3d19'}}>Mức trực tuyến</td>
-                  <td>3</td>
-                  <td style={{color: '#ef3d19'}}>Cách thức nộp trực tuyến</td>
-                  <td>
-                    <a href="#">Xem hướng dẫn</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{color: '#ef3d19'}}>Thời hạn giải quyết</td>
-                  <td colSpan={3}>05 ngày làm việc</td>
-                </tr>
-                <tr>
-                  <td style={{color: '#ef3d19'}}>Đối tượng thực hiện</td>
-                  <td>Cá nhân - Tổ chức</td>
-                  <td style={{color: '#ef3d19'}}>Lĩnh vực</td>
-                  <td>Dịch vụ thương mại</td>
-                </tr>
-                <tr>
-                  <td style={{color: '#ef3d19'}}>Cơ quan thực hiện</td>
-                  <td>Ủy ban nhân dân cấp huyện</td>
-                  <td style={{color: '#ef3d19'}}>Cơ quan có thẩm quyền quyết định</td>
-                  <td />
-                </tr>
-                <tr>
-                  <td style={{color: '#ef3d19'}}>Cơ quan phối hợp &amp; CQ được ủy quyền</td>
-                  <td colSpan={3} />
-                </tr>
-                <tr>
-                  <td style={{color: '#ef3d19'}}>Cách thức thực hiện</td>
-                  <td colSpan={3}>Hồ sơ được nộp trực tiếp tại Bộ phận tiếp nhận và trả kết quả thuộc Văn phòng UBND cấp huyện</td>
-                </tr>
-                <tr>
-                  <td style={{color: '#ef3d19'}}>Trình tự thực hiện</td>
-                  <td colSpan={3}>
-                    <p>Bước 1: Tổ chức, cá nhân hoàn thiện hồ sơ theo hướng dẫn;</p>
-                    <p>Bước 2: Bộ phận tiếp nhận và trả kết quả thuộc Văn phòng UBND cấp huyện tiếp nhận hồ sơ và chuyển sang Phòng Kinh tế hoặc Phòng Kinh tế và Hạ tầng;</p>
-                    <p>Bước 3: Chuyên viên xử lý hồ sơ, trình lãnh đạo phòng ký và chuyển giấy phép cho Bộ phận tiếp nhận và trả kết quả để trả cho công dân, tổ chức.</p>
-                    <p>Bước 1: Tổ chức, cá nhân hoàn thiện hồ sơ theo hướng dẫn;</p>
-                    <p>Bước 2: Bộ phận tiếp nhận và trả kết quả thuộc Văn phòng UBND cấp huyện tiếp nhận hồ sơ và chuyển sang Phòng Kinh tế hoặc Phòng Kinh tế và Hạ tầng;</p>
-                    <p>Bước 3: Chuyên viên xử lý hồ sơ, trình lãnh đạo phòng ký và chuyển giấy phép cho Bộ phận tiếp nhận và trả kết quả để trả cho công dân, tổ chức.</p>
-                    <p>Bước 1: Tổ chức, cá nhân hoàn thiện hồ sơ theo hướng dẫn;</p>
-                    <p>Bước 2: Bộ phận tiếp nhận và trả kết quả thuộc Văn phòng UBND cấp huyện tiếp nhận hồ sơ và chuyển sang Phòng Kinh tế hoặc Phòng Kinh tế và Hạ tầng;</p>
-                    <p>Bước 3: Chuyên viên xử lý hồ sơ, trình lãnh đạo phòng ký và chuyển giấy phép cho Bộ phận tiếp nhận và trả kết quả để trả cho công dân, tổ chức.</p>
-                    <p>Bước 1: Tổ chức, cá nhân hoàn thiện hồ sơ theo hướng dẫn;</p>
-                    <p>Bước 2: Bộ phận tiếp nhận và trả kết quả thuộc Văn phòng UBND cấp huyện tiếp nhận hồ sơ và chuyển sang Phòng Kinh tế hoặc Phòng Kinh tế và Hạ tầng;</p>
-                    <p>Bước 3: Chuyên viên xử lý hồ sơ, trình lãnh đạo phòng ký và chuyển giấy phép cho Bộ phận tiếp nhận và trả kết quả để trả cho công dân, tổ chức.</p>
-                    <p>Bước 1: Tổ chức, cá nhân hoàn thiện hồ sơ theo hướng dẫn;</p>
-                    <p>Bước 2: Bộ phận tiếp nhận và trả kết quả thuộc Văn phòng UBND cấp huyện tiếp nhận hồ sơ và chuyển sang Phòng Kinh tế hoặc Phòng Kinh tế và Hạ tầng;</p>
-                    <p>Bước 3: Chuyên viên xử lý hồ sơ, trình lãnh đạo phòng ký và chuyển giấy phép cho Bộ phận tiếp nhận và trả kết quả để trả cho công dân, tổ chức.</p>
-                    <p>Bước 1: Tổ chức, cá nhân hoàn thiện hồ sơ theo hướng dẫn;</p>
-                    <p>Bước 2: Bộ phận tiếp nhận và trả kết quả thuộc Văn phòng UBND cấp huyện tiếp nhận hồ sơ và chuyển sang Phòng Kinh tế hoặc Phòng Kinh tế và Hạ tầng;</p>
-                    <p>Bước 3: Chuyên viên xử lý hồ sơ, trình lãnh đạo phòng ký và chuyển giấy phép cho Bộ phận tiếp nhận và trả kết quả để trả cho công dân, tổ chức.</p>
-                    <p>Bước 1: Tổ chức, cá nhân hoàn thiện hồ sơ theo hướng dẫn;</p>
-                    <p>Bước 2: Bộ phận tiếp nhận và trả kết quả thuộc Văn phòng UBND cấp huyện tiếp nhận hồ sơ và chuyển sang Phòng Kinh tế hoặc Phòng Kinh tế và Hạ tầng;</p>
-                    <p>Bước 3: Chuyên viên xử lý hồ sơ, trình lãnh đạo phòng ký và chuyển giấy phép cho Bộ phận tiếp nhận và trả kết quả để trả cho công dân, tổ chức.</p>
-                    <p>Bước 1: Tổ chức, cá nhân hoàn thiện hồ sơ theo hướng dẫn;</p>
-                    <p>Bước 2: Bộ phận tiếp nhận và trả kết quả thuộc Văn phòng UBND cấp huyện tiếp nhận hồ sơ và chuyển sang Phòng Kinh tế hoặc Phòng Kinh tế và Hạ tầng;</p>
-                    <p>Bước 3: Chuyên viên xử lý hồ sơ, trình lãnh đạo phòng ký và chuyển giấy phép cho Bộ phận tiếp nhận và trả kết quả để trả cho công dân, tổ chức.</p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <iframe name='iframe1' id="iframe1"  width="100%" height="100%" src={`http://tthc.danang.gov.vn/index.php?option=com_thutuchanhchinh&task=thutucdetailfromdb&view=thutuc&id_hethong=${this.props.match.params.id}`} seamless />
+            <div className="hideButtonBack"></div>
           </div>
         </div>
       </div>
@@ -101,4 +76,10 @@ class FindProcedureDetail extends Component {
   }
 }
 
-export default FindProcedureDetail;
+const bindStateToProps = (state) => {
+  return {
+    procedures: state.procedures || []
+  }
+}
+
+export default connect(bindStateToProps)(FindProcedureDetail);

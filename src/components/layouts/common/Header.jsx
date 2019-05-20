@@ -11,12 +11,15 @@ class Header extends React.Component {
       <header className="box-header">
         <div className="container">
           <h1 className="logo">
-            <Link className="link-logo" to='/'>
-              <img className="img-logo" src={require('assets/images/logo/Logo.png')} />
-            </Link>
           </h1>
-          <div className="text-logo">
-            <span className="text-title-logo">UBND QUẬN THANH KHÊ</span>
+          <p className="title-page">
+            <span className="title">Order</span>
+          </p>
+          <div className="account-info-box">
+            <p className="account-text">
+              Xin chào:
+              <span className="text">Nguyễn Thị Mai</span>
+            </p>
           </div>
         </div>
       </header>

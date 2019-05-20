@@ -1,16 +1,32 @@
 import reduxApi, {transformers} from 'redux-api';
 import customFetch from 'api/axios';
+import CONFIG from 'base/constants/config';
 
 // Example
-export default reduxApi({
+const rest = reduxApi({
   categories: {
-    url: 'http://localhost:8888/categories',
+    // url: '/get-all-category',
+    url: '/categories?per_page=100',
     options:(url, params, getState) => {
       return {
         method: "GET",
-        headers: {},
+        headers: {
+          //'Content-Type': 'application/json'
+        },
         data: {}
       };
-    }
+    },
+    postfetch: [
+      function({data, actions, dispatch, getState, request}) {
+        dispatch({
+          type: 'GET_LIST_CATEGORIES',
+          categories: data.data
+        });
+      }
+    ]
   }
-}).use('fetch', customFetch);
+})
+.use('fetch', customFetch)
+.use("rootUrl", CONFIG.API_URL);
+
+export default rest;

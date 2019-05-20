@@ -2,6 +2,7 @@ import React from 'react';
 import {MasterLayout} from 'layouts';
 
 class HomePage extends React.Component {
+
   gotoPage(page) {
     this.props.history.push(page);
   }
@@ -12,7 +13,7 @@ class HomePage extends React.Component {
         <div className="container">
           <div className="header-content">
             <p className="help">Xin hãy nhấn trực tiếp vào màn hình cảm ứng để sử dụng.</p>
-            <p className="help-phone">Nếu có rắc rối, xin liên hệ <span className="contact-content">02683 000 000</span></p>
+            <p className="help-phone">Nếu có vướng mắc, xin liên hệ: <span className="contact-content">0236 222 5871</span></p>
             <img className="icon-hand" src={require('assets/images/icon/hand_gesture.svg')} />
           </div>
           <div className="main-content">
@@ -69,12 +70,12 @@ class HomePage extends React.Component {
                   </button>
                 </li>
                 <li className="sub-tab">
-                  <button className="btn-tab feedback" onClick={this.gotoPage.bind(this, '/feedback')}>
+                  <button className="btn-tab feedback" onClick={this.gotoPage.bind(this, '/plan')}>
                     <span className="icon-tab">
                       <img className="resize-feedback center" src={require('assets/images/icon/feedback.svg')} />
                     </span>
                     <div className="content-tab">
-                      <span className="title-tab">Góp Ý - Phản Ánh</span>
+                      <span className="title-tab">Thông Tin Quy Hoạch</span>
                     </div>
                   </button>
                 </li>
