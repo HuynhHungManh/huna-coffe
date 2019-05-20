@@ -8,11 +8,12 @@ import FindProcedureDetail from 'components/pages/FindProcedureDetail.jsx';
 import Feedback from 'components/pages/Feedback.jsx';
 import Plan from 'components/pages/Plan.jsx';
 import ViewMapPlan from 'components/pages/ViewMapPlan.jsx';
-
 import RatingList from 'components/pages/RatingList.jsx';
 import RatingDetail from 'components/pages/RatingDetail.jsx';
 import SearchFile from 'components/pages/SearchFile.jsx';
 import SearchDetail from 'components/pages/SearchDetail.jsx';
+import Login from 'components/pages/Login.jsx';
+import Coffee from 'components/pages/Coffee.jsx';
 const routes = [
   {
     component: App,
@@ -102,6 +103,16 @@ const routes = [
         component: SearchFile,
         exact: true,
         path: '/search-file',
+      },
+      {
+        component: Login,
+        exact: true,
+        path: '/login'
+      },
+      {
+        component: Coffee,
+        exact: true,
+        path: '/coffee'
       }
     ]
   }

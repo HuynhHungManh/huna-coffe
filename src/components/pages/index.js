@@ -13,6 +13,7 @@ import SearchDetail from './SearchDetail.jsx';
 import SearchFile from './SearchFile.jsx';
 import Plan from './Plan.jsx';
 import ViewMapPlan from './ViewMapPlan.jsx';
+import Coffee from './Coffee.jsx';
 
 
-export {HomePage, Root, Calendar, Document, Feedback, FindProcedure, FindProcedureDetail, ProcedureDetail, RatingDetail, RatingList, SearchDetail, SearchFile, Plan, ViewMapPlan};
+export {HomePage, Root, Calendar, Document, Feedback, FindProcedure, FindProcedureDetail, ProcedureDetail, RatingDetail, RatingList, SearchDetail, SearchFile, Plan, ViewMapPlan, Coffee};

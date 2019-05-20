@@ -17,6 +17,7 @@ import {notifications} from 'base/reducers/notification';
 import {changeFile} from 'base/reducers/changeFile';
 import {plans} from 'base/reducers/plans';
 import {categoryplans} from 'base/reducers/categoryplans';
+import {auth} from 'base/reducers/auth';
 
 let rootReducer = combineReducers(
 {
@@ -35,7 +36,8 @@ let rootReducer = combineReducers(
     notifications,
     changeFile,
     categoryplans,
-    plans
+    plans,
+    auth
   }
 );
 
