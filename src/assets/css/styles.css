@@ -209,8 +209,6 @@
 
 .bill-content {
   width: 100%;
-  overflow-y: scroll;
-  border-bottom: 1px solid #ccc;
 }
 .bill-title p{
   font-family: 'Roboto-Bold';
@@ -253,9 +251,61 @@
   height: 175px;
   background-color: #fff;
   border-bottom: 2px solid #ccc;
+  overflow-y: scroll;
 }
 .bill-content .calculate-box {
   border: 1px solid #ccc;
   border-radius: 5px;
   overflow: hidden;
+}
+.bill-results {
+  background-color: #fff;
+  border-bottom: 2px solid #ccc;
+}
+.bill-results .text{
+  width: 50%;
+  text-align: left;
+  display: inline-block;
+}
+.bill-results .text-results{
+  width: 50%;
+  text-align: right;
+  display: inline-block;
+}
+.calculate-tmp, .discount, .discount-after, .outlay,.exchange {
+  padding: 8px 10px;
+}
+.inp-outlay {
+  display: inline-block;
+  width: 50%;
+}
+.inp-discount, .bg-discount {
+  display: inline-block;
+  width: 25%;
+}
+.bill-results .bg-discount {
+  background-color: #ccc;
+}
+.bill-results .discount-text {
+  line-height: 22px;
+  text-align: right;
+}
+.inp-outlay {
+  text-align: right;
+}
+.bill-footer {
+  width: 100%;
+  padding: 10px 7px;
+}
+.bill-footer .fill-again, .save, .pay {
+  width: 30%;
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 20px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-left: 10px;
 }

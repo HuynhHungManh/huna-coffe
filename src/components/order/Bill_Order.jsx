@@ -105,6 +105,42 @@ class Bill_Order extends Component {
             }
           </div>
         </div>
+        <div className="bill-results">
+          <div className="calculate-tmp">
+            <p className="text">Tạm tính</p>
+            <p className="text-results">150.000đ</p>
+          </div>
+          <div className="discount">
+            <p className="text">Chiếc khấu</p>
+            <input className="inp-discount" name="discount" type="text" placeholder=""/>
+            <div className="bg-discount">
+              <p className="discount-text">13.500đ</p>
+            </div>
+          </div>
+          <div className="discount-after">
+            <p className="text">Sau chiếc khấu</p>
+            <p className="text-results">150.000đ</p>
+          </div>
+          <div className="outlay">
+            <p className="text">Tiền khách đưa</p>
+            <input className="inp-outlay" name="outlay" value="150.000" type="text" placeholder=""/>
+          </div>
+          <div className="exchange">
+            <p className="text">Tiền thối lại</p>
+            <p className="text-results">150.000đ</p>
+          </div>
+        </div>
+        <div className="bill-footer">
+          <button className="fill-again">
+            Nhập lại
+          </button>
+          <button className="save">
+            Lưu
+          </button>
+          <button className="pay">
+            Thanh Toán
+          </button>
+        </div>
       </div>
     );
   }
