@@ -4,12 +4,9 @@ const {createTreeFromFlatArray} = require('libs/arrayToTree');
 function categories(state = initial, action) {
   switch (action.type) {
     case 'GET_LIST_CATEGORIES':
-      let tree = createTreeFromFlatArray(action.categories, {
-        parentProperty: 'parent'
-      });
-      return [
-        ...tree
-      ]
+      return action.categories;
+    case 'GET_LIST_PRODUCTS':
+      return action.products;
     case 'GET_LIST_CATEGORIES_BY_POST':
       let array=[];
       action.array.forEach(function(value, i) {

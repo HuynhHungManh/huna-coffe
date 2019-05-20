@@ -1,10 +1,12 @@
-let initial = [];
+let initial = {};
 
 function auth(state = initial, action) {
   switch (action.type) {
     case 'LOGIN':
-      console.log(action.login);
-      return action.login;
+      return {
+        ...state,
+        token: action.login.token ? action.login.token : null,
+      };
     default:
       return state;
   }

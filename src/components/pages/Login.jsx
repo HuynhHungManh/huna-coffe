@@ -1,10 +1,9 @@
 import React from 'react';
 import {CommonLayout} from 'layouts';
 import {Auth} from 'api';
-import {PropTypes} from 'prop-types';
 import {connect} from 'react-redux';
-// import classnames from 'classnames';
-// import {Calendar_PDF, Calendar_Title} from 'components/calendar';
+import {PropTypes} from 'prop-types';
+import classnames from 'classnames';
 
 class Login extends React.Component {
   constructor(props, context) {
@@ -14,6 +13,7 @@ class Login extends React.Component {
       password : '',
       message: '',
       hasError: false,
+      token: this.props.token ? this.props.token : null,
     }
   }
 
@@ -40,10 +40,21 @@ class Login extends React.Component {
         message: 'Vui lòng nhập password',
       })
     } else {
-      // this.props.dispatch(Auth.actions.login()).then((res) =>{
-      //   console.log(res);
-      // });
-      this.props.history.push('/coffee');
+      this.props.dispatch(Auth.actions.login()).then((res) =>{
+        if (res.data.token) {
+          this.props.history.push('/coffee');
+        } else {
+          this.setState({
+            hasError: true,
+            message: 'Not found token',
+          })
+        }
+      }).catch((error) =>{
+        this.setState({
+          hasError: true,
+          message: error.response.data.errors[0].description
+        })
+      });
     }
   }
 
@@ -59,6 +70,11 @@ class Login extends React.Component {
           <button className="btn-login">
             Đăng Nhập
           </button>
+          { this.state.hasError ?
+            (<div className="validation-form">
+              <span className="validation-text">{this.state.message}</span>
+            </div>) : null
+          }
         </form>
       </div>
     );
