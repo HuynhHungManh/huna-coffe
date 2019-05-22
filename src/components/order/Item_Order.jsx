@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
-import {connect} from 'react-redux';
 
 class Item_Order extends Component {
   constructor(props, context) {
@@ -9,16 +8,14 @@ class Item_Order extends Component {
 
   render(){
     return(
-      <li className="item-order">
-        <span className="item-text">{this.props.data.name}</span>
+      <li className={
+        classnames('item-order', {
+          'active' : this.props.data.selectStatus,
+        })} onClick={this.props.chooseProduct.bind(this, this.props.data.id)}>
+        <span className="item-text">{this.props.data.ten}</span>
       </li>
     );
   }
 }
 
-const bindStateToProps = (state) => {
-  return {
-  }
-}
-
-export default connect(bindStateToProps)(Item_Order);
+export default Item_Order;

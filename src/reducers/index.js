@@ -18,6 +18,9 @@ import {changeFile} from 'base/reducers/changeFile';
 import {plans} from 'base/reducers/plans';
 import {categoryplans} from 'base/reducers/categoryplans';
 import {auth} from 'base/reducers/auth';
+import {products} from 'base/reducers/products';
+import {productsBill} from 'base/reducers/productsBill';
+import {orders} from 'base/reducers/orders';
 
 let rootReducer = combineReducers(
 {
@@ -37,7 +40,10 @@ let rootReducer = combineReducers(
     changeFile,
     categoryplans,
     plans,
-    auth
+    auth,
+    products,
+    productsBill,
+    orders
   }
 );
 

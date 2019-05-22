@@ -10,5 +10,6 @@ import Notification from 'api/notification';
 import CategoryPlans from 'api/categoryplans';
 import Plans from 'api/plan.js';
 import Auth from 'api/auth.js';
+import Orders from 'api/payment.js';
 
-export {Categories, Documents, SearchDocuments, Feedbacks, Calendars, Ratings, Procedures, SearchFile, Notification, CategoryPlans, Plans, Auth};
+export {Categories, Documents, SearchDocuments, Feedbacks, Calendars, Ratings, Procedures, SearchFile, Notification, CategoryPlans, Plans, Auth, Orders};

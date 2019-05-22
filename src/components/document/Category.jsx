@@ -15,7 +15,7 @@ class Category extends Component {
     }
   }
 
-  componentWillMount(){
+  componentWillMount() {
     if(window.previousLocation.pathname === "/"){
       this.props.dispatch(Categories.actions.categories()).then((res) =>{
         if(res.data.length > 0){

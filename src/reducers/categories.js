@@ -5,8 +5,6 @@ function categories(state = initial, action) {
   switch (action.type) {
     case 'GET_LIST_CATEGORIES':
       return action.categories;
-    case 'GET_LIST_PRODUCTS':
-      return action.products;
     case 'GET_LIST_CATEGORIES_BY_POST':
       let array=[];
       action.array.forEach(function(value, i) {

@@ -58,7 +58,7 @@
   text-justify: distribute-all-lines;
   width:100%;
 }
-.footer .container-footer>div {
+.footer .container-footer .tab {
   width: 25%;
   vertical-align: top;
   display: inline-block;
@@ -68,18 +68,18 @@
   text-align: center;
   line-height: 85px;
 }
-.footer .container-footer>div>a {
+.footer .container-footer .tab .tab-link.active{
+  border-bottom: 7px solid #dee809;
+  line-height: 78px;
+  color: #dee809;
+}
+.footer .container-footer .tab .tab-link {
   font-family: 'Roboto-Bold';
   text-transform: uppercase;
   line-height: 85px;
   color: #fff;
   display: block;
   text-decoration: none;
-}
-.footer .container-footer>div>a:focus {
-  border-bottom: 7px solid #dee809;
-  line-height: 78px;
-  color: #dee809;
 }
 .footer .container-footer span {
   width: 100%;
@@ -96,18 +96,32 @@
 .categories-block {
   width: 11%;
   display: inline-block;
-  -webkit-box-shadow: 0 1px 10px #0000008c;
-  -moz-box-shadow:0 3px 2px #000;
+  -webkit-box-shadow: 0 -7px 10px #0000008c
+}
+.categories-block {
+  height: 603px;
+  overflow-y: scroll;
+  overflow: hidden;
+}
+.categories-block .categories-tab .tab {
+  height: 86px;
+  border-bottom: 1px solid #cacaca;
+  color: #000;
+}
+.categories-block .categories-tab .tab.tab-active {
+  background-color: #ffae21;
+  color: #fff;
+  background-color: #f4a900;
 }
 .categories-block .categories-tab .tab a {
   font-family: 'Roboto-Bold';
-  display: block;
-  height: 86px;
-  border-bottom: 1px solid #cacaca;
   font-size: 17px;
-  color: #000;
-  text-align: center;
-  padding: 33px 0px;
+  position: relative;
+  float: left;
+  top: 50%;
+  left: 50%;
+  display: inline-block;
+  transform: translate(-50%, -50%);
 }
 .order-content-page {
   width: 89%;
@@ -130,11 +144,7 @@
   padding: 10px 10px 10px 0;
   overflow: auto
 }
-/* .item-order-box {
-  width: 100%;
-  height: 600px;
-  overflow-y: scroll;
-} */
+
 .item-order-block .item-order-box .item-order {
   width: 23%;
   height: 85px;
@@ -149,12 +159,18 @@
   display: inline-block;
 }
 .item-order-block .item-order-box .item-order .item-text {
+  font-family: 'Roboto-Bold';
   position: relative;
   float: left;
   top: 50%;
   left: 50%;
   display: inline-block;
   transform: translate(-50%, -50%);
+  font-weight: bold;
+}
+
+.item-order-block .item-order-box .item-order.active {
+  background-color: #dcdcdc;
 }
 
 /* Bill Block */
