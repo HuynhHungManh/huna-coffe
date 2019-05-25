@@ -4,6 +4,8 @@ import {Auth} from 'api';
 import {connect} from 'react-redux';
 import {PropTypes} from 'prop-types';
 import classnames from 'classnames';
+import {Keyboarded} from 'components/keyboarded';
+Modal.setAppElement('body');
 
 class Login extends React.Component {
   constructor(props, context) {
@@ -92,6 +94,7 @@ class Login extends React.Component {
             </div>) : null
           }
         </form>
+        // <Keyboarded />
       </div>
     );
   }
