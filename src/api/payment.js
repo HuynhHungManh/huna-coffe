@@ -7,10 +7,19 @@ const rest = reduxApi({
   orders: {
     url: '/orders',
     options:(url, params, getState) => {
+      let auth = JSON.parse(localStorage.getItem('auth'));
+      let token = '';
+      if (auth.token) {
+        token = auth.token;
+      }
       return {
         method: "POST",
-        headers: params,
-        data: {}
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        data: params
       };
     },
     postfetch: [

@@ -9,16 +9,39 @@ class Bill_Order extends Component {
   constructor(props, context) {
     super(props, context);
     this.updateQuantum = this.updateQuantum.bind(this);
+    var currentdate = new Date();
+    var datetime = currentdate.getDate() + "/"
+    + (currentdate.getMonth()+1)  + "/"
+    + currentdate.getFullYear();
     this.state = {
       productsBill: [],
       priceTotal: 0,
       discountPriceTotal: 0,
-      discountAfter: 0
+      discountAfter: 0,
+      dateOrder: datetime,
+      date: new Date()
     }
   }
 
+  componentWillMount() {
+    this.timerID = setInterval(
+      () => this.tick(),
+      1000
+    );
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+
+  tick() {
+    this.setState({
+      date: new Date()
+    });
+  }
+
   componentDidUpdate(prevProps, prevState) {
-    if(prevProps.productsBill !== this.props.productsBill) {
+    if (prevProps.productsBill !== this.props.productsBill) {
       let productsBill = [];
       let priceTotal = 0;
       this.props.productsBill.forEach((item, index) => {
@@ -61,30 +84,32 @@ class Bill_Order extends Component {
     console.log(this.state.discountPriceTotal);
   }
 
-  submitOrders() {
+  submitOrders(e) {
+    e.preventDefault();
+    let date = new Date();
+    let dateFormat = JSON.parse(JSON.stringify(date));
+    let orderProducts = [];
+    this.state.productsBill.forEach((item, index) => {
+      let dataProducts = {
+        'donGia': item.donGia,
+        'khuyenMai': 10,
+        'ngayOrder': dateFormat,
+        'soLuong': item.quantum,
+        'thanhTien': item.priceAndQuantum,
+        'thucDonId': item.id,
+        'tongGia': (item.priceAndQuantum * 10) / 100
+      }
+      orderProducts.push(dataProducts);
+    });
     let data = {
-      'Content-Type': 'application/json',
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': "Bearer eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiZGlyIn0..JNHKc4rBGOpKndlv.E0cC0NUw_LCZvU9FT1YWaAkMKNM4zWOpupoN566dCdcQlCg3m91GL8T9lHWb_pviMa4FgYBbfQaAB8bvKcm9cvmdk2t6YWXgi_cI5cnTkUwva4ynBSM94JLjWObhuRT4GMHEB9SZH2ZyMSP_MFp0ZDrREymfPCnv0wsy5KY9VISNxw7ykJqVAcrkQ6kauW2xtFdKfJ8JtdADwH94Gv7N5yX9VZmj5XQ1NQLCeQScPCtXUJGWKj0iNqRPJSLmMGwG4s9oomyejXwdPhQPbeDCDl9btCiOb_40pim-DOU8Be9KEf1o9RrXNsYuGuA0UGFR6ZaH6GREaVsXnd4qpt3t.Xv9USee085LY3Vyr99Xs2Q",
-      "khuyenMai": 3,
-      "ngayOrder": "2019-01-24T11:55:02.619Z",
-      "orderThucDons": [
-        {
-          "donGia": 2,
-          "khuyenMai": 0,
-          "ngayOrder": "2019-01-24T11:55:02.619Z",
-          "soLuong": 2,
-          "thanhTien": 1,
-          "thucDonId": 1,
-          "tongGia": 0
-        }
-      ],
-      "thanhTien": 0,
-      "tongGia": 321,
-      "trangThaiOrder": "DA_THANH_TOAN"
-    }
-    this.props.dispatch(Orders.actions.orders(data));
+      'khuyenMai': 0,
+      'ngayOrder': dateFormat,
+      'orderThucDons': orderProducts,
+      'thanhTien': this.state.priceTotal,
+      'tongGia': this.state.discountAfter,
+      'trangThaiOrder': 'DA_THANH_TOAN'
+    };
+    this.props.dispatch(Orders.actions.orders(null, data));
   }
 
   render() {
@@ -99,8 +124,8 @@ class Bill_Order extends Component {
               Số:<span className="number">0000123</span>
             </p>
             <p className="date-bill">
-              Thời gian: 25/03/2019
-              <span className="time-bill">11:08</span>
+              Thời gian: {this.state.dateOrder}
+              <span className="time-bill">{this.state.date.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}).replace(/(:\d{2}| [AP]M)$/, "")}</span>
             </p>
           </div>
           <div className="right-header">

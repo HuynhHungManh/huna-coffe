@@ -226,6 +226,9 @@
 .bill-content {
   width: 100%;
 }
+.time-bill {
+  margin-left: 12px;
+}
 .bill-title p{
   font-family: 'Roboto-Bold';
   font-weight: bold;
@@ -244,6 +247,9 @@
   width: 25%;
   height: 48px;
   text-align: center;
+}
+.text-item {
+  padding: 0 10px;
 }
 .minus-quantum, .plus-quantum, .text-quantum {
   display: inline-block;

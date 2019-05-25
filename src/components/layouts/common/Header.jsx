@@ -1,9 +1,22 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
+import {connect} from 'react-redux';
 
 class Header extends React.Component {
   constructor(props, context) {
     super(props, context);
+    this.state = {
+      hoVaTen: 'Anonymous'
+    }
+  }
+
+  componentWillMount() {
+    let auth = JSON.parse(localStorage.getItem('auth'));
+    if (auth.hoVaTen) {
+      this.setState({
+        hoVaTen : auth.hoVaTen
+      });
+    }
   }
 
   render() {
@@ -18,7 +31,7 @@ class Header extends React.Component {
           <div className="account-info-box">
             <p className="account-text">
               Xin chào:
-              <span className="text">Nguyễn Thị Mai</span>
+              <span className="text">{this.state.hoVaTen}</span>
             </p>
           </div>
         </div>
@@ -26,4 +39,9 @@ class Header extends React.Component {
     );
   }
 }
-export default Header;
+
+const bindStateToProps = (state) => {
+  return {}
+}
+
+export default connect(bindStateToProps)(Header);

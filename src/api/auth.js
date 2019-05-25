@@ -9,12 +9,7 @@ const rest = reduxApi({
     options:(url, params, getState) => {
       return {
         method: "POST",
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Email': 'admin',
-          'Password': 'abc@123'
-        },
+        headers: params,
         data: {}
       };
     },

@@ -13,7 +13,7 @@ class Login extends React.Component {
       password : '',
       message: '',
       hasError: false,
-      token: this.props.token ? this.props.token : null,
+      token: ''
     }
   }
 
@@ -40,8 +40,15 @@ class Login extends React.Component {
         message: 'Vui lòng nhập password',
       })
     } else {
-      this.props.dispatch(Auth.actions.login()).then((res) =>{
-        if (res.data.token) {
+      let header = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Email': this.state.username,
+        'Password': this.state.password
+      }
+      this.props.dispatch(Auth.actions.login(null, header)).then((res) =>{
+        if (res.data && res.data.token) {
+          localStorage.setItem('auth', JSON.stringify(res.data));
           this.props.history.push('/coffee');
         } else {
           this.setState({
@@ -58,6 +65,15 @@ class Login extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if(prevProps.token !== this.props.token) {
+      // this.setState({
+      //   login : this.props.login
+      // });
+      console.log(this.props);
+    }
+  }
+
   render() {
     return (
       <div className="bg-login">
@@ -66,7 +82,7 @@ class Login extends React.Component {
           <div className="logo-huna">
           </div>
           <input className="inp-username" name="username" type="text" placeholder="Tài khoản" onChange={this.handleChange.bind(this, 'username')}/>
-          <input className="inp-password" name="password" type="text" placeholder="Mật khẩu" onChange={this.handleChange.bind(this, 'password')}/>
+          <input className="inp-password" name="password" type="password" placeholder="Mật khẩu" onChange={this.handleChange.bind(this, 'password')}/>
           <button className="btn-login">
             Đăng Nhập
           </button>

@@ -42,7 +42,11 @@ class Content_Order extends Component {
     let chooseProductsBill = [];
     this.state.products.forEach((item, index) => {
       if (item.id === idProduct) {
-        item.selectStatus = true;
+        if (item.selectStatus == true) {
+          item.selectStatus = false;
+        } else {
+          item.selectStatus = true;
+        }
       }
       preProduct.push(item);
     });

@@ -37,11 +37,29 @@ class Item_Bill extends Component {
     this.props.updateQuantum(idBill, 'plus');
   }
 
+  truncate(text) {
+    let len = 0;
+    let textTruncate = text;
+    let trimmedText = '';
+    let count=0;
+    let i=0;
+    for (i = 0, len = textTruncate.length; i < len; i++) {
+      if(textTruncate[i]==' ') count++;
+      if(count == 6){
+        trimmedText = textTruncate.substring(0, i) + " ...";
+      break;
+    } else {
+        trimmedText = textTruncate.substring(0, i+1);
+      }
+    }
+    return trimmedText;
+  }
+
   render() {
     return(
       <div className="bill-item">
         <div className="text-item">
-          <p className="text">{this.state.bill_data.ten}</p>
+          <p className="text">{this.truncate(this.state.bill_data.ten)}</p>
         </div>
         <div className="price-item">
           <p className="text-price">{this.state.bill_data.donGia}</p>
