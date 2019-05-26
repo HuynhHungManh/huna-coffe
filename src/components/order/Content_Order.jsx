@@ -11,18 +11,48 @@ class Content_Order extends Component {
     this.chooseProduct = this.chooseProduct.bind(this);
     this.state = {
       products: [],
+      arrayId: []
     }
   }
 
-  componentDidUpdate(prevProps, prevState){
+  componentWillMount() {
+    localStorage.removeItem('products');
+  }
+
+  componentDidUpdate(prevProps, prevState) {
     if(prevProps.products !== this.props.products) {
+      let getStoreProducts = JSON.parse(localStorage.getItem('products'));
       let products = this.props.products;
       let preProduct = [];
 
       products.forEach((item, index) => {
-        item.selectStatus = false;
+        if (getStoreProducts != null
+          && getStoreProducts.length > 0
+          && getStoreProducts.includes(item.id)
+        ) {
+          console.log('2');
+          item.selectStatus = true;
+        } else {
+          item.selectStatus = false;
+        }
         preProduct.push(item);
       });
+
+      if (prevProps.products.length > 0) {
+        let arrayId = [];
+        this.state.products.forEach((item, index) => {
+          if (item.selectStatus == true) {
+            arrayId.push(item.id);
+          }
+        });
+        if (getStoreProducts != null
+          && getStoreProducts.length > 0
+        ) {
+          arrayId = getStoreProducts.push(arrayId);
+        }
+        console.log('1');
+        localStorage.setItem('products', JSON.stringify(arrayId));
+      }
 
       this.setState({
         products : preProduct

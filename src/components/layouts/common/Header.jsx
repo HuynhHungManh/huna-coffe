@@ -1,16 +1,28 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
+import {PropTypes} from 'prop-types';
 
 class Header extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      hoVaTen: 'Anonymous'
+      hoVaTen: 'Anonymous',
+      page: ''
     }
   }
 
   componentWillMount() {
+    let location = 'temporary-bill';
+    if(window.location.href.indexOf(location) !== -1) {
+      this.setState({
+        page : 'Thống Kê'
+      })
+    } else {
+      this.setState({
+        page : 'Order'
+      })
+    }
     let auth = JSON.parse(localStorage.getItem('auth'));
     if (auth.hoVaTen) {
       this.setState({
@@ -26,7 +38,7 @@ class Header extends React.Component {
           <h1 className="logo">
           </h1>
           <p className="title-page">
-            <span className="title">Order</span>
+            <span className="title">{this.state.page}</span>
           </p>
           <div className="account-info-box">
             <p className="account-text">
@@ -38,6 +50,10 @@ class Header extends React.Component {
       </header>
     );
   }
+}
+
+Header.contextTypes = {
+  router : PropTypes.any
 }
 
 const bindStateToProps = (state) => {

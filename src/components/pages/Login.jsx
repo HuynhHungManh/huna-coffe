@@ -5,7 +5,10 @@ import {connect} from 'react-redux';
 import {PropTypes} from 'prop-types';
 import classnames from 'classnames';
 import {Keyboarded} from 'components/keyboarded';
+import Modal from 'react-modal';
 Modal.setAppElement('body');
+import Keyboard from "react-simple-keyboard";
+import "react-simple-keyboard/build/css/index.css";
 
 class Login extends React.Component {
   constructor(props, context) {
@@ -15,7 +18,11 @@ class Login extends React.Component {
       password : '',
       message: '',
       hasError: false,
-      token: ''
+      token: '',
+      statusPopup: true,
+      filter: 'username',
+      input: '',
+      statusChange: false
     }
   }
 
@@ -67,34 +74,84 @@ class Login extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if(prevProps.token !== this.props.token) {
-      // this.setState({
-      //   login : this.props.login
-      // });
-      console.log(this.props);
-    }
+  handleChange(name, e) {
+    this.setState({
+      [name]: e.target.value
+    })
   }
+
+  onChange(input) {
+    if (this.state.filter == 'username') {
+      this.setState({
+        username: input
+      });
+    } else {
+      this.setState({
+        password: input
+      });
+    }
+  };
+
+  onChangeInput(event) {
+    // let input = event.target.value;
+    // console.log(event);
+    this.setState({
+      [name]: event.target.value
+    },
+    () => {
+        this.keyboardRef.keyboard.setInput(event.target.value);
+      }
+    );
+  };
+
+  filterInput(filter) {
+    let statusChange = false;
+    if (this.state.statusChange == false) {
+      statusChange = true;
+    } else {
+      statusChange = false;
+    }
+    this.setState({
+      filter: filter,
+      statusChange: statusChange
+    });
+  }
+
+  // resetFilterinput() {
+  //
+  // }
 
   render() {
     return (
       <div className="bg-login">
-        <form className="login-box" onSubmit={this.submitLogin.bind(this)}>
-          Huna cafe
-          <div className="logo-huna">
-          </div>
-          <input className="inp-username" name="username" type="text" placeholder="Tài khoản" onChange={this.handleChange.bind(this, 'username')}/>
-          <input className="inp-password" name="password" type="password" placeholder="Mật khẩu" onChange={this.handleChange.bind(this, 'password')}/>
-          <button className="btn-login">
-            Đăng Nhập
-          </button>
-          { this.state.hasError ?
-            (<div className="validation-form">
-              <span className="validation-text">{this.state.message}</span>
-            </div>) : null
-          }
-        </form>
-        // <Keyboarded />
+        <Modal
+          isOpen={this.state.statusPopup}
+          contentLabel="Modal"
+          className="modal popup"
+        >
+          <form className="login-box">
+            <div className="logo-huna">
+              <span className="img-logo">HUNA</span>
+            </div>
+            <div className="filter-login-block">
+              <input className="inp-username" name="username" type="text" placeholder="Tài khoản"
+                value={this.state.username}
+                onChange={this.handleChange.bind(this, 'username')}/>
+              <input className="inp-password" name="password" type="password" placeholder="Mật khẩu"
+                value={this.state.password}
+                onChange={this.handleChange.bind(this, 'password')}/>
+            </div>
+            { this.state.hasError ?
+              (<div className="validation-form">
+                <span className="validation-text">{this.state.message}</span>
+              </div>) : null
+            }
+            <div className="btn-login" onClick={this.submitLogin.bind(this)}>
+              <span className="text-login">Đăng Nhập</span>
+            </div>
+          </form>
+          <Keyboarded statusChange = {this.state.statusChange} onChangeInput = {this.onChangeInput.bind(this)} onChange = {this.onChange.bind(this)}/>
+        </Modal>
       </div>
     );
   }

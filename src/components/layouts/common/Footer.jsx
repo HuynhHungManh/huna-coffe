@@ -13,27 +13,58 @@ class Footer extends Component {
         {
           name: 'Order',
           id: 1,
-          status: true
+          status: false,
+          url: '/coffee'
         },
         {
           name: 'Hóa Đơn Lưu Tạm',
           id: 2,
-          status: false
+          status: false,
+          url: '/'
         },
         {
           name: 'Thống Kê',
           id: 3,
-          status: false
+          status: false,
+          url: '/temporary-bill'
         },
         {
           name: 'Đăng Xuất',
           id: 4,
-          status: false
+          status: false,
+          url: '/'
         },
       ],
     }
   }
-  chooseTab(idTab) {
+
+  componentWillMount() {
+    this.state.tabs.forEach((item, index) => {
+      if (window.location.href.indexOf(item.url) !== -1) {
+        if (item.url == '/coffee' || item.url == '/temporary-bill') {
+          item.status = true;
+        }
+      }
+      // if (item.id === idTab) {
+      //   item.status = true;
+      // }
+      // preTabs.push(item);
+    })
+    let location = 'temporary-bill';
+    if(window.location.href.indexOf(location) !== -1) {
+
+
+      this.setState({
+        page : 'Thống Kê'
+      })
+    } else {
+      this.setState({
+        page : 'Order'
+      })
+    }
+  }
+
+  chooseTab(idTab, url) {
     let itemSelected = this.state.tabs.find(value => value.status === true);
     let preTabs = [];
     this.state.tabs.forEach((item, index) => {
@@ -48,7 +79,13 @@ class Footer extends Component {
     this.setState({
       tabs : preTabs
     })
+    this.gotoPage(url);
   }
+
+  gotoPage(page) {
+    this.context.router.history.push(page);
+  }
+
   render() {
     return (
       <footer className="footer">
@@ -60,7 +97,7 @@ class Footer extends Component {
                   <a className={
                     classnames("tab-link", {
                       "active" : item.status,
-                    })} onClick={this.chooseTab.bind(this, item.id)}>{item.name}</a>
+                    })} onClick={this.chooseTab.bind(this, item.id, item.url)}>{item.name}</a>
                 </div>
               )
             })

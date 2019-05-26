@@ -4,6 +4,8 @@ import {connect} from 'react-redux';
 import Item_Bill from './Item_Bill.jsx';
 import {PropTypes} from 'prop-types';
 import {Orders} from 'api';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
 class Bill_Order extends Component {
   constructor(props, context) {
@@ -19,7 +21,8 @@ class Bill_Order extends Component {
       discountPriceTotal: 0,
       discountAfter: 0,
       dateOrder: datetime,
-      date: new Date()
+      date: new Date(),
+      statusTab: false
     }
   }
 
@@ -28,6 +31,7 @@ class Bill_Order extends Component {
       () => this.tick(),
       1000
     );
+    localStorage.removeItem('productsBill');
   }
 
   componentWillUnmount() {
@@ -40,23 +44,80 @@ class Bill_Order extends Component {
     });
   }
 
+  createNotification(type) {
+    console.log(type);
+    return () => {
+      switch (type) {
+        case 'info':
+          NotificationManager.info('Info message');
+          break;
+        case 'success':
+          NotificationManager.success('Success message', 'Bạn đã order thành công!');
+          break;
+        case 'warning':
+          NotificationManager.warning('Warning message', 'Close after 3000ms', 3000);
+          break;
+        case 'error':
+          NotificationManager.error('Error message', 'Lỗi order!', 5000, () => {
+            alert('callback');
+          });
+          break;
+      }
+    };
+  };
+
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.productsBill !== this.props.productsBill) {
+      let products = this.props.productsBill;
+      var getStoreProductsBill = JSON.parse(localStorage.getItem('productsBill'));
       let productsBill = [];
       let priceTotal = 0;
-      this.props.productsBill.forEach((item, index) => {
+      products.forEach((item, index) => {
         item.quantum = 1;
         item.priceAndQuantum = item.quantum * item.donGia;
         priceTotal = priceTotal + item.priceAndQuantum;
         productsBill.push(item);
       });
-      console.log(productsBill);
+      if (getStoreProductsBill !== null
+        && getStoreProductsBill.length > 0
+        && this.state.statusTab == true
+      ) {
+        let array_unique = [];
+        getStoreProductsBill.forEach((value, index) => {
+          if (!productsBill.find(item => item.id === value.id)) {
+            array_unique.push(value);
+          }
+        });
+        productsBill = array_unique.concat(productsBill);
+        this.setState({
+          statusTab: false
+        });
+      } else if(getStoreProductsBill !== null
+        && getStoreProductsBill.length > 0
+        && this.state.statusTab == false
+      ) {
+        let array_unique = [];
+        this.state.productsBill.forEach((value, index) => {
+          if (!productsBill.find(item => item.id === value.id)) {
+            array_unique.push(value);
+          }
+        });
+        productsBill = array_unique.concat(productsBill);
+      }
       this.setState({
         productsBill :  productsBill,
         priceTotal: priceTotal,
         discountPriceTotal: priceTotal / 10,
         discountAfter: priceTotal - (priceTotal / 10)
       });
+    }
+    if (prevProps.products !== this.props.products) {
+      if (prevProps.products.length > 0) {
+        localStorage.setItem('productsBill', JSON.stringify(this.state.productsBill));
+        this.setState({
+          statusTab: true
+        });
+      }
     }
   }
 
@@ -81,7 +142,6 @@ class Bill_Order extends Component {
       discountPriceTotal: priceTotal / 10,
       discountAfter: priceTotal - (priceTotal / 10)
     });
-    console.log(this.state.discountPriceTotal);
   }
 
   submitOrders(e) {
@@ -109,12 +169,28 @@ class Bill_Order extends Component {
       'tongGia': this.state.discountAfter,
       'trangThaiOrder': 'DA_THANH_TOAN'
     };
-    this.props.dispatch(Orders.actions.orders(null, data));
+    // this.props.dispatch(Orders.actions.orders(null, data));
+    this.props.dispatch(Orders.actions.orders(null, data)).then((res) =>{
+      this.createNotification('success');
+    }).catch((reason) =>{
+      this.createNotification('error');
+    });
+  }
+
+  clearFormOrder() {
+    this.setState({
+      productsBill :  [],
+      priceTotal: 0,
+      discountPriceTotal: 0,
+      discountAfter: 0,
+      statusTab: false
+    });
   }
 
   render() {
     return(
       <div className="bill-order-block">
+      <div className="bill-box">
         <div className="bill-header">
           <div className="left-header">
             <p className="title-bill">
@@ -183,7 +259,7 @@ class Bill_Order extends Component {
           </div>
         </div>
         <div className="bill-footer">
-          <button className="fill-again">
+          <button className="fill-again" onClick={this.clearFormOrder.bind(this)}>
             Nhập lại
           </button>
           <button className="save">
@@ -193,6 +269,7 @@ class Bill_Order extends Component {
             Thanh Toán
           </button>
         </div>
+      </div>
       </div>
     );
   }
@@ -205,7 +282,9 @@ Bill_Order.contextTypes = {
 const bindStateToProps = (state) => {
   return {
     productsBill: state.productsBill,
-    orders: state.orders
+    orders: state.orders,
+    categories: state.categories,
+    products: state.products
   }
 }
 

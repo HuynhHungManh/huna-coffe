@@ -3,25 +3,40 @@ import {connect} from 'react-redux';
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 
-
 class Keyboarded extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
       layoutName: 'default',
-      input: ''
+      input: '',
+      statusChange: ''
     };
   }
 
-  onChange(input) {
-    this.setState({
-      input: input
-    });
-    console.log("Input changed", input);
+  componentWillMount() {
+    console.log(this.props.statusChange);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if(prevProps.statusChange !== this.props.statusChange) {
+      this.setState({
+        input: ''
+      });
+      console.log(this.props.statusChange);
+    }
+  }
+
+  onChange(e, input) {
+    console.log(input);
+    this.props.onChange(input);
+    // this.setState({
+    //   input: input
+    // });
+    // console.log("Input changed", input);
   };
 
   onKeyPress(button) {
-    console.log("Button pressed", button);
+    // console.log("Button pressed", button);
     /**
      * If you want to handle the shift and caps lock buttons
      */
@@ -36,29 +51,24 @@ class Keyboarded extends Component {
     });
   };
 
-  onChangeInput(event) {
-    let input = event.target.value;
-    this.setState(
-      {
-        input: input
-      },
-      () => {
-        this.keyboardRef.keyboard.setInput(input);
-      }
-    );
-  };
+  // onChangeInput(event) {
+  //   let input = event.target.value;
+  //   this.setState(
+  //     {
+  //       input: input
+  //     },
+  //     () => {
+  //       this.keyboardRef.keyboard.setInput(input);
+  //     }
+  //   );
+  // };
 
   render() {
     return (
       <div>
-        <input
-          value={this.state.input}
-          placeholder={"Tap on the virtual keyboard to start"}
-          onChange={e => this.onChangeInput(e)}
-        />
         <Keyboard
           ref={r => (this.keyboardRef = r)}
-          onChange={input => this.onChange(input)}
+          onChange={input => this.onChange(this, input)}
           onKeyPress={button => this.onKeyPress(button)}
           theme={"hg-theme-default hg-layout-default myTheme"}
           layoutName={this.state.layoutName}

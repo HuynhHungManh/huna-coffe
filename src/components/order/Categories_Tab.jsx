@@ -12,7 +12,7 @@ class Categories_Tab extends Component {
   }
 
   componentWillMount() {
-    this.props.dispatch(Categories.actions.categories()).then((res) =>{
+    this.props.dispatch(Categories.actions.categories()).then((res) => {
       if (res.data) {
         let categories = res.data;
         categories[0].selectStatus = true;

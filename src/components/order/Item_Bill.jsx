@@ -17,6 +17,12 @@ class Item_Bill extends Component {
     });
   }
 
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (prevProps.productsBill !== this.props.productsBill) {
+  //
+  //   }
+  // }
+
   calculatePrice(price, quantum) {
     return price * quantum;
   }
@@ -56,30 +62,31 @@ class Item_Bill extends Component {
   }
 
   render() {
+    console.log(this.state.bill_data);
     return(
       <div className="bill-item">
         <div className="text-item">
-          <p className="text">{this.truncate(this.state.bill_data.ten)}</p>
+          <p className="text">{this.truncate(this.props.data.ten)}</p>
         </div>
         <div className="price-item">
-          <p className="text-price">{this.state.bill_data.donGia}</p>
+          <p className="text-price">{this.props.data.donGia}</p>
         </div>
         <div className="quantum-item">
           <div className="calculate-box">
             <button className="btn minus-quantum"
-              onClick={this.minusQuantum.bind(this, this.state.bill_data.id)}>
+              onClick={this.minusQuantum.bind(this, this.props.data.id)}>
               -
             </button>
             <p className="text-quantum">{this.state.quantum}</p>
             <button className="btn plus-quantum"
-              onClick={this.plusQuantum.bind(this, this.state.bill_data.id)}>
+              onClick={this.plusQuantum.bind(this, this.props.data.id)}>
               +
             </button>
           </div>
         </div>
         <div className="total-price-item">
           <p className="total-price-text">
-            {this.calculatePrice(this.state.bill_data.donGia, this.state.bill_data.quantum)}
+            {this.calculatePrice(this.props.data.donGia, this.props.data.quantum)}
           </p>
         </div>
       </div>
