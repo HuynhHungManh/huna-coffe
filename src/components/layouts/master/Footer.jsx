@@ -5,18 +5,14 @@ import {Notification} from 'api';
 class Footer extends React.Component {
   constructor(props, context) {
     super(props, context);
-    this.state = {
-      notifications : ''
-    }
-    this.props.dispatch(Notification.actions.notifications());
   }
 
   componentDidUpdate(prevProps, prevState) {
-      if(prevProps.notifications !== this.props.notifications){
-        this.setState({
-          notifications : this.props.notifications[0].title.rendered
-        });
-      }
+      // if(prevProps.notifications !== this.props.notifications){
+      //   this.setState({
+      //     notifications : this.props.notifications[0].title.rendered
+      //   });
+      // }
   }
 
   render() {
@@ -24,7 +20,6 @@ class Footer extends React.Component {
       <footer className="footer new-message">
         <div className="container">
           <div className="box-message">
-            <h3>{this.state && this.state.notifications}</h3>
           </div>
         </div>
       </footer>
@@ -35,9 +30,7 @@ class Footer extends React.Component {
 
 
 const bindStateToProps = (state) => {
-  return {
-    notifications: state.notifications || []
-  }
+  return {}
 }
 
 export default connect(bindStateToProps)(Footer);

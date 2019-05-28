@@ -5,7 +5,7 @@ import CONFIG from 'base/constants/config';
 // Example
 let auth = JSON.parse(localStorage.getItem('auth'));
 let token = '';
-if (auth.token) {
+if (auth && auth.token) {
   token = auth.token;
 }
 

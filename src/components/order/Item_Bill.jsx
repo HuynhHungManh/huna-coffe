@@ -17,12 +17,6 @@ class Item_Bill extends Component {
     });
   }
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (prevProps.productsBill !== this.props.productsBill) {
-  //
-  //   }
-  // }
-
   calculatePrice(price, quantum) {
     return price * quantum;
   }
@@ -62,9 +56,8 @@ class Item_Bill extends Component {
   }
 
   render() {
-    console.log(this.state.bill_data);
     return(
-      <div className="bill-item">
+      <div className="bill-item" onClick={this.props.openModel.bind(this)}>
         <div className="text-item">
           <p className="text">{this.truncate(this.props.data.ten)}</p>
         </div>

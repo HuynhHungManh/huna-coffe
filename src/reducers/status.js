@@ -1,9 +1,9 @@
-let initial = [];
+let initial = false;
 
 function status(state = initial, action) {
   switch (action.type) {
-    case 'CHANGE_STATUS_SEARCH_DOCUMENT':
-      return action.status;
+    case 'STATUS_CLEAR_PRODUCTS':
+      return action.statusClear;
     default:
       return state;
   }

@@ -68,7 +68,7 @@ class Login extends React.Component {
       }).catch((error) =>{
         this.setState({
           hasError: true,
-          message: error.response.data.errors[0].description
+          message: error.response.data.errors[0].description ? error.response.data.errors[0].description : 'Kiểm tra mạng!'
         })
       });
     }

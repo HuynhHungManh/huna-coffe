@@ -1,6 +1,10 @@
 import React from 'react';
 import {RenderRoutes} from 'base/routes';
 import {connect} from 'react-redux';
+import Alert from 'react-s-alert';
+
+import 'react-s-alert/dist/s-alert-default.css';
+import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
 class App extends React.Component {
   constructor(props, context) {
@@ -15,6 +19,7 @@ class App extends React.Component {
     return (
       <div>
         <RenderRoutes routes={this.props.route.routes}/>
+        <Alert timeout={3000} stack={{limit: 3}}/>
       </div>
     );
   }

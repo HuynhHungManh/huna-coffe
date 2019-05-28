@@ -1,28 +1,28 @@
 // import React from 'react';
-// import {NotificationContainer, NotificationManager} from 'react-notifications';
-// import 'react-notifications/lib/notifications.css';
+// import Alert from 'react-s-alert';
+// import 'react-s-alert/dist/s-alert-default.css';
 //
 // class Notification extends React.Component {
-//   createNotification = (type) => {
-//     return () => {
-//       switch (type) {
-//         case 'info':
-//           NotificationManager.info('Info message');
-//           break;
-//         case 'success':
-//           NotificationManager.success('Success message', 'Title here');
-//           break;
-//         case 'warning':
-//           NotificationManager.warning('Warning message', 'Close after 3000ms', 3000);
-//           break;
-//         case 'error':
-//           NotificationManager.error('Error message', 'Click me!', 5000, () => {
-//             alert('callback');
-//           });
-//           break;
-//       }
-//     };
-//   };
+//   constructor(props, context) {
+//     super(props, context);
+//     this.state = {
+//       notification: '',
+//       type: ''
+//     }
+//   }
+//     handleClick1(e) {
+//     e.preventDefault();
+//     Alert.warning('<h1>Test message 1</h1>', {
+//     position: 'top-right',
+//     effect: 'scale',
+//     onShow: function () {
+//        console.log('aye!')
+//     },
+//     beep: false,
+//     timeout: 'none',
+//     offset: 100
+//     });
+//   }
 //
 //   render() {
 //     return (

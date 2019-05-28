@@ -9,9 +9,11 @@ class Content_Order extends Component {
   constructor(props, context) {
     super(props, context);
     this.chooseProduct = this.chooseProduct.bind(this);
+    this.clearFormOrder = this.clearFormOrder.bind(this);
     this.state = {
       products: [],
-      arrayId: []
+      arrayId: [],
+      statusClear: false
     }
   }
 
@@ -30,7 +32,6 @@ class Content_Order extends Component {
           && getStoreProducts.length > 0
           && getStoreProducts.includes(item.id)
         ) {
-          console.log('2');
           item.selectStatus = true;
         } else {
           item.selectStatus = false;
@@ -48,15 +49,28 @@ class Content_Order extends Component {
         if (getStoreProducts != null
           && getStoreProducts.length > 0
         ) {
-          arrayId = getStoreProducts.push(arrayId);
+          arrayId = getStoreProducts.concat(arrayId);
         }
-        console.log('1');
         localStorage.setItem('products', JSON.stringify(arrayId));
       }
 
       this.setState({
         products : preProduct
       });
+    }
+    if (prevProps.statusClear !== this.props.statusClear) {
+      let products = this.state.products;
+      let arrayProduct = [];
+      products.forEach((item, index) => {
+        if (item.selectStatus == true) {
+          item.selectStatus = false;
+        }
+        arrayProduct.push(item);
+      });
+      // this.setState({
+      //   products : arrayProduct,
+      //   statusClear: false
+      // });
     }
   }
 
@@ -65,6 +79,21 @@ class Content_Order extends Component {
       type: 'CHOOSE_PRODUCTS_BILL',
       productsBill
     }
+  }
+
+  clearFormOrder() {
+    let products = this.state.products;
+    let arrayProduct = [];
+    products.forEach((item, index) => {
+      if (item.selectStatus == true) {
+        item.selectStatus = false;
+      }
+      arrayProduct.push(item);
+    });
+    this.setState({
+      products : arrayProduct
+    });
+    localStorage.removeItem('products');
   }
 
   chooseProduct(idProduct) {
@@ -107,7 +136,7 @@ class Content_Order extends Component {
             }
           </ul>
         </div>
-        <Bill_Order/>
+        <Bill_Order productsBill = {this.state.products} clearFormOrder = {this.clearFormOrder}/>
       </div>
     );
   }
@@ -119,7 +148,8 @@ Content_Order.contextTypes = {
 
 const bindStateToProps = (state) => {
   return {
-    products: state.products || []
+    products: state.products || [],
+    statusClear: state.statusClear
   }
 }
 
