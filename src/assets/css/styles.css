@@ -471,7 +471,7 @@
 }
 .temporary-bill-page .content{
   padding: 0px 10px;
-  float: left;
+  /* float: left; */
 }
 .content-block {
   width: 100%;
@@ -575,7 +575,7 @@
 .info-plus-block {
   font-family: 'Roboto-Bold';
   position: absolute;
-  top: 67%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%,-50%);
   background-color: #fff;
@@ -688,4 +688,7 @@
   width: 100%;
   float: left;
   padding: 10px 0px;
+}
+.checkbox-inp-block.discount.cb-active, .checkbox-inp-block.cb-active {
+  background-color: #ffb100;
 }

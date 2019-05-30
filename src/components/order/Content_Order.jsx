@@ -33,30 +33,35 @@ class Content_Order extends Component {
           && getStoreProducts.includes(item.id)
         ) {
           item.selectStatus = true;
-        } else {
-          item.selectStatus = false;
         }
         preProduct.push(item);
+      });
+      this.setState({
+        products : preProduct
       });
 
       if (prevProps.products.length > 0) {
         let arrayId = [];
+        let arrayIdAdd = [];
         this.state.products.forEach((item, index) => {
           if (item.selectStatus == true) {
             arrayId.push(item.id);
           }
         });
         if (getStoreProducts != null
-          && getStoreProducts.length > 0
+          && getStoreProducts.length > 0 && arrayId.length > 0
         ) {
-          arrayId = getStoreProducts.concat(arrayId);
+          arrayId.forEach((id, index) => {
+            if (!getStoreProducts.includes(id)) {
+              arrayIdAdd.push(id);
+            }
+          });
+          arrayId = getStoreProducts.concat(arrayIdAdd);
         }
-        localStorage.setItem('products', JSON.stringify(arrayId));
+        if (arrayId.length > 0) {
+          localStorage.setItem('products', JSON.stringify(arrayId));
+        }
       }
-
-      this.setState({
-        products : preProduct
-      });
     }
     if (prevProps.statusClear !== this.props.statusClear) {
       let products = this.state.products;
@@ -67,10 +72,6 @@ class Content_Order extends Component {
         }
         arrayProduct.push(item);
       });
-      // this.setState({
-      //   products : arrayProduct,
-      //   statusClear: false
-      // });
     }
   }
 
@@ -101,25 +102,19 @@ class Content_Order extends Component {
     let chooseProductsBill = [];
     this.state.products.forEach((item, index) => {
       if (item.id === idProduct) {
-        if (item.selectStatus == true) {
-          item.selectStatus = false;
-        } else {
-          item.selectStatus = true;
-        }
+        item.selectStatus = true;
       }
       preProduct.push(item);
     });
-
     this.setState({
       products : preProduct
     });
-
-    preProduct.forEach((value, index_select) => {
-      if (value.selectStatus === true) {
-        chooseProductsBill.push(value);
-      }
-    });
-    this.props.dispatch(this.storeProductsBill(chooseProductsBill));
+    // preProduct.forEach((value, index_select) => {
+    //   if (value.selectStatus === true) {
+    //     chooseProductsBill.push(value);
+    //   }
+    // });
+    // this.props.dispatch(this.storeProductsBill(chooseProductsBill));
   }
 
   render() {
@@ -136,7 +131,7 @@ class Content_Order extends Component {
             }
           </ul>
         </div>
-        <Bill_Order productsBill = {this.state.products} clearFormOrder = {this.clearFormOrder}/>
+        <Bill_Order productsBill = {this.state.products}  categories = {this.props.categories} clearFormOrder = {this.clearFormOrder}/>
       </div>
     );
   }
@@ -149,7 +144,8 @@ Content_Order.contextTypes = {
 const bindStateToProps = (state) => {
   return {
     products: state.products || [],
-    statusClear: state.statusClear
+    statusClear: state.statusClear,
+    categories: state.categories
   }
 }
 

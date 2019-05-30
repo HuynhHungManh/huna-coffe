@@ -57,7 +57,7 @@ class Item_Bill extends Component {
 
   render() {
     return(
-      <div className="bill-item" onClick={this.props.openModel.bind(this)}>
+      <div className="bill-item" onClick={this.props.chooseItemProduct.bind(this, this.props.data)}>
         <div className="text-item">
           <p className="text">{this.truncate(this.props.data.ten)}</p>
         </div>
