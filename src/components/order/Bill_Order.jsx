@@ -392,7 +392,12 @@ class Bill_Order extends Component {
                               <input type="checkbox" className="checkbox-inp-block"  name="" value="Bike" />
                             </div>
                             <div className="input-item">
-                              <input type="text" className="input-inp-block"/>
+                              <select className="checkbox-inp-block dropdown-discount">
+                                <option value="volvo">Volvo</option>
+                                <option value="saab">Saab</option>
+                                <option value="fiat">Fiat</option>
+                                <option value="audi">Audi</option>
+                              </select>
                               <p>X</p>
                             </div>
                           </div>

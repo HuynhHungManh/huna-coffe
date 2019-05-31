@@ -13,6 +13,7 @@ import "react-simple-keyboard/build/css/index.css";
 class Login extends React.Component {
   constructor(props, context) {
     super(props, context);
+    this.onChangeAll = this.onChangeAll.bind(this);
     this.state = {
       username: '',
       password : '',
@@ -20,16 +21,9 @@ class Login extends React.Component {
       hasError: false,
       token: '',
       statusPopup: true,
-      filter: 'username',
       input: '',
-      statusChange: false
+      inputName: ''
     }
-  }
-
-  handleChange(name, e) {
-    this.setState({
-      [name]: e.target.value
-    })
   }
 
   gotoPage(page) {
@@ -38,12 +32,12 @@ class Login extends React.Component {
 
   submitLogin(e) {
     e.preventDefault();
-    if(this.state.username == '') {
+    if(this.state.input['username'] == '') {
       this.setState({
         hasError: true,
         message: 'Vui lòng nhập username',
       })
-    } else if (this.state.password == '') {
+    } else if (this.state.input['password'] == '') {
       this.setState({
         hasError: true,
         message: 'Vui lòng nhập password',
@@ -52,10 +46,11 @@ class Login extends React.Component {
       let header = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Email': this.state.username,
-        'Password': this.state.password
+        'Email': this.state.input['username'],
+        'Password': this.state.input['password']
       }
-      this.props.dispatch(Auth.actions.login(null, header)).then((res) =>{
+      this.props.dispatch(Auth.actions.login(null, header))
+      .then((res) => {
         if (res.data && res.data.token) {
           localStorage.setItem('auth', JSON.stringify(res.data));
           this.props.history.push('/coffee');
@@ -74,52 +69,17 @@ class Login extends React.Component {
     }
   }
 
-  handleChange(name, e) {
+  setActiveInput(event) {
     this.setState({
-      [name]: e.target.value
-    })
-  }
-
-  onChange(input) {
-    if (this.state.filter == 'username') {
-      this.setState({
-        username: input
-      });
-    } else {
-      this.setState({
-        password: input
-      });
-    }
-  };
-
-  onChangeInput(event) {
-    // let input = event.target.value;
-    // console.log(event);
-    this.setState({
-      [name]: event.target.value
-    },
-    () => {
-        this.keyboardRef.keyboard.setInput(event.target.value);
-      }
-    );
-  };
-
-  filterInput(filter) {
-    let statusChange = false;
-    if (this.state.statusChange == false) {
-      statusChange = true;
-    } else {
-      statusChange = false;
-    }
-    this.setState({
-      filter: filter,
-      statusChange: statusChange
+      inputName: event.target.id
     });
   }
 
-  // resetFilterinput() {
-  //
-  // }
+  onChangeAll(input) {
+    this.setState({
+      input: input
+    });
+  }
 
   render() {
     return (
@@ -134,12 +94,14 @@ class Login extends React.Component {
               <span className="img-logo">HUNA</span>
             </div>
             <div className="filter-login-block">
-              <input className="inp-username" name="username" type="text" placeholder="Tài khoản"
-                value={this.state.username}
-                onChange={this.handleChange.bind(this, 'username')}/>
-              <input className="inp-password" name="password" type="password" placeholder="Mật khẩu"
-                value={this.state.password}
-                onChange={this.handleChange.bind(this, 'password')}/>
+              <input id="username" className="inp-username" name="username" type="text" placeholder="Tài khoản"
+                onFocus={this.setActiveInput.bind(this)}
+                value={this.state.input['username'] || ""}
+                />
+              <input id="password" className="inp-password" name="password" type="password" placeholder="Mật khẩu"
+                onFocus={this.setActiveInput.bind(this)}
+                value={this.state.input['password'] || ""}
+                />
             </div>
             { this.state.hasError ?
               (<div className="validation-form">
@@ -150,7 +112,7 @@ class Login extends React.Component {
               <span className="text-login">Đăng Nhập</span>
             </div>
           </form>
-          <Keyboarded statusChange = {this.state.statusChange} onChangeInput = {this.onChangeInput.bind(this)} onChange = {this.onChange.bind(this)}/>
+          <Keyboarded inputName = {this.state.inputName} statusChange = {this.state.statusChange} onChangeAll = {this.onChangeAll} submitLogin = {this.submitLogin}/>
         </Modal>
       </div>
     );

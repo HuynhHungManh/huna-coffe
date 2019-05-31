@@ -9,37 +9,18 @@ class Keyboarded extends Component {
     this.state = {
       layoutName: 'default',
       input: '',
-      statusChange: ''
+      statusChange: '',
+      inputName: ''
     };
   }
 
-  componentWillMount() {
-    console.log(this.props.statusChange);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if(prevProps.statusChange !== this.props.statusChange) {
-      this.setState({
-        input: ''
-      });
-      console.log(this.props.statusChange);
-    }
-  }
-
-  onChange(e, input) {
-    console.log(input);
-    this.props.onChange(input);
-    // this.setState({
-    //   input: input
-    // });
-    // console.log("Input changed", input);
-  };
-
   onKeyPress(button) {
-    // console.log("Button pressed", button);
     /**
      * If you want to handle the shift and caps lock buttons
      */
+    if (button === "{enter}") {
+      this.props.submitLogin.bind(this);
+    }
     if (button === "{shift}" || button === "{lock}") this.handleShift();
   };
 
@@ -51,24 +32,13 @@ class Keyboarded extends Component {
     });
   };
 
-  // onChangeInput(event) {
-  //   let input = event.target.value;
-  //   this.setState(
-  //     {
-  //       input: input
-  //     },
-  //     () => {
-  //       this.keyboardRef.keyboard.setInput(input);
-  //     }
-  //   );
-  // };
-
   render() {
     return (
       <div>
         <Keyboard
+          inputName={this.props.inputName}
+          onChangeAll={inputs => this.props.onChangeAll(inputs)}
           ref={r => (this.keyboardRef = r)}
-          onChange={input => this.onChange(this, input)}
           onKeyPress={button => this.onKeyPress(button)}
           theme={"hg-theme-default hg-layout-default myTheme"}
           layoutName={this.state.layoutName}

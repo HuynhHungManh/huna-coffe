@@ -57,21 +57,21 @@ class Item_Bill extends Component {
 
   render() {
     return(
-      <div className="bill-item" onClick={this.props.chooseItemProduct.bind(this, this.props.data)}>
+      <div className="bill-item">
         <div className="text-item">
-          <p className="text">{this.truncate(this.props.data.ten)}</p>
+          <p className="text" onClick={this.props.chooseItemProduct.bind(this, this.props.data)}>{this.truncate(this.props.data.ten)}</p>
         </div>
         <div className="price-item">
           <p className="text-price">{this.props.data.donGia}</p>
         </div>
         <div className="quantum-item">
           <div className="calculate-box">
-            <button className="btn minus-quantum"
+            <button className="minus-quantum"
               onClick={this.minusQuantum.bind(this, this.props.data.id)}>
               -
             </button>
             <p className="text-quantum">{this.state.quantum}</p>
-            <button className="btn plus-quantum"
+            <button className="plus-quantum"
               onClick={this.plusQuantum.bind(this, this.props.data.id)}>
               +
             </button>

@@ -637,11 +637,12 @@
 .text-note-info {
   text-align: left;
   padding: 15px;
+  padding: 15px 15px 0px 15px;
 }
 .item-info {
   width: 100%;
   float: left;
-  padding-bottom: 15px;
+  padding: 15px 0;
   border-bottom: 1px solid #0000002e;
 }
 .item-block-info {
@@ -691,4 +692,8 @@
 }
 .checkbox-inp-block.discount.cb-active, .checkbox-inp-block.cb-active {
   background-color: #ffb100;
+}
+.dropdown-discount {
+  width: 78%;
+  padding: 10px;
 }
