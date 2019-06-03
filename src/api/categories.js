@@ -53,6 +53,28 @@ const rest = reduxApi({
         });
       }
     ]
+  },
+  productsMost: {
+    url: '/thucdons/banChay',
+    options:(url, params, getState) => {
+      return {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        data: {}
+      };
+    },
+    postfetch: [
+      function({data, actions, dispatch, getState, request}) {
+        dispatch({
+          type: 'GET_LIST_PRODUCTS_MOST',
+          productsMost: data.data
+        });
+      }
+    ]
   }
 })
 .use('fetch', customFetch)

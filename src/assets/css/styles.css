@@ -3,13 +3,16 @@
    -moz-box-sizing: border-box;
    -webkit-box-sizing: border-box;
 }
+.ReactModalPortal .ReactModal__Overlay.ReactModal__Overlay--after-open{
+  background-color:rgba(255, 255, 255, 0.17) !important;
+}
 /* login page */
 .bg-login {
   width: 100%;
   height: 768px;
-  background-color: #eee;
-  /* background: url('../images/bg-login.jpg') no-repeat;
-  background-size: 100%; */
+  /* background-color: #eee; */
+  background: url('../images/background-cf.jpg') no-repeat;
+  background-size: 100%;
 }
 .login-box {
   font-family: 'Roboto-Bold';
@@ -42,6 +45,11 @@
   height: 130px;
   position: relative;
 }
+.logo {
+  position: relative;
+  width: 72px;
+  margin: 6px 14px 0px 8px;
+}
 .react-simple-keyboard {
   position: absolute;
   bottom: 0;
@@ -57,6 +65,8 @@
   left: 50%;
   transform: translate(-50%,-50%);
   font-size: 45px;
+  width: 118px;
+  margin-top: 10px;
 }
 .inp-username, .inp-password {
   display: block;
@@ -89,8 +99,8 @@
   font-size: 25px;
   text-align: left;
   line-height: 80px;
-  margin-left: 50px;
   display: inline-block;
+  position: absolute;
 }
 .account-info-box {
   display: inline-block;
@@ -202,7 +212,6 @@
   padding: 10px 10px 10px 0;
   overflow: auto
 }
-
 .item-order-block .item-order-box .item-order {
   width: 23%;
   height: 85px;
@@ -226,22 +235,26 @@
   transform: translate(-50%, -50%);
   font-weight: bold;
 }
-
 .item-order-block .item-order-box .item-order.active {
-  background-color: #dcdcdc;
+  color: #f4a900;
+  border: 1px solid #f4a900;
 }
-
+.item-order-block .item-order-box .item-order:active {
+  background-image: linear-gradient(#fffefe0f, #ececec);
+}
 /* Bill Block */
 .inp-number-table {
   border-radius: 4px 4px;
   border: 1px solid #0000002e;
+  padding: 7px;
+  text-align: center;
 }
 .bill-order-block {
   width: 42%;
   height: 600px;
   display: inline-block;
   float: right;
-  padding: 10px 5px;
+  padding: 10px 0px;
 }
 .bill-box {
   border: 1px solid #ddd;
@@ -279,6 +292,9 @@
 .bill-header .right-header .btn-copy-bill {
   float: right;
 }
+.bill-header .right-header .btn-copy-bill:active {
+  background-image: linear-gradient(#fffefe00, #0202026e);
+}
 .bill-header .right-header .table-box-block .number-table-text {
   display: inline-block;
   line-height: 28px;
@@ -299,11 +315,11 @@
 .bill-title p {
   font-family: 'Roboto-Bold';
   font-weight: bold;
-  width: 25%;
+  width: 23%;
   display: inline-block;
   text-align: center;
   padding: 12px 10px;
-  font-size: 15px;
+  font-size: 14px;
 }
 .bill-content .bill-item {
   border-bottom: 1px solid #ccc;
@@ -312,24 +328,36 @@
 }
 .text-item, .price-item, .quantum-item, .total-price-item {
   display: inline-block;
-  width: 25%;
+  width: 23%;
+  height: 48px;
+  text-align: center;
+}
+.icon-cancel-box {
+  display: inline-block;
+  width: 8%;
+  height: 48px;
+  text-align: center;
+}
+.btn-cancel-row {
+  width: 8%;
+  display: inline-block;
   height: 48px;
   text-align: center;
 }
 .text-item {
   padding: 0 10px;
 }
-.minus-quantum, .plus-quantum, .text-quantum {
+.minus-quantum, .plus-quantum, .text-quantum, .btn-cancel-row {
   display: inline-block;
 }
 .minus-quantum, .plus-quantum {
-  width: 30px;
-  height: 30px;
+  width: 27px;
+  height: 32px;
 }
 .bill-content .text-quantum {
   margin: 0 10px;
 }
-.bill-content .text, .text-price, .total-price-text, .calculate-box {
+.bill-content .text, .text-price, .total-price-text, .calculate-box, .icon-cancel-box {
   position: relative;
   float: left;
   top: 50%;
@@ -365,6 +393,16 @@
 .calculate-tmp, .discount, .discount-after, .outlay,.exchange {
   padding: 8px 10px;
 }
+.discount {
+  position: relative;
+}
+.discount .inp-discount {
+  width: 50%;
+  position: relative;
+  line-height: 22px;
+  font-size: 14px;
+  border-radius: 4px 4px;
+}
 .inp-outlay {
   display: inline-block;
   width: 50%;
@@ -372,9 +410,15 @@
 .inp-discount, .bg-discount {
   display: inline-block;
   width: 25%;
+  border: 1px solid #0000002e;
+  padding: 5px;
 }
 .bill-results .bg-discount {
   background-color: #ccc;
+  position: absolute;
+  right: 10px;
+  width: 85px;
+  border-radius: 0px 4px 4px 0px;
 }
 .bill-results .discount-text {
   line-height: 22px;
@@ -616,22 +660,14 @@
   width: 53px;
   height: 35px;
   border: 1px solid #0000002e;
-}
-.checkbox-inp-block.discount{
-  margin-left: 10px;
-  margin-top: 5px;
+  padding: 10px;
+  text-align: center;
 }
 .checkbox-block {
-  text-align: left;
-  position: relative;
-  padding: 10px;
+  float: left;
   border-bottom: 1px solid #dbdbdb;
-}
-.checkbox-discount-text {
-  display: inline-block;
-  position: absolute;
-  left: 86px;
-  top: 25px;
+  width: 100%;
+  text-align: left;
 }
 
 .text-note-info {
@@ -642,26 +678,46 @@
 .item-info {
   width: 100%;
   float: left;
-  padding: 15px 0;
+  padding: 8px 0px 15px 0px;
   border-bottom: 1px solid #0000002e;
+}
+.content-item-info {
+  float: left;
+}
+.checkbox-item-discount {
+  display: inline-block;
+  width: 25%;
+  float: left;
+  padding-left: 15px;
+}
+.input-item-discount {
+  width: 75%;
+  display: inline-block;
+  float: left;
+}
+.item-info-discount {
+  width: 100%;
+  padding: 8px 0px 15px 0px;
+  border-bottom: 1px solid #0000002e;
+  float: left;
 }
 .item-block-info {
   width: 100%;
   float: left;
   padding-bottom: 15px;
 }
-.item-info {
-  width: 100%;
-}
 .checkbox-item {
   width: 25%;
   display: inline-block;
   float: left;
+  text-align: left;
+  padding-left: 15px;
 }
 .input-item {
   width: 75%;
   float: right;
   display: inline-block;
+  text-align: left;
 }
 .input-item .input-inp-block {
   height: 35px;
@@ -670,11 +726,7 @@
   padding: 10px;
   float: left;
 }
-.input-item p {
-  float: right;
-  margin-right: 5px;
-  padding: 10px 20px;
-}
+
 .add-new-item-info {
   width: 100%;
   float: left;
@@ -682,7 +734,7 @@
 }
 .add-new-item-info-text {
   color: blue;
-  padding: 0px 20px 15px 20px;
+  padding: 0px 15px 15px 15px;
   text-align: left;
 }
 .footer-info-plus {
@@ -692,8 +744,99 @@
 }
 .checkbox-inp-block.discount.cb-active, .checkbox-inp-block.cb-active {
   background-color: #ffb100;
+  border: none;
 }
 .dropdown-discount {
-  width: 78%;
+  width: 82%;
+  padding: 7px 10px;
+}
+.input-item-icon.icon-bin {
+  font-size: 18px;
+  position: relative;
+}
+.input-item-icon.icon-bin:before {
+  top: 2px;
+  left: 18px;
+  content: "\E9AC";
+  position: absolute;
+}
+.item-block-info .title-item, .title-item-left, .title-item-right {
+  width: 100%;
+  float: left;
+  font-size: 12px;
+}
+.title-item-left-discount {
+  width: 25%;
+  padding-left: 15px;
+}
+.title-item-right-discount {
+  width: 75%;
+}
+.title-item-left-discount, .title-item-right-discount {
+  display: inline-block;
+  font-size: 12px;
+}
+.item-block-info .title-item-left {
+  width: 25%;
+  padding-left: 15px;
+}
+.item-block-info .title-item-right {
+  width: 75%;
+}
+.item-block-info .title-item {
+  margin-top: 12px;
+  text-align: left;
+}
+.icon-cancel-box.icon-bin:before {
+  position: absolute;
+  top: 14px;
+  left: -14px;
+  font-size: 18px;
+}
+
+.content-info-plus .checkbox-block .checkbox-block-left {
+  width: 25%;
+  float: left;
+  display: inline-block;
+}
+
+.content-info-plus .checkbox-block .text-discount-right {
+  width: 75%;
+  float: left;
+  display: inline-block;
+}
+
+.item-block-info-discount {
+  width: 100%;
+  float: left;
+}
+
+.item-info-discount .inp-price-discount-text {
+  width: 82%;
+  height: 35px;
+  border: 1px solid #0000002e;
   padding: 10px;
+}
+.checkbox-block-header {
+  width: 100%;
+  float: left;
+  padding: 15px 15px 0px 15px;
+}
+.checkbox-discount-text {
+  line-height: 35px;
+}
+.title-item-discount {
+  margin-top: 12px;
+}
+.add-discount-text-block {
+  width: 100%;
+  float: left;
+}
+.add-discount-text-block .add-discount-text {
+  color: blue;
+  padding: 15px;
+  text-align: left;
+}
+.padding-header {
+  padding-bottom: 15px !important;
 }

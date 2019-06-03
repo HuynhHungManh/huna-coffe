@@ -14,23 +14,39 @@ class Categories_Tab extends Component {
   componentWillMount() {
     this.props.dispatch(Categories.actions.categories()).then((res) => {
       if (res.data) {
-        let categories = res.data;
-        categories[0].selectStatus = true;
+        let categories = [{
+          id: 0,
+          ten: "Bán chạy",
+          iconUrl: "",
+          soThuTu: 0,
+        }];
+        categories = categories.concat(res.data);
         categories.forEach(function(item, index) {
-          if (index > 0) {
+          if (item.id == 0) {
+            item.selectStatus = true;
+          } else {
             item.selectStatus = false;
           }
         });
         this.setState({
           categories : categories
         })
-        this.chooseCategory(1);
+        this.chooseCategory(0);
       }
     })
   }
 
   chooseCategory(categoriesId) {
-    this.props.dispatch(Categories.actions.products({idProduct: categoriesId}));
+    if (categoriesId == 0) {
+      let today = new Date();
+      let param = {
+        soKetQua: 20,
+        banChayTrongSoNgay: today.getDate()
+      }
+      this.props.dispatch(Categories.actions.productsMost(param));
+    } else {
+      this.props.dispatch(Categories.actions.products({idProduct: categoriesId}));
+    }
     let itemSelected = this.state.categories.find(value => value.selectStatus === true);
     let preCategories = [];
     this.state.categories.forEach((item, index) => {

@@ -14,6 +14,7 @@ class Login extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.onChangeAll = this.onChangeAll.bind(this);
+    this.submitLogin = this.submitLogin.bind(this);
     this.state = {
       username: '',
       password : '',
@@ -30,8 +31,7 @@ class Login extends React.Component {
     this.context.router.history.push(page);
   }
 
-  submitLogin(e) {
-    e.preventDefault();
+  submitLogin() {
     if(this.state.input['username'] == '') {
       this.setState({
         hasError: true,
@@ -49,6 +49,7 @@ class Login extends React.Component {
         'Email': this.state.input['username'],
         'Password': this.state.input['password']
       }
+      console.log(this.state.input['username']);
       this.props.dispatch(Auth.actions.login(null, header))
       .then((res) => {
         if (res.data && res.data.token) {
@@ -91,7 +92,7 @@ class Login extends React.Component {
         >
           <form className="login-box">
             <div className="logo-huna">
-              <span className="img-logo">HUNA</span>
+              <img className="img-logo" src="../src/assets/images/logo/logo-huna.jpg"></img>
             </div>
             <div className="filter-login-block">
               <input id="username" className="inp-username" name="username" type="text" placeholder="Tài khoản"

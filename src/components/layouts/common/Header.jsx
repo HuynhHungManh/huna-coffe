@@ -35,8 +35,7 @@ class Header extends React.Component {
     return (
       <header className="box-header">
         <div className="container">
-          <h1 className="logo">
-          </h1>
+          <img className="logo" src="../src/assets/images/logo/logo-huna.jpg"></img>
           <p className="title-page">
             <span className="title">{this.state.page}</span>
           </p>

@@ -13,8 +13,20 @@ class Item_Bill extends Component {
 
   componentWillMount() {
     this.setState({
-      bill_data :  this.props.data
+      bill_data :  this.props.data,
+      quantum: this.props.data.quantum
     });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.productsBill !== this.props.productsBill) {
+      let value = this.props.productsBill.find(item => item.id == this.props.data.id);
+      if (value && value.quantum) {
+        this.setState({
+          quantum: value.quantum
+        });
+      }
+    }
   }
 
   calculatePrice(price, quantum) {
@@ -81,6 +93,9 @@ class Item_Bill extends Component {
           <p className="total-price-text">
             {this.calculatePrice(this.props.data.donGia, this.props.data.quantum)}
           </p>
+        </div>
+        <div className="btn-cancel-row" onClick={this.props.cancelItemBill.bind(this, this.props.data.id)}>
+          <span className="icon-cancel-box icon-bin"></span>
         </div>
       </div>
     );

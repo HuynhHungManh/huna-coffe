@@ -10,9 +10,11 @@ class Content_Order extends Component {
     super(props, context);
     this.chooseProduct = this.chooseProduct.bind(this);
     this.clearFormOrder = this.clearFormOrder.bind(this);
+    this.cancelItemBill = this.cancelItemBill.bind(this);
+    this.updateQuantum = this.updateQuantum.bind(this);
+    this.copyProductsBill = this.copyProductsBill.bind(this);
     this.state = {
       products: [],
-      arrayId: [],
       statusClear: false
     }
   }
@@ -26,51 +28,55 @@ class Content_Order extends Component {
       let getStoreProducts = JSON.parse(localStorage.getItem('products'));
       let products = this.props.products;
       let preProduct = [];
-
       products.forEach((item, index) => {
         if (getStoreProducts != null
           && getStoreProducts.length > 0
-          && getStoreProducts.includes(item.id)
+          && getStoreProducts.find(x => x.id == item.id)
         ) {
+          let getProduct = getStoreProducts.find(x => x.id == item.id)
           item.selectStatus = true;
+          item.quantum = getProduct.quantum;
+        } else {
+          item.quantum = 1;
         }
+        item.priceAndQuantum = item.quantum * item.donGia;
         preProduct.push(item);
       });
       this.setState({
         products : preProduct
       });
-
       if (prevProps.products.length > 0) {
-        let arrayId = [];
-        let arrayIdAdd = [];
-        this.state.products.forEach((item, index) => {
-          if (item.selectStatus == true) {
-            arrayId.push(item.id);
-          }
-        });
+        let array = [];
+        let arrayAdd = [];
+        let updateQuantum = [];
+        array = this.state.products.filter(value => value.selectStatus == true);
         if (getStoreProducts != null
-          && getStoreProducts.length > 0 && arrayId.length > 0
+          && getStoreProducts.length > 0 && array.length > 0
         ) {
-          arrayId.forEach((id, index) => {
-            if (!getStoreProducts.includes(id)) {
-              arrayIdAdd.push(id);
+          array.forEach((item, index) => {
+            if (!getStoreProducts.find(x => x.id == item.id)) {
+              arrayAdd.push(item);
+            } else {
+              updateQuantum.push(item);
             }
           });
-          arrayId = getStoreProducts.concat(arrayIdAdd);
+          getStoreProducts.forEach((item, index) => {
+            let valueUpdate = updateQuantum.find(x => x.id == item.id);
+            if (valueUpdate) {
+              getStoreProducts[index].quantum = valueUpdate.quantum;
+              getStoreProducts[index].priceAndQuantum = getStoreProducts[index].quantum * getStoreProducts[index].donGia;
+            }
+          });
+          array = getStoreProducts.concat(arrayAdd);
         }
-        if (arrayId.length > 0) {
-          localStorage.setItem('products', JSON.stringify(arrayId));
+        if (array.length > 0) {
+          localStorage.setItem('products', JSON.stringify(array));
         }
       }
     }
-    if (prevProps.statusClear !== this.props.statusClear) {
-      let products = this.state.products;
-      let arrayProduct = [];
-      products.forEach((item, index) => {
-        if (item.selectStatus == true) {
-          item.selectStatus = false;
-        }
-        arrayProduct.push(item);
+    if (prevState.products !== this.state.products) {
+      this.setState({
+        products: this.state.products
       });
     }
   }
@@ -102,6 +108,10 @@ class Content_Order extends Component {
     let chooseProductsBill = [];
     this.state.products.forEach((item, index) => {
       if (item.id === idProduct) {
+        if (item.selectStatus == true) {
+          item.quantum = item.quantum + 1;
+          item.priceAndQuantum = item.quantum * item.donGia;
+        }
         item.selectStatus = true;
       }
       preProduct.push(item);
@@ -109,12 +119,89 @@ class Content_Order extends Component {
     this.setState({
       products : preProduct
     });
-    // preProduct.forEach((value, index_select) => {
-    //   if (value.selectStatus === true) {
-    //     chooseProductsBill.push(value);
-    //   }
-    // });
-    // this.props.dispatch(this.storeProductsBill(chooseProductsBill));
+  }
+
+  cancelItemBill(id) {
+    let arrayPreProduct = [];
+    this.state.products.forEach((item, index) => {
+      if (item.id == id) {
+        item.selectStatus = false;
+      }
+      arrayPreProduct.push(item);
+    });
+    this.setState({
+      products: arrayPreProduct
+    });
+    let getStoreProducts = JSON.parse(localStorage.getItem('products'));
+    if (getStoreProducts && getStoreProducts.find(x => x.id == id)) {
+      localStorage.setItem('products', JSON.stringify(getStoreProducts.filter(x => x.id != id)));
+    }
+  }
+
+  updateQuantum(idBill, operator) {
+    console.log(idBill);
+    let productsBillPre = [];
+    let priceTotal = 0;
+    this.state.products.forEach((item, index) => {
+      if (item.id == idBill) {
+        if (operator === 'minus') {
+          item.quantum = item.quantum - 1;
+        } else {
+          item.quantum = item.quantum + 1;
+        }
+      }
+      item.priceAndQuantum = item.quantum * item.donGia;
+      priceTotal = priceTotal + item.priceAndQuantum;
+      productsBillPre.push(item);
+    });
+    this.setState({
+      products : productsBillPre
+    });
+    let getStoreProducts = JSON.parse(localStorage.getItem('products'));
+    if (getStoreProducts && getStoreProducts.find(x => x.id == idBill)) {
+      getStoreProducts.forEach((item, index) => {
+        if (item.id == idBill) {
+          if (operator === 'minus') {
+            getStoreProducts[index].quantum = getStoreProducts[index].quantum - 1;
+          } else {
+            getStoreProducts[index].quantum = getStoreProducts[index].quantum + 1;
+          }
+        }
+        getStoreProducts[index].priceAndQuantum = getStoreProducts[index].quantum * getStoreProducts[index].donGia;
+      });
+      localStorage.setItem('products', JSON.stringify(getStoreProducts));
+    }
+    // console.log(productsBillPre);
+  }
+
+  copyProductsBill() {
+    this.clearFormOrder();
+    let getStoreProducts = JSON.parse(localStorage.getItem('products'));
+    let getCopyProductsBill = JSON.parse(localStorage.getItem('copyProductsBill')).productsBill;
+    let productsCurrent = this.state.products;
+    if (getCopyProductsBill) {
+      getCopyProductsBill.forEach((item, index) => {
+        productsCurrent.forEach((item2, index2) => {
+          if (item.id == item2.id) {
+            productsCurrent[index2] = getCopyProductsBill[index];
+          }
+        });
+      });
+      this.setState({
+        products: productsCurrent
+      });
+
+      if (getStoreProducts) {
+        getCopyProductsBill.forEach((item, index) => {
+          getStoreProducts.forEach((item2, index2) => {
+            if (item.id == item2.id) {
+              getStoreProducts[index2] = getCopyProductsBill[index];
+            }
+          });
+        });
+        localStorage.setItem('products', JSON.stringify(getStoreProducts));
+      }
+    }
   }
 
   render() {
@@ -131,7 +218,14 @@ class Content_Order extends Component {
             }
           </ul>
         </div>
-        <Bill_Order productsBill = {this.state.products}  categories = {this.props.categories} clearFormOrder = {this.clearFormOrder}/>
+        <Bill_Order
+          updateQuantum = {this.updateQuantum}
+          cancelItemBill = {this.cancelItemBill}
+          productsBill = {this.state.products}
+          categories = {this.props.categories}
+          clearFormOrder = {this.clearFormOrder}
+          copyProductsBill = {this.copyProductsBill}
+        />
       </div>
     );
   }
@@ -144,7 +238,6 @@ Content_Order.contextTypes = {
 const bindStateToProps = (state) => {
   return {
     products: state.products || [],
-    statusClear: state.statusClear,
     categories: state.categories
   }
 }
