@@ -2,6 +2,7 @@ import App from 'components/app';
 import Login from 'components/pages/Login.jsx';
 import Coffee from 'components/pages/Coffee.jsx';
 import TemporaryBill from 'components/pages/TemporaryBill.jsx';
+import StoreTmp from 'components/pages/StoreTmp.jsx';
 
 const routes = [
   {
@@ -21,6 +22,11 @@ const routes = [
         component: TemporaryBill,
         exact: true,
         path: '/temporary-bill'
+      },
+      {
+        component: StoreTmp,
+        exact: true,
+        path: '/store-tmp'
       }
     ]
   }

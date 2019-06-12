@@ -13,10 +13,13 @@ class Header extends React.Component {
   }
 
   componentWillMount() {
-    let location = 'temporary-bill';
-    if(window.location.href.indexOf(location) !== -1) {
+    if(window.location.href.indexOf('temporary-bill') !== -1) {
       this.setState({
         page : 'Thống Kê'
+      })
+    } else if(window.location.href.indexOf('store-tmp') !== -1) {
+      this.setState({
+        page : 'Hóa Đơn Lưu Tạm'
       })
     } else {
       this.setState({

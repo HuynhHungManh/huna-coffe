@@ -20,7 +20,7 @@ class Footer extends Component {
           name: 'Hóa Đơn Lưu Tạm',
           id: 2,
           status: false,
-          url: '/'
+          url: '/store-tmp'
         },
         {
           name: 'Thống Kê',
@@ -41,7 +41,7 @@ class Footer extends Component {
   componentWillMount() {
     this.state.tabs.forEach((item, index) => {
       if (window.location.href.indexOf(item.url) !== -1) {
-        if (item.url == '/coffee' || item.url == '/temporary-bill') {
+        if (item.url == '/coffee' || item.url == '/temporary-bill' ||  item.url == '/store-tmp') {
           item.status = true;
         }
       }

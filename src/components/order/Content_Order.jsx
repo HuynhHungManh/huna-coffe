@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import Item_Order from './Item_Order.jsx';
 import Bill_Order from './Bill_Order.jsx';
 import {PropTypes} from 'prop-types';
+import {Numberic} from 'components/keyboarded';
 
 class Content_Order extends Component {
   constructor(props, context) {
@@ -38,6 +39,11 @@ class Content_Order extends Component {
           item.quantum = getProduct.quantum;
         } else {
           item.quantum = 1;
+        }
+        let sameProduct = this.state.products.find(x => x.id == item.id);
+        if (sameProduct && sameProduct.selectStatus == true) {
+          item.selectStatus = true;
+          item.quantum = sameProduct.quantum;
         }
         item.priceAndQuantum = item.quantum * item.donGia;
         preProduct.push(item);
@@ -94,6 +100,7 @@ class Content_Order extends Component {
     products.forEach((item, index) => {
       if (item.selectStatus == true) {
         item.selectStatus = false;
+        item.quantum = 1;
       }
       arrayProduct.push(item);
     });
@@ -207,6 +214,7 @@ class Content_Order extends Component {
   render() {
     return(
       <div className="content-order">
+      <Numberic />
         <div className="item-order-block">
           <ul className="item-order-box">
             {

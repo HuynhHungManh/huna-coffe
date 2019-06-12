@@ -57,6 +57,88 @@ const rest = reduxApi({
         });
       }
     ]
+  },
+  ressonCancelOrders: {
+    url: '/lydohuyorders',
+    options:(url, params, getState) => {
+      let auth = JSON.parse(localStorage.getItem('auth'));
+      let token = '';
+      if (auth && auth.token) {
+        token = auth.token;
+      }
+      return {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        data: {}
+      };
+    },
+    postfetch: [
+      function({data, actions, dispatch, getState, request}) {
+        dispatch({
+          type: 'RESSON_CANCEL_ORDERS',
+          ressonCancelOrders: data.data
+        });
+      }
+    ]
+  },
+  cancelOrders: {
+    url: '/orders/:idOrder/huyOrder',
+    options:(url, params, getState) => {
+      let auth = JSON.parse(localStorage.getItem('auth'));
+      let token = '';
+      if (auth && auth.token) {
+        token = auth.token;
+      }
+      console.log(params);
+      return {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        data: {params}
+      };
+    },
+    postfetch: [
+      function({data, actions, dispatch, getState, request}) {
+        dispatch({
+          type: 'CANCEL_ORDERS',
+          cancelOrders: data.data
+        });
+      }
+    ]
+  },
+  orderThucDons: {
+    url: '/orderThucDons',
+    options:(url, params, getState) => {
+      let auth = JSON.parse(localStorage.getItem('auth'));
+      let token = '';
+      if (auth && auth.token) {
+        token = auth.token;
+      }
+      return {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        data: {}
+      };
+    },
+    postfetch: [
+      function({data, actions, dispatch, getState, request}) {
+        dispatch({
+          type: 'ORDER_THUCDONS',
+          orderThucDons: data.data
+        });
+      }
+    ]
   }
 })
 .use('fetch', customFetch)

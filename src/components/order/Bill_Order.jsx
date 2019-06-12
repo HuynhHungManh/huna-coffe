@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import {connect} from 'react-redux';
 import Item_Bill from './Item_Bill.jsx';
-// import {PropTypes} from 'prop-types';
 import {Orders} from 'api';
 import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
 import Modal from 'react-modal';
 Modal.setAppElement('body');
+import NumberFormat from 'react-number-format';
 
 class Bill_Order extends Component {
   constructor(props, context) {
@@ -34,7 +34,9 @@ class Bill_Order extends Component {
       itemNote: [],
       noteEditing: 0,
       noteQuantum: 0,
-      noteName: ''
+      noteName: '',
+      tableNumber: '',
+      idNoteCurrent: 0
     }
   }
 
@@ -100,31 +102,6 @@ class Bill_Order extends Component {
           discountAfter: priceTotal - (priceTotal / 10)
         });
       }
-      // products.forEach((item, index) => {
-      //   priceTotal = priceTotal + item.priceAndQuantum;
-      //   if (item.selectStatus == true) {
-      //     if (getProductsBill && getProductsBill.length > 0) {
-      //       let findCheck = getProductsBill.find(value => value.id == item.id);
-      //       if (!findCheck) {
-      //         productsBillTmp.push(item);
-      //       }
-      //     } else {
-      //         productsBillTmp.push(item);
-      //     }
-      //   }
-      // });
-      // if (productsBillTmp && productsBillTmp.length > 0) {
-      //   if (getProductsBill && getProductsBill.length > 0) {
-      //     productsBillTmp = getProductsBill.concat(productsBillTmp);
-      //   }
-      //   localStorage.setItem('productsBill', JSON.stringify(productsBillTmp));
-      //   this.setState({
-      //     productsBill :  productsBillTmp,
-      //     priceTotal: priceTotal,
-      //     discountPriceTotal: priceTotal / 10,
-      //     discountAfter: priceTotal - (priceTotal / 10)
-      //   });
-      // }
     }
   }
 
@@ -176,6 +153,7 @@ class Bill_Order extends Component {
       statusCopyPreBill: false
     });
     localStorage.removeItem('productsBill');
+    localStorage.removeItem('products');
   }
 
   submitOrders(e) {
@@ -205,7 +183,8 @@ class Bill_Order extends Component {
       'orderThucDons': orderProducts,
       'thanhTien': this.state.priceTotal,
       'tongGia': this.state.discountAfter,
-      'trangThaiOrder': 'DA_THANH_TOAN'
+      'trangThaiOrder': 'DA_THANH_TOAN',
+      'banSo': this.state.tableNumber
     };
     this.props.dispatch(Orders.actions.orders(null, data)).then((res) =>{
       this.alertNotification('Bạn đã order thành công!', 'success');
@@ -297,7 +276,9 @@ class Bill_Order extends Component {
       statusPopup : true,
       noteEditing: data.id,
       noteQuantum: data.quantum,
-      noteName: data.ten
+      noteName: data.ten,
+      idNoteCurrent: data.id,
+      itemNote: data.itemNote ? data.itemNote : []
     });
   }
 
@@ -316,10 +297,11 @@ class Bill_Order extends Component {
     });
   }
 
-  addNote() {
+  addNote(id) {
     let note = {
       "ghiChuId": 1,
-      "soLuong": 1
+      "soLuong": 1,
+      "id": id
     };
     let noteState = this.state.itemNote;
     noteState.push(note);
@@ -365,12 +347,19 @@ class Bill_Order extends Component {
   }
 
   saveUpdateNote() {
+    console.log(this.state.itemNote);
     this.state.productsBill.forEach((item, index) => {
       if (this.state.noteEditing == item.id) {
         this.state.productsBill[index].itemNote = this.state.itemNote;
       }
     });
-    this.state.itemNote = [];
+    this.closeModel();
+  }
+
+  onChangeTableNumber(e) {
+    this.setState({
+      tableNumber: e.target.value
+    });
   }
 
   render() {
@@ -403,7 +392,9 @@ class Bill_Order extends Component {
                 <p className="number-table-text">
                   Bàn số:
                 </p>
-                <input className="inp-number-table" name="number-table" type="text" placeholder=""/>
+                <input className="inp-number-table" name="number-table" type="text" placeholder=""
+                  onChange={this.onChangeTableNumber.bind(this)}
+                />
               </div>
             </div>
           </div>
@@ -427,18 +418,24 @@ class Bill_Order extends Component {
           <div className="bill-results">
             <div className="calculate-tmp">
               <p className="text">Tạm tính</p>
-              <p className="text-results">{this.state.priceTotal} đ</p>
+              <p className="text-results">
+              <NumberFormat value={this.state.priceTotal} displayType={'text'} thousandSeparator={true} /> đ
+               </p>
             </div>
             <div className="discount">
               <p className="text">Chiết khấu</p>
               <input className="inp-discount" name="discount" value = "10" type="text" placeholder=""/>
               <div className="bg-discount">
-                <p className="discount-text">{this.state.discountPriceTotal} đ</p>
+                <p className="discount-text">
+                <NumberFormat value={this.state.discountPriceTotal} displayType={'text'} thousandSeparator={true} /> đ
+                </p>
               </div>
             </div>
             <div className="discount-after">
               <p className="text">Sau chiết khấu</p>
-              <p className="text-results">{this.state.discountAfter} đ</p>
+              <p className="text-results">
+              <NumberFormat value={this.state.discountAfter} displayType={'text'} thousandSeparator={true} /> đ
+              </p>
             </div>
             <div className="outlay">
               <p className="text">Tiền khách đưa</p>
@@ -446,7 +443,10 @@ class Bill_Order extends Component {
             </div>
             <div className="exchange">
               <p className="text">Tiền thối lại</p>
-              <p className="text-results">150.000đ</p>
+              <p className="text-results">
+              <NumberFormat value={150000} displayType={'text'} thousandSeparator={true} />
+              đ
+              </p>
             </div>
           </div>
           <div className="bill-footer">
@@ -482,7 +482,7 @@ class Bill_Order extends Component {
                     <div className="checkbox-block-left">
                       <input type="checkbox" className= {
                         classnames('checkbox-inp-block discount', {
-                          'cb-active' : this.state.cbDiscount,
+                          'cb-active icon-checkmark' : this.state.cbDiscount,
                         })}
                         onClick={this.changCbDiscount.bind(this)}
                         name="discount" ref="cb_discount" />
@@ -538,7 +538,7 @@ class Bill_Order extends Component {
                             </div>
                             <div className="item-info">
                               <div className="checkbox-item">
-                                <input type="text" className="checkbox-inp-block" name={i} defaultValue={1} onChange={this.handleChangeQuantum.bind(this)}/>
+                                <input type="text" className="checkbox-inp-block" name={i} defaultValue={item.soLuong} onChange={this.handleChangeQuantum.bind(this)}/>
                               </div>
                               <div className="input-item">
                                 <select className="checkbox-inp-block dropdown-discount" name = {i}
@@ -559,7 +559,7 @@ class Bill_Order extends Component {
                     }
                   </div>
                   <div className="add-new-item-info">
-                    <p className="add-new-item-info-text" onClick={this.addNote.bind(this)}>
+                    <p className="add-new-item-info-text" onClick={this.addNote.bind(this, this.state.idNoteCurrent)}>
                       + Thêm ghi chú
                     </p>
                   </div>
