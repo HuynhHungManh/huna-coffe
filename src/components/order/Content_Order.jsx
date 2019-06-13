@@ -14,9 +14,16 @@ class Content_Order extends Component {
     this.cancelItemBill = this.cancelItemBill.bind(this);
     this.updateQuantum = this.updateQuantum.bind(this);
     this.copyProductsBill = this.copyProductsBill.bind(this);
+    this.onClickFiledInput = this.onClickFiledInput.bind(this);
+    this.closeNumberic = this.closeNumberic.bind(this);
     this.state = {
       products: [],
-      statusClear: false
+      statusClear: false,
+      numberTable: '',
+      showNumberic: false,
+      filedCurrent: '',
+      discountInput: '',
+      outLay: 0
     }
   }
 
@@ -211,10 +218,92 @@ class Content_Order extends Component {
     }
   }
 
+  onClickFiledInput(e) {
+    this.setState({
+      filedCurrent: e.target.name,
+      showNumberic: true
+    });
+  }
+
+  changeNumbericInput(number) {
+    if (this.state.filedCurrent == 'numberTable') {
+      if (number != 'clear') {
+        if (this.state.numberTable && this.state.numberTable < 100) {
+          let numbers = (this.state.numberTable * 10) + number;
+          if (numbers < 100) {
+            this.setState({
+              numberTable: numbers
+            });
+          } else {
+            this.setState({
+              numberTable: '0' + number
+            });
+          }
+        } else {
+          this.setState({
+            numberTable: '0' + number
+          });
+        }
+      } else {
+        this.setState({
+          numberTable: ''
+        });
+      }
+    } else if (this.state.filedCurrent == 'discountInput') {
+      if (number != 'clear') {
+        if (this.state.discountInput && this.state.discountInput < 100) {
+          let numbers = (this.state.discountInput * 10) + number;
+          if (numbers < 100) {
+            this.setState({
+              discountInput: numbers
+            });
+          } else {
+            this.setState({
+              discountInput: '0' + number
+            });
+          }
+        } else {
+          this.setState({
+            discountInput: '0' + number
+          });
+        }
+      } else {
+        this.setState({
+          discountInput: ''
+        });
+      }
+    } else if (this.state.filedCurrent == 'outLay') {
+      let numberCurrent = 0;
+      if (number != 'clear') {
+        if (this.state.outLay == 0) {
+          numberCurrent = number * 1000;
+        } else {
+          numberCurrent = (this.state.outLay * 10) + (number * 1000);
+        }
+        this.setState({
+          outLay: numberCurrent
+        });
+      } else {
+        this.setState({
+          outLay: ''
+        });
+      }
+    }
+  }
+
+  closeNumberic() {
+    this.setState({
+      showNumberic: false
+    });
+  }
+
   render() {
     return(
       <div className="content-order">
-      <Numberic />
+        { this.state.showNumberic
+          ? <Numberic changeNumbericInput = {this.changeNumbericInput.bind(this)} closeNumberic = {this.closeNumberic}/>
+          : ""
+        }
         <div className="item-order-block">
           <ul className="item-order-box">
             {
@@ -233,6 +322,12 @@ class Content_Order extends Component {
           categories = {this.props.categories}
           clearFormOrder = {this.clearFormOrder}
           copyProductsBill = {this.copyProductsBill}
+          numberTable = {this.state.numberTable}
+          showNumberic = {this.state.showNumberic}
+          onClickFiledInput = {this.onClickFiledInput}
+          discountInput = {this.state.discountInput}
+          filedCurrent = {this.state.filedCurrent}
+          outLay = {this.state.outLay}
         />
       </div>
     );

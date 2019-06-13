@@ -16,6 +16,7 @@ class Bill_Order extends Component {
     this.chooseItemProduct = this.chooseItemProduct.bind(this);
     this.cancelItemBill = this.cancelItemBill.bind(this);
     this.updateQuantum = this.updateQuantum.bind(this);
+    this.onChangeNumberic = this.onChangeNumberic.bind(this);
     let currentdate = new Date();
     let datetime = currentdate.getDate() + "/"
     + (currentdate.getMonth()+1)  + "/"
@@ -36,7 +37,8 @@ class Bill_Order extends Component {
       noteQuantum: 0,
       noteName: '',
       tableNumber: '',
-      idNoteCurrent: 0
+      outlay: '',
+      idNoteCurrent: 0,
     }
   }
 
@@ -356,11 +358,18 @@ class Bill_Order extends Component {
     this.closeModel();
   }
 
-  onChangeTableNumber(e) {
+  onChangeNumberic(e) {
+    // this.setState({
+    //   tableNumber: e.target.value
+    // });
     this.setState({
-      tableNumber: e.target.value
+      [e.target.name]: e.target.value
     });
   }
+
+  // onClickFiledInput(e) {
+  //   // this.props.onClickFiledInput(e.target.name);
+  // }
 
   render() {
     return(
@@ -392,8 +401,14 @@ class Bill_Order extends Component {
                 <p className="number-table-text">
                   Bàn số:
                 </p>
-                <input className="inp-number-table" name="number-table" type="text" placeholder=""
-                  onChange={this.onChangeTableNumber.bind(this)}
+                <input className= {
+                  classnames('inp-number-table', {
+                    'position-input' : this.props.showNumberic && this.props.filedCurrent == 'numberTable',
+                  })}
+                  name="numberTable" type="text" placeholder=""
+                  value = {this.props.numberTable}
+                  onChange={this.onChangeNumberic.bind(this)}
+                  onClick = {this.props.onClickFiledInput.bind(this)}
                 />
               </div>
             </div>
@@ -424,8 +439,18 @@ class Bill_Order extends Component {
             </div>
             <div className="discount">
               <p className="text">Chiết khấu</p>
-              <input className="inp-discount" name="discount" value = "10" type="text" placeholder=""/>
-              <div className="bg-discount">
+              <input className={classnames('inp-discount', {
+                  'position-input' : this.props.showNumberic && this.props.filedCurrent == 'discountInput',
+                })}
+                name="discountInput"
+                value = {this.props.discountInput} type="text"
+                onChange={this.onChangeNumberic.bind(this)}
+                onClick = {this.props.onClickFiledInput.bind(this)}
+              />
+              <div className={classnames('bg-discount', {
+                  'position-input' : this.props.showNumberic && this.props.filedCurrent == 'discountInput',
+                })}
+              >
                 <p className="discount-text">
                 <NumberFormat value={this.state.discountPriceTotal} displayType={'text'} thousandSeparator={true} /> đ
                 </p>
@@ -439,12 +464,20 @@ class Bill_Order extends Component {
             </div>
             <div className="outlay">
               <p className="text">Tiền khách đưa</p>
-              <input className="inp-outlay" name="outlay" value="150.000" type="text" placeholder=""/>
+              <input className={classnames('inp-outlay', {
+                  'position-input' : this.props.showNumberic && this.props.filedCurrent == 'outLay',
+                })}
+                name="outLay"
+                onChange={this.onChangeNumberic.bind(this)}
+                onClick = {this.props.onClickFiledInput.bind(this)}
+                value= {this.props.outLay}
+                type="text"
+              />
             </div>
             <div className="exchange">
               <p className="text">Tiền thối lại</p>
               <p className="text-results">
-              <NumberFormat value={150000} displayType={'text'} thousandSeparator={true} />
+              <NumberFormat value={this.props.outLay - this.state.discountAfter} displayType={'text'} thousandSeparator={true} />
               đ
               </p>
             </div>

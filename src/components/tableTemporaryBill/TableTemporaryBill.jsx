@@ -200,7 +200,6 @@ class TableTemporaryBill extends Component {
           <div className="table-box">
             <div className="table-scroll">
               <table className="tmp-bill">
-
                 <thead>
                   <tr>
                     <th width="8%">Mã số</th>

@@ -18,6 +18,40 @@ class TableStoreTmp extends Component {
   render() {
     return(
       <div className="show-order-block">
+        <div className="table-scroll">
+          <table className="tmp-bill">
+            <thead>
+              <tr>
+                <th width="8%">Mã số</th>
+                <th width="20%">Thòi gian</th>
+                <th width="9%">Bàn số</th>
+                <th width="10%">In lúc</th>
+                <th width="13%">Tổng tiền</th>
+                <th width="40%">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td width="8%">0000123</td>
+                <td width="20%">123</td>
+                <td width="9%">5</td>
+                <td width="10%">-</td>
+                <td width="13%">123</td>
+                <td width="40%">
+                  <button className="btn cancel-table">
+                    Hủy HĐ
+                  </button>
+                  <button className="btn view-order-btn">
+                    Xem order
+                  </button>
+                  <button className="btn print-btn">
+                    In
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }
