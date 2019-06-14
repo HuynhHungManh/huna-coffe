@@ -43,6 +43,15 @@ class TableTemporaryBill extends Component {
   }
 
   componentWillMount() {
+    let dataCacheOrder = JSON.parse(localStorage.getItem('dataCacheOrder'));
+    if (dataCacheOrder) {
+      this.setState({
+        getOrders: dataCacheOrder.getOrders,
+        billTotal: dataCacheOrder.billTotal,
+        priceTotal: dataCacheOrder.priceTotal,
+        priceDiscount: dataCacheOrder.priceDiscount
+      });
+    }
     this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder}));
     // this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
     //   if (res.data) {
@@ -73,7 +82,6 @@ class TableTemporaryBill extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    var hiddenInputElement = document.getElementById("example-datepicker");
     if (prevProps.orders !== this.props.orders && this.props.orders.content) {
       let data = this.props.orders;
       this.setState({
@@ -90,10 +98,17 @@ class TableTemporaryBill extends Component {
         priceTotal :  priceTotal,
         priceDiscount: priceTotal - priceDiscount
       });
+      let dataCache = {
+        getOrders: data.content,
+        billTotal: data.totalElements,
+        priceTotal: priceTotal,
+        priceDiscount: priceTotal - priceDiscount
+      };
+      localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
     }
   }
 
-  getDate (jsonDate) {
+  getDate(jsonDate) {
     let currentdate = new Date(jsonDate);
     let datetime = currentdate.getDate() + "/"
       + (currentdate.getMonth()+1)  + "/"

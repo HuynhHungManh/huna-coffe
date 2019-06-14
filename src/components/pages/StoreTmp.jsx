@@ -9,7 +9,7 @@ class StoreTmp extends React.Component {
   render() {
     return (
       <CommonLayout>
-        <div className="container temporary-bill-page">
+        <div className="container temporary-bill-page-tmp">
           <div className="content">
             <TableStoreTmp/>
           </div>

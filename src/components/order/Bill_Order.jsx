@@ -16,7 +16,6 @@ class Bill_Order extends Component {
     this.chooseItemProduct = this.chooseItemProduct.bind(this);
     this.cancelItemBill = this.cancelItemBill.bind(this);
     this.updateQuantum = this.updateQuantum.bind(this);
-    this.onChangeNumberic = this.onChangeNumberic.bind(this);
     let currentdate = new Date();
     let datetime = currentdate.getDate() + "/"
     + (currentdate.getMonth()+1)  + "/"
@@ -36,7 +35,6 @@ class Bill_Order extends Component {
       noteEditing: 0,
       noteQuantum: 0,
       noteName: '',
-      tableNumber: '',
       outlay: '',
       idNoteCurrent: 0,
     }
@@ -158,8 +156,7 @@ class Bill_Order extends Component {
     localStorage.removeItem('products');
   }
 
-  submitOrders(e) {
-    e.preventDefault();
+  submitOrders(typeSubmit) {
     let date = new Date();
     let dateFormat = JSON.parse(JSON.stringify(date));
     let auth = JSON.parse(localStorage.getItem('auth'));
@@ -173,7 +170,8 @@ class Bill_Order extends Component {
         'soLuong': item.quantum,
         'thanhTien': item.priceAndQuantum,
         'thucDonId': item.id,
-        'tongGia': (item.priceAndQuantum * 10) / 100
+        'tongGia': (item.priceAndQuantum * 10) / 100,
+        'ten': item.ten
       }
       orderProducts.push(dataProducts);
     });
@@ -181,33 +179,51 @@ class Bill_Order extends Component {
     let data = {
       'khuyenMai': 0,
       'ngayOrder': dateFormat,
+      'nguoiChietKhauId': 1,
       'nhanVienOrderId': auth.userId ? auth.userId : 0,
       'orderThucDons': orderProducts,
       'thanhTien': this.state.priceTotal,
       'tongGia': this.state.discountAfter,
       'trangThaiOrder': 'DA_THANH_TOAN',
-      'banSo': this.state.tableNumber
+      'soBan': this.props.numberTable
     };
-    this.props.dispatch(Orders.actions.orders(null, data)).then((res) =>{
-      this.alertNotification('Bạn đã order thành công!', 'success');
-      let d = new Date();
-      let hour = d.getHours();
-      let minutes = date.getMinutes();
-      let timeCopy = hour + ":" + minutes;
-      let copyProductsBill = {
-        productsBill: this.state.productsBill,
-        priceTotal: this.state.priceTotal,
-        discountPriceTotal: this.state.discountPriceTotal,
-        discountAfter: this.state.discountAfter,
-        dateCopy: timeCopy,
-        dateOrder: this.state.dateOrder
+    if (typeSubmit == "Order") {
+      this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
+        this.alertNotification('Bạn đã order thành công!', 'success');
+        let d = new Date();
+        let hour = d.getHours();
+        let minutes = date.getMinutes();
+        let timeCopy = hour + ":" + minutes;
+        let copyProductsBill = {
+          productsBill: this.state.productsBill,
+          priceTotal: this.state.priceTotal,
+          discountPriceTotal: this.state.discountPriceTotal,
+          discountAfter: this.state.discountAfter,
+          dateCopy: timeCopy,
+          dateOrder: this.state.dateOrder
+        }
+        localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
+        this.clearForm();
+      }).catch((reason) => {
+        this.alertNotification('Order không thành công!', 'error');
+      });
+    } else if (typeSubmit == 'Store') {
+      let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
+      let orderNewListTmp = [];
+      data.productsBill = this.state.productsBill;
+      data.priceTotal = this.state.priceTotal;
+      data.discountPriceTotal = this.state.discountPriceTotal;
+      data.discountAfter = this.state.discountAfter;
+      data.dateOrder = this.state.dateOrder;
+      if (orderListTmp) {
+        orderNewListTmp = orderListTmp.concat(data);
+      } else {
+        orderNewListTmp.push(data);
       }
-      localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
-      this.clearForm();
-    }).catch((reason) => {
-      this.alertNotification('Order không thành công!', 'error');
-    });
-  }
+      localStorage.setItem('orderListTmp', JSON.stringify(orderNewListTmp.reverse()));
+      this.alertNotification('Bạn đã lưu thành công!', 'success');
+    }
+  };
 
   copyProductsBill() {
     this.props.copyProductsBill();
@@ -349,7 +365,6 @@ class Bill_Order extends Component {
   }
 
   saveUpdateNote() {
-    console.log(this.state.itemNote);
     this.state.productsBill.forEach((item, index) => {
       if (this.state.noteEditing == item.id) {
         this.state.productsBill[index].itemNote = this.state.itemNote;
@@ -357,19 +372,6 @@ class Bill_Order extends Component {
     });
     this.closeModel();
   }
-
-  onChangeNumberic(e) {
-    // this.setState({
-    //   tableNumber: e.target.value
-    // });
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  }
-
-  // onClickFiledInput(e) {
-  //   // this.props.onClickFiledInput(e.target.name);
-  // }
 
   render() {
     return(
@@ -407,7 +409,6 @@ class Bill_Order extends Component {
                   })}
                   name="numberTable" type="text" placeholder=""
                   value = {this.props.numberTable}
-                  onChange={this.onChangeNumberic.bind(this)}
                   onClick = {this.props.onClickFiledInput.bind(this)}
                 />
               </div>
@@ -444,7 +445,6 @@ class Bill_Order extends Component {
                 })}
                 name="discountInput"
                 value = {this.props.discountInput} type="text"
-                onChange={this.onChangeNumberic.bind(this)}
                 onClick = {this.props.onClickFiledInput.bind(this)}
               />
               <div className={classnames('bg-discount', {
@@ -468,7 +468,6 @@ class Bill_Order extends Component {
                   'position-input' : this.props.showNumberic && this.props.filedCurrent == 'outLay',
                 })}
                 name="outLay"
-                onChange={this.onChangeNumberic.bind(this)}
                 onClick = {this.props.onClickFiledInput.bind(this)}
                 value= {this.props.outLay}
                 type="text"
@@ -486,10 +485,10 @@ class Bill_Order extends Component {
             <button className="fill-again" onClick={this.clearForm.bind(this)}>
               Nhập lại
             </button>
-            <button className="save">
+            <button className="save" onClick={this.submitOrders.bind(this, 'Store')}>
               Lưu
             </button>
-            <button className="pay" onClick={this.submitOrders.bind(this)}>
+            <button className="pay" onClick={this.submitOrders.bind(this, 'Order')}>
               Thanh Toán
             </button>
           </div>

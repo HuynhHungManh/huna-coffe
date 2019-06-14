@@ -12,6 +12,7 @@ main {
 }
 .ReactModalPortal .ReactModal__Overlay.ReactModal__Overlay--after-open{
   background-color:rgba(255, 255, 255, 0.17) !important;
+  z-index: 100 !important;
 }
 /* login page */
 .bg-login {
@@ -552,13 +553,15 @@ main {
   text-align: center;
 }
 
-.temporary-bill-page, .show-order-block{
+.temporary-bill-page, .show-order-block, .temporary-bill-page-tmp {
   height: 600px;
   background-color: #f5f5f5e3;
 }
 .temporary-bill-page .content{
   padding: 0px 10px;
-  /* float: left; */
+}
+.temporary-bill-page-tmp {
+  padding: 0px 10px;
 }
 .show-order-block {
   padding: 22px 0;
@@ -687,7 +690,7 @@ main {
 }
 .cancel-order-block {
   position: absolute;
-  top: 56%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%,-50%);
   background-color: #fff;
@@ -1061,4 +1064,61 @@ main {
 .head-numberic-box .icon-close-numberic:before {
   color: #e6e6e6;
   font-size: 18px;
+}
+.hidden {
+  pointer-events: none;
+  opacity: 0.4;
+}
+.cancel-text {
+  color: red !important;
+}
+.success-text {
+  color: #20c100 !important;
+}
+.temporary-bill-page-tmp .show-order-block .table-scroll{
+  height: 538px !important;
+  width: 100%;
+  float: left;
+  position: relative;
+  top: -40px;
+}
+.temporary-bill-page-tmp .header-table-order {
+  float: left;
+  width: 100%;
+  position: relative;
+  border: 1px solid #ddd;
+  z-index: 1;
+}
+.temporary-bill-page-tmp .header-table-order .header-tb{
+  display: inline-block;
+  float: left;
+}
+.temporary-bill-page-tmp .header-table-order .header-table-order {
+  display: inline-block;
+  float: left;
+}
+.temporary-bill-page-tmp .header-table-order .code-h {
+  width: 8%;
+}
+.temporary-bill-page-tmp .header-table-order .time-h {
+  width: 20%;
+}
+.temporary-bill-page-tmp .header-table-order .table-h {
+  width: 9%;
+}
+.temporary-bill-page-tmp .header-table-order .print-h {
+  width: 10%;
+}
+.temporary-bill-page-tmp .header-table-order .price-h {
+  width: 13%;
+}
+.temporary-bill-page-tmp .header-table-order .button-h {
+  width: 40%;
+}
+.temporary-bill-page-tmp .header-table-order .code-h, .time-h, .table-h, .print-h, .price-h, .button-h {
+  padding: 12px 8px;
+  background-color: #f7f5f5;
+  background-image: linear-gradient(#fffefe, #fffefe0f);
+  font-family: 'Roboto-Bold';
+  font-weight: bold;
 }
