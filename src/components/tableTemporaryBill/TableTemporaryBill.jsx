@@ -52,7 +52,7 @@ class TableTemporaryBill extends Component {
         priceDiscount: dataCacheOrder.priceDiscount
       });
     }
-    this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder}));
+    // this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder}));
     // this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
     //   if (res.data) {
     //     let data = res.data.content;
@@ -207,12 +207,20 @@ class TableTemporaryBill extends Component {
               <p className="text">Tổng tiền chiếc khấu trong ca</p>
               <p className="price-text"><span className="price-discount-color">{this.state.priceDiscount.toLocaleString()} đ</span></p>
             </div>
-            <div className="bill-total">
+            <div className="bill-total-tmp">
               <p className="text">Tổng hóa đơn bán trong ca</p>
               <p><span className="bill-total-text">{this.state.billTotal}</span></p>
             </div>
           </div>
           <div className="table-box">
+            <div className="header-table-order">
+              <div className="header-tb code-h">Mã số</div>
+              <div className="header-tb time-h">Thòi gian</div>
+              <div className="header-tb table-h">Bàn số</div>
+              <div className="header-tb print-h">In lúc</div>
+              <div className="header-tb price-h">Tổng tiền</div>
+              <div className="header-tb button-h">Thao tác</div>
+            </div>
             <div className="table-scroll">
               <table className="tmp-bill">
                 <thead>
@@ -234,7 +242,9 @@ class TableTemporaryBill extends Component {
                           <td width="20%">{this.getDate(item.ngayOrder)}</td>
                           <td width="9%">5</td>
                           <td width="10%">-</td>
-                          <td width="13%">{item.tongGia}</td>
+                          <td width="13%">
+                            <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
+                          </td>
                           <td width="40%">
                             <button className="btn cancel-table" onClick={this.cancelItemBill.bind(this, item.id)}>
                               Hủy HĐ

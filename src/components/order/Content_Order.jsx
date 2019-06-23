@@ -5,6 +5,7 @@ import Item_Order from './Item_Order.jsx';
 import Bill_Order from './Bill_Order.jsx';
 import {PropTypes} from 'prop-types';
 import {Numberic} from 'components/keyboarded';
+import {Orders, Promotion} from 'api';
 
 class Content_Order extends Component {
   constructor(props, context) {
@@ -29,6 +30,10 @@ class Content_Order extends Component {
 
   componentWillMount() {
     localStorage.removeItem('products');
+    let date = new Date();
+    let dateTodayFormat = JSON.parse(JSON.stringify(date));
+    this.props.dispatch(Orders.actions.getOrders({ngayOrder: dateTodayFormat}));
+    this.props.dispatch(Promotion.actions.promotion());
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -112,7 +117,8 @@ class Content_Order extends Component {
       arrayProduct.push(item);
     });
     this.setState({
-      products : arrayProduct
+      products : arrayProduct,
+      outLay: 0
     });
     localStorage.removeItem('products');
   }
@@ -140,6 +146,14 @@ class Content_Order extends Component {
     this.state.products.forEach((item, index) => {
       if (item.id == id) {
         item.selectStatus = false;
+        if (item.itemPromotion) {
+          delete item.itemPromotion;
+        }
+        if (item.itemNote) {
+          delete item.itemNote;
+        }
+        item.quantum = 1;
+        item.priceAndQuantum = item.quantum * item.donGia;
       }
       arrayPreProduct.push(item);
     });
@@ -152,8 +166,7 @@ class Content_Order extends Component {
     }
   }
 
-  updateQuantum(idBill, operator) {
-    console.log(idBill);
+  updateQuantum(idBill, operator, promotion) {
     let productsBillPre = [];
     let priceTotal = 0;
     this.state.products.forEach((item, index) => {
@@ -163,8 +176,13 @@ class Content_Order extends Component {
         } else {
           item.quantum = item.quantum + 1;
         }
+        if (promotion && promotion > 0) {
+          item.priceAndQuantum = item.priceAndQuantum - (promotion * item.quantum);
+          item.itemPromotion = promotion;
+        } else {
+          item.priceAndQuantum = item.quantum * item.donGia;
+        }
       }
-      item.priceAndQuantum = item.quantum * item.donGia;
       priceTotal = priceTotal + item.priceAndQuantum;
       productsBillPre.push(item);
     });
@@ -180,12 +198,17 @@ class Content_Order extends Component {
           } else {
             getStoreProducts[index].quantum = getStoreProducts[index].quantum + 1;
           }
+          if (promotion && promotion > 0) {
+            item.priceAndQuantum = item.priceAndQuantum - (promotion * item.quantum);
+            item.itemPromotion = promotion;
+          } else {
+            item.priceAndQuantum = item.quantum * item.donGia;
+          }
         }
         getStoreProducts[index].priceAndQuantum = getStoreProducts[index].quantum * getStoreProducts[index].donGia;
       });
       localStorage.setItem('products', JSON.stringify(getStoreProducts));
     }
-    // console.log(productsBillPre);
   }
 
   copyProductsBill() {

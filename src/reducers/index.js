@@ -8,16 +8,18 @@ import {products} from 'base/reducers/products';
 import {productsBill} from 'base/reducers/productsBill';
 import {orders} from 'base/reducers/orders';
 import {status} from 'base/reducers/status';
+import {promotion} from 'base/reducers/promotion';
 
 let rootReducer = combineReducers(
-{
+  {
     routing,
     categories,
     auth,
     products,
     productsBill,
     orders,
-    status
+    status,
+    promotion
   }
 );
 

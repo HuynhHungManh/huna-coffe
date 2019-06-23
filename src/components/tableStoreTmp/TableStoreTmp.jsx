@@ -41,7 +41,9 @@ class TableStoreTmp extends Component {
       viewOrderPriceTotal: 0,
       viewOrderPriceDiscount: 0,
       viewOrderAfterDiscount: 0,
-      optionCancel: optionCancel
+      optionCancel: optionCancel,
+      timeCurrentOrder: 0,
+      tableCurrentOrder: ''
     }
   }
 
@@ -62,25 +64,23 @@ class TableStoreTmp extends Component {
     });
   }
 
-  cancelTable(index) {
-    this.setState({
-      statusPopup: true,
-      indexItemCurrent: index,
-      modelCurrent: 'cancelForm'
-    });
-  }
+  // cancelTable(index) {
+  //   this.setState({
+  //     statusPopup: true,
+  //     indexItemCurrent: index,
+  //     modelCurrent: 'cancelForm',
+  //   });
+  // }
 
-  cancelItemTable() {
+  cancelItemTable(index) {
     let listData = this.state.orderListData;
-    let index = this.state.indexItemCurrent;
     if (listData[index]) {
-      listData[index].statusCancel = true;
+      listData.splice(index, 1);
       this.setState({
         orderListData: listData,
         statusPopup: false
       });
       localStorage.setItem('orderListTmp', JSON.stringify(listData));
-      this.alertNotification("Hủy bàn thành công!", 'success');
     }
   }
 
@@ -123,7 +123,9 @@ class TableStoreTmp extends Component {
       modelCurrent: 'viewOrder',
       viewOrderPriceTotal: priceTotal,
       viewOrderPriceDiscount: priceDiscount,
-      viewOrderAfterDiscount: afterDiscount
+      viewOrderAfterDiscount: afterDiscount,
+      timeCurrentOrder: this.getDate(dataOrder[index].ngayOrder),
+      tableCurrentOrder: dataOrder[index].soBan
     });
   }
 
@@ -145,14 +147,13 @@ class TableStoreTmp extends Component {
     let data = this.state.orderListData[index];
     this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
       let orderListData = this.state.orderListData;
-      orderListData[index].statusSuccess = true;
+      orderListData.splice(index, 1);
       this.setState({
-        orderListData: orderListData
+        orderListData: orderListData,
+        statusPopup: false
       });
-      let d = new Date();
-      let hour = d.getHours();
-      let minutes = d.getMinutes();
-      let timeCopy = hour + ":" + minutes;
+      let date = new Date();
+      let timeCopy = date.getHours() + ":" + date.getMinutes();
       let copyProductsBill = {
         productsBill: data.productsBill,
         priceTotal: data.priceTotal,
@@ -174,7 +175,6 @@ class TableStoreTmp extends Component {
     let datetime = currentdate.getDate() + "/"
       + (currentdate.getMonth()+1)  + "/"
       + currentdate.getFullYear();
-
     let hoursDiff = currentdate.getHours() - currentdate.getTimezoneOffset() / 60;
     let minutesDiff = (currentdate.getHours() - currentdate.getTimezoneOffset()) % 60;
 
@@ -216,7 +216,12 @@ class TableStoreTmp extends Component {
                     >
                       <td width="8%">1231221</td>
                       <td width="20%">{this.getDate(item.ngayOrder)}</td>
-                      <td width="9%">{item.soBan}</td>
+                      <td width="9%">
+                        { item.soBan == ""
+                          ? ' Mang về'
+                          : item.soBan
+                        }
+                      </td>
                       <td width="10%">-</td>
                       <td width="13%">{item.tongGia}</td>
                       <td width="40%">
@@ -224,7 +229,7 @@ class TableStoreTmp extends Component {
                           classnames('btn cancel-table', {
                             'hidden' : item.statusCancel || item.statusSuccess
                           })}
-                          onClick = {this.cancelTable.bind(this, i)}
+                          onClick = {this.cancelItemTable.bind(this, i)}
                         >
                           Hủy Bàn
                         </button>
@@ -261,8 +266,13 @@ class TableStoreTmp extends Component {
             <div className="cancel-order-block">
               <div className="header-order-block">
                 <span className="close-cancel-form icon-cross" onClick={this.closeCancelForm.bind(this)}></span>
-                <p>Bạn có chắc muốn hủy hóa đơn</p>
-                <p><span className="code-text">0000123</span> không? Vui lòng chọn lý do</p>
+                <p>Bạn có chắc muốn hủy bàn</p>
+                <p><span className="code-text">
+                { this.state.tableCurrentOrder == ""
+                  ? ' Mang về'
+                  : this.state.tableCurrentOrder
+                }
+                </span> không? Vui lòng chọn lý do</p>
                 <p>hủy bên dưới và xác nhận</p>
               </div>
               <div className="dropdown-block">
@@ -292,16 +302,32 @@ class TableStoreTmp extends Component {
             <div className="view-order-block">
               <div className="header-view-order">
                 <p className="text-title">0000123</p>
-                <p className="close-model" onClick={this.closeCancelForm.bind(this)}>X</p>
+                <p className="close-model" onClick={this.closeCancelForm.bind(this)}>
+                  <span className="close-model-icon icon-cross"></span>
+                </p>
+              </div>
+              <div className="table-header-view-order">
+                <div className="table-header item-h">
+                  MẶT HÀNG
+                </div>
+                <div className="table-header bill-h">
+                  ĐƠN GIÁ
+                </div>
+                <div className="table-header quantum-h">
+                  SỐ LƯỢNG
+                </div>
+                <div className="table-header total-h">
+                  TỔNG TIỀN
+                </div>
               </div>
               <div className="table-view-order-content">
                 <table className="table-view-order">
                   <thead>
                     <tr>
-                      <th>MẶT HÀNG</th>
-                      <th>ĐƠN GIÁ</th>
-                      <th>SỐ LƯỢNG</th>
-                      <th>TỔNG TIỀN</th>
+                      <th width="35%">MẶT HÀNG</th>
+                      <th width="20%">ĐƠN GIÁ</th>
+                      <th width="20%">SỐ LƯỢNG</th>
+                      <th width="25%">TỔNG TIỀN</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -327,7 +353,7 @@ class TableStoreTmp extends Component {
                 <div className="view-order-price-tmp">
                   <div className="title-left">
                     <p className="title-text">
-                      Thời gian: <span className="bold">25/02/2015  11:08</span>
+                      Thời gian: <span className="bold">{this.state.timeCurrentOrder}</span>
                     </p>
                   </div>
                   <div className="title-right">
@@ -357,7 +383,13 @@ class TableStoreTmp extends Component {
                 <div className="view-order-after-discount">
                   <div className="title-left">
                     <p className="title-text">
-                      Bàn số: <span className="bold">05</span>
+                      Bàn số:
+                      <span className="bold">
+                        { this.state.tableCurrentOrder == ""
+                          ? ' Mang về'
+                          : this.state.tableCurrentOrder
+                        }
+                      </span>
                     </p>
                   </div>
                   <div className="title-right">
@@ -404,7 +436,7 @@ class TableStoreTmp extends Component {
                 <button className="btn cancel-table" onClick={this.cancelItemTable.bind(this, this.state.indexItemCurrent)}>
                   Hủy Bàn
                 </button>
-                <button className="btn pay" onClick={this.viewOrder.bind(this, this.state.indexItemCurrent)}>
+                <button className="btn pay" onClick={this.orderStore.bind(this, this.state.indexItemCurrent)}>
                   Thanh Toán
                 </button>
               </div>

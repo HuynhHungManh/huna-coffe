@@ -37,17 +37,21 @@ class Bill_Order extends Component {
       noteName: '',
       outlay: '',
       idNoteCurrent: 0,
+      promotion: 0,
+      notePrice: 0,
+      itemNote_tmp: [],
+      dropdown_tmp: 1
     }
   }
 
   componentWillMount() {
+    this.setState({
+      productsBill: this.props.productsBill
+    });
     this.timerID = setInterval(
       () => this.tick(),
       1000
     );
-    this.setState({
-      productsBill: this.props.productsBill
-    });
     localStorage.removeItem('productsBill');
   }
 
@@ -86,7 +90,11 @@ class Bill_Order extends Component {
               let findUpdate = updateQuantum.find(value => value.id == item.id);
               if (findUpdate) {
                 productsAfter[index].quantum = findUpdate.quantum;
-                productsAfter[index].priceAndQuantum = productsAfter[index].quantum * productsAfter[index].donGia;
+                if (item.itemPromotion && item.itemPromotion > 0) {
+                  productsAfter[index].priceAndQuantum = productsAfter[index].quantum * (productsAfter[index].donGia - item.itemPromotion);
+                } else {
+                  productsAfter[index].priceAndQuantum = productsAfter[index].quantum * productsAfter[index].donGia;
+                }
               }
             });
           }
@@ -103,10 +111,19 @@ class Bill_Order extends Component {
         });
       }
     }
+    if (prevProps.promotion !== this.props.promotion) {
+      let promotion = this.props.promotion.find(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_HOA_DON');
+      this.setState({
+        promotion: promotion.chietKhau
+      });
+    }
   }
 
   updateQuantum(idBill, operator) {
-    this.props.updateQuantum(idBill, operator);
+    let item = this.state.productsBill.find(x => x.id == idBill);
+    if (item) {
+      this.props.updateQuantum(idBill, operator, item.itemPromotion);
+    }
     let productsBillPre = [];
     let priceTotal = 0;
     let tmp = '';
@@ -124,7 +141,13 @@ class Bill_Order extends Component {
           }
         }
       }
-      item.priceAndQuantum = item.quantum * item.donGia;
+      item.itemNote = this.state.itemNote;
+      let priceAndQuantum = 0;
+      if (item.itemPromotion && item.itemPromotion > 0) {
+        item.priceAndQuantum = item.priceAndQuantum - (item.itemPromotion * item.quantum);
+      } else {
+        item.priceAndQuantum = item.quantum * item.donGia;
+      }
       priceTotal = priceTotal + item.priceAndQuantum;
       productsBillPre.push(item);
     });
@@ -134,7 +157,6 @@ class Bill_Order extends Component {
       discountPriceTotal: priceTotal / 10,
       discountAfter: priceTotal - (priceTotal / 10)
     });
-
   }
 
   clearForm() {
@@ -165,7 +187,7 @@ class Bill_Order extends Component {
       let dataProducts = {
         'donGia': item.donGia,
         'ghiChuMonOrderThucDon': this.state.itemNote,
-        'khuyenMai': 10,
+        'khuyenMai': item.itemPromotion,
         'ngayOrder': dateFormat,
         'soLuong': item.quantum,
         'thanhTien': item.priceAndQuantum,
@@ -185,7 +207,9 @@ class Bill_Order extends Component {
       'thanhTien': this.state.priceTotal,
       'tongGia': this.state.discountAfter,
       'trangThaiOrder': 'DA_THANH_TOAN',
-      'soBan': this.props.numberTable
+      'soBan': this.props.numberTable,
+      'tienKhachDua': this.props.outLay,
+      'tienThoiLai': (this.props.outLay - this.state.discountAfter)
     };
     if (typeSubmit == "Order") {
       this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
@@ -200,7 +224,8 @@ class Bill_Order extends Component {
           discountPriceTotal: this.state.discountPriceTotal,
           discountAfter: this.state.discountAfter,
           dateCopy: timeCopy,
-          dateOrder: this.state.dateOrder
+          dateOrder: this.state.dateOrder,
+          outLay: this.state.outLay
         }
         localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
         this.clearForm();
@@ -295,8 +320,11 @@ class Bill_Order extends Component {
       noteEditing: data.id,
       noteQuantum: data.quantum,
       noteName: data.ten,
+      notePrice: data.donGia,
       idNoteCurrent: data.id,
-      itemNote: data.itemNote ? data.itemNote : []
+      itemNote: data.itemNote ? data.itemNote : [],
+      cbDiscount: data.itemPromotion ? true : false,
+      itemNote_tmp: 1
     });
   }
 
@@ -324,7 +352,7 @@ class Bill_Order extends Component {
     let noteState = this.state.itemNote;
     noteState.push(note);
     this.setState({
-      itemNote: noteState
+      itemNote_tmp: noteState
     });
   }
 
@@ -335,16 +363,21 @@ class Bill_Order extends Component {
   }
 
   handleChangeDropDown(event) {
+    // this.setState({
+    //   dropdown_tmp: event.target.value
+    // });
     let index_dd = event.target.name;
     let note = this.state.itemNote;
+    let arrayTmp = [];
     if (index_dd && note && note.length > 0) {
       note.forEach((item, index) => {
         if (index_dd == index) {
-          note[index].ghiChuId = event.target.value;
+          item.ghiChuId = event.target.value;
         }
+        arrayTmp.push(item);
       });
       this.setState({
-        itemNote: note
+        itemNote: arrayTmp
       });
     }
   }
@@ -359,21 +392,38 @@ class Bill_Order extends Component {
         }
       });
       this.setState({
-        itemNote: note
+        itemNote_tmp: note
       });
     }
   }
 
   saveUpdateNote() {
-    this.state.productsBill.forEach((item, index) => {
+    let productsBill = this.state.productsBill;
+    let arrayTmp = [];
+    let priceTotal = 0;
+    productsBill.forEach((item, index) => {
       if (this.state.noteEditing == item.id) {
-        this.state.productsBill[index].itemNote = this.state.itemNote;
+        item.itemNote = this.state.itemNote;
+        // item.itemNote[0].ghiChuId = this.state.dropdown_tmp;
+        if (this.state.cbDiscount) {
+          item.itemPromotion = (this.state.promotion * this.state.notePrice) / 100;
+          item.priceAndQuantum = item.priceAndQuantum - (item.itemPromotion * item.quantum);
+        }
       }
+      priceTotal = priceTotal + item.priceAndQuantum;
+      arrayTmp.push(item);
+    });
+    this.setState({
+      productsBill: arrayTmp,
+      priceTotal: priceTotal,
+      discountPriceTotal: priceTotal / 10,
+      discountAfter: priceTotal - (priceTotal / 10)
     });
     this.closeModel();
   }
 
   render() {
+
     return(
       <div className="bill-order-block">
         <div className="bill-box">
@@ -416,16 +466,23 @@ class Bill_Order extends Component {
           </div>
           <div className="bill-content">
             <div className="bill-title">
-              <p className="">Mặt hàng</p>
-              <p className="">Đơn giá</p>
-              <p className="">Số lượng</p>
-              <p className="">Tổng tiền</p>
+              <p className="bill-item">Mặt hàng</p>
+              <p className="bill-price">Đơn giá</p>
+              <p className="bill-quatium">Số lượng</p>
+              <p className="bill-total">Tổng tiền</p>
             </div>
             <div className="bill-calculate">
               {
                 this.state.productsBill.map((item, i) => {
                   return (
-                    <Item_Bill key = {i} data = {item} cancelItemBill = {this.cancelItemBill} productsBill = {this.state.productsBill}  updateQuantum = {this.updateQuantum} openModel={this.openModel} chooseItemProduct = {this.chooseItemProduct}/>
+                    <Item_Bill key = {i} data = {item}
+                      cancelItemBill = {this.cancelItemBill}
+                      productsBill = {this.state.productsBill}
+                      updateQuantum = {this.updateQuantum}
+                      openModel={this.openModel}
+                      chooseItemProduct = {this.chooseItemProduct}
+                      itemNote = {item.itemNote}
+                    />
                   )
                 })
               }
@@ -435,7 +492,7 @@ class Bill_Order extends Component {
             <div className="calculate-tmp">
               <p className="text">Tạm tính</p>
               <p className="text-results">
-              <NumberFormat value={this.state.priceTotal} displayType={'text'} thousandSeparator={true} /> đ
+                <NumberFormat value={this.state.priceTotal} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
                </p>
             </div>
             <div className="discount">
@@ -452,32 +509,37 @@ class Bill_Order extends Component {
                 })}
               >
                 <p className="discount-text">
-                <NumberFormat value={this.state.discountPriceTotal} displayType={'text'} thousandSeparator={true} /> đ
+                <NumberFormat value={this.state.discountPriceTotal} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
                 </p>
               </div>
             </div>
             <div className="discount-after">
               <p className="text">Sau chiết khấu</p>
               <p className="text-results">
-              <NumberFormat value={this.state.discountAfter} displayType={'text'} thousandSeparator={true} /> đ
+              <NumberFormat value={this.state.discountAfter} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
               </p>
             </div>
             <div className="outlay">
               <p className="text">Tiền khách đưa</p>
-              <input className={classnames('inp-outlay', {
-                  'position-input' : this.props.showNumberic && this.props.filedCurrent == 'outLay',
-                })}
+              <NumberFormat
+                className={classnames('inp-outlay', {
+                    'position-input' : this.state.discountPriceTotal > 0
+                      && this.props.showNumberic
+                      && this.props.filedCurrent == 'outLay',
+                    'display-input' : this.state.discountPriceTotal == 0
+                  })}
                 name="outLay"
                 onClick = {this.props.onClickFiledInput.bind(this)}
                 value= {this.props.outLay}
                 type="text"
+                thousandSeparator={true}
+                suffix={' đ'}
               />
             </div>
             <div className="exchange">
               <p className="text">Tiền thối lại</p>
               <p className="text-results">
-              <NumberFormat value={this.props.outLay - this.state.discountAfter} displayType={'text'} thousandSeparator={true} />
-              đ
+              <NumberFormat value={this.props.outLay != 0 ? (this.props.outLay - this.state.discountAfter) : 0} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
               </p>
             </div>
           </div>
@@ -531,24 +593,24 @@ class Bill_Order extends Component {
                     <div>
                       <div className="item-block-info-discount">
                         <div className="title-item-discount">
-                          <div className="title-item-left-discount">Số lượng</div>
+                          <div className="title-item-left-discount">Phần trăm</div>
                           <div className="title-item-right-discount">Số tiền khuyến mãi giảm giá</div>
                         </div>
                       </div>
 
                       <div className="item-info-discount">
                         <div className="checkbox-item-discount">
-                          <input type="text" className="checkbox-inp-block"/>
+                          <input type="text" className="checkbox-inp-block" value = {this.state.promotion}/>
                         </div>
                         <div className="input-item">
-                          <input type="text" className="inp-price-discount-text"/>
-                          <span className="input-item-icon icon-bin"></span>
+                          <NumberFormat
+                            className="inp-price-discount-text"
+                            value= {(this.state.promotion * this.state.notePrice)/100}
+                            type="text"
+                            thousandSeparator={true}
+                          />
+                          <span className="text-price-discount">đ</span>
                         </div>
-                      </div>
-                      <div className="add-discount-text-block">
-                        <p className="add-discount-text">
-                          + Thêm giảm giá
-                        </p>
                       </div>
                     </div>
                     :
@@ -559,11 +621,15 @@ class Bill_Order extends Component {
                   <div className="text-note-info">
                     Ghi chú
                   </div>
-                  <div className="item-block-info">
+                  <div className= {
+                    classnames('item-block-info', {
+                      'item-block-info-scroll' : this.state.itemNote && this.state.itemNote.length > 2,
+                    })}
+                  >
                     {
                       this.state.itemNote.map((item, i) => {
                         return (
-                          <div key = {i}>
+                          <div className="item-note-box" key = {i}>
                             <div className="title-item">
                               <div className="title-item-left">Số lượng</div>
                               <div className="title-item-right">Loại ghi chú</div>
@@ -612,12 +678,10 @@ class Bill_Order extends Component {
   }
 }
 
-// Bill_Order.contextTypes = {
-//   router : PropTypes.any
-// }
-
 const bindStateToProps = (state) => {
-  return {}
+  return {
+    promotion: state.promotion
+  }
 }
 
 export default connect(bindStateToProps)(Bill_Order);
