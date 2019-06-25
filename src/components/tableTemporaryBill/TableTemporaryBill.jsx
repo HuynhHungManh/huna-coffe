@@ -246,13 +246,13 @@ class TableTemporaryBill extends Component {
                             <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
                           </td>
                           <td width="40%">
-                            <button className="btn cancel-table" onClick={this.cancelItemBill.bind(this, item.id)}>
+                            <button className="btn cancel-table btn-active" onClick={this.cancelItemBill.bind(this, item.id)}>
                               Hủy HĐ
                             </button>
-                            <button className="btn view-order-btn" onClick={this.viewOrder.bind(this, item.id)}>
+                            <button className="btn view-order-btn btn-active" onClick={this.viewOrder.bind(this, item.id)}>
                               Xem order
                             </button>
-                            <button className="btn print-btn">
+                            <button className="btn print-btn btn-active">
                               In
                             </button>
                           </td>

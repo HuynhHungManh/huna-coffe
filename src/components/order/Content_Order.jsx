@@ -118,7 +118,8 @@ class Content_Order extends Component {
     });
     this.setState({
       products : arrayProduct,
-      outLay: 0
+      outLay: 0,
+      discountInput: ''
     });
     localStorage.removeItem('products');
   }
@@ -186,6 +187,7 @@ class Content_Order extends Component {
       priceTotal = priceTotal + item.priceAndQuantum;
       productsBillPre.push(item);
     });
+    console.log(productsBillPre);
     this.setState({
       products : productsBillPre
     });

@@ -226,7 +226,7 @@ class TableStoreTmp extends Component {
                       <td width="13%">{item.tongGia}</td>
                       <td width="40%">
                         <button className={
-                          classnames('btn cancel-table', {
+                          classnames('btn cancel-table btn-active', {
                             'hidden' : item.statusCancel || item.statusSuccess
                           })}
                           onClick = {this.cancelItemTable.bind(this, i)}
@@ -234,7 +234,7 @@ class TableStoreTmp extends Component {
                           Hủy Bàn
                         </button>
                         <button className={
-                          classnames('btn view-order-btn', {
+                          classnames('btn view-order-btn btn-active', {
                             'hidden' : item.statusCancel || item.statusSuccess
                           })}
                           onClick={this.viewOrder.bind(this, i)}
@@ -242,7 +242,7 @@ class TableStoreTmp extends Component {
                           Xem order
                         </button>
                         <button className={
-                          classnames('btn print-btn', {
+                          classnames('btn print-btn btn-active', {
                             'hidden' : item.statusCancel || item.statusSuccess
                           })}
                           onClick ={this.orderStore.bind(this, i)}

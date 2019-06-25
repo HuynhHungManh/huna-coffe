@@ -40,13 +40,15 @@ class Bill_Order extends Component {
       promotion: 0,
       notePrice: 0,
       itemNote_tmp: [],
-      dropdown_tmp: 1
+      dropdown_tmp: 1,
+      discountInput: 1
     }
   }
 
   componentWillMount() {
     this.setState({
-      productsBill: this.props.productsBill
+      productsBill: this.props.productsBill,
+      discountInput: this.props.discountInput && this.props.discountInput != '' ?  parseInt(this.props.discountInput, 10) : 1
     });
     this.timerID = setInterval(
       () => this.tick(),
@@ -103,11 +105,12 @@ class Bill_Order extends Component {
         getChooses.forEach((item, index) => {
           priceTotal = priceTotal + item.priceAndQuantum;
         });
+        let discountPriceTotal = (priceTotal * parseInt(this.state.discountInput, 10)) / 100;
         this.setState({
           productsBill :  getChooses,
           priceTotal: priceTotal,
-          discountPriceTotal: priceTotal / 10,
-          discountAfter: priceTotal - (priceTotal / 10)
+          discountPriceTotal: discountPriceTotal,
+          discountAfter: priceTotal - discountPriceTotal
         });
       }
     }
@@ -116,6 +119,16 @@ class Bill_Order extends Component {
       this.setState({
         promotion: promotion.chietKhau
       });
+    }
+    if (prevProps.discountInput !== this.props.discountInput) {
+      if (this.props.discountInput != '') {
+        let discountPriceTotal = (this.state.priceTotal * parseInt(this.props.discountInput, 10)) / 100;
+        this.setState({
+          discountInput: parseInt(this.props.discountInput, 10),
+          discountPriceTotal: discountPriceTotal,
+          discountAfter: this.state.priceTotal - discountPriceTotal
+        });
+      }
     }
   }
 
@@ -133,15 +146,15 @@ class Bill_Order extends Component {
     }
     this.state.productsBill.forEach((item, index) => {
       if (item.id == idBill) {
-        if (operator === 'minus') {
+        if (operator === 'minus' && item.quantum > 1) {
           item.quantum = item.quantum - 1;
-        } else {
+        } else if (operator === 'plus') {
           if (tmp) {
             item.quantum = item.quantum + 1;
           }
         }
+        item.itemNote = this.state.itemNote;
       }
-      item.itemNote = this.state.itemNote;
       let priceAndQuantum = 0;
       if (item.itemPromotion && item.itemPromotion > 0) {
         item.priceAndQuantum = item.priceAndQuantum - (item.itemPromotion * item.quantum);
@@ -151,11 +164,13 @@ class Bill_Order extends Component {
       priceTotal = priceTotal + item.priceAndQuantum;
       productsBillPre.push(item);
     });
+    let discountPriceTotal = (priceTotal * parseInt(this.state.discountInput, 10)) / 100;
+    // console.log(productsBillPre);
     this.setState({
       productsBill :  productsBillPre,
       priceTotal: priceTotal,
-      discountPriceTotal: priceTotal / 10,
-      discountAfter: priceTotal - (priceTotal / 10)
+      discountPriceTotal: discountPriceTotal,
+      discountAfter: priceTotal - discountPriceTotal
     });
   }
 
@@ -172,7 +187,8 @@ class Bill_Order extends Component {
       discountAfter: 0,
       dateOrder: datetime,
       date: new Date(),
-      statusCopyPreBill: false
+      statusCopyPreBill: false,
+      discountInput: 1
     });
     localStorage.removeItem('productsBill');
     localStorage.removeItem('products');
@@ -192,7 +208,7 @@ class Bill_Order extends Component {
         'soLuong': item.quantum,
         'thanhTien': item.priceAndQuantum,
         'thucDonId': item.id,
-        'tongGia': (item.priceAndQuantum * 10) / 100,
+        'tongGia': this.state.discountInput && this.props.state.length > 0 ? ((item.priceAndQuantum * this.state.discountInput) / 100) : item.priceAndQuantum,
         'ten': item.ten
       }
       orderProducts.push(dataProducts);
@@ -308,10 +324,15 @@ class Bill_Order extends Component {
   }
 
   changCbDiscount() {
-    this.setState({
-      cbDiscount : this.refs.cb_discount.checked
-    });
-
+    if (this.state.cbDiscount !==  this.refs.cb_discount.checked) {
+      this.setState({
+        cbDiscount : this.refs.cb_discount.checked
+      });
+    } else if (this.state.cbDiscount == true && this.refs.cb_discount.checked == true ) {
+      this.setState({
+        cbDiscount : false
+      });
+    }
   }
 
   chooseItemProduct(data) {
@@ -335,11 +356,12 @@ class Bill_Order extends Component {
     afterCancel.forEach((item, index) => {
       priceTotal = priceTotal + item.priceAndQuantum;
     });
+    let discountPriceTotal = (priceTotal * parseInt(this.state.discountInput, 10)) / 100;
     this.setState({
       productsBill : afterCancel,
       priceTotal: priceTotal,
-      discountPriceTotal: priceTotal / 10,
-      discountAfter: priceTotal - (priceTotal / 10)
+      discountPriceTotal: discountPriceTotal,
+      discountAfter: priceTotal - discountPriceTotal
     });
   }
 
@@ -363,9 +385,6 @@ class Bill_Order extends Component {
   }
 
   handleChangeDropDown(event) {
-    // this.setState({
-    //   dropdown_tmp: event.target.value
-    // });
     let index_dd = event.target.name;
     let note = this.state.itemNote;
     let arrayTmp = [];
@@ -404,26 +423,27 @@ class Bill_Order extends Component {
     productsBill.forEach((item, index) => {
       if (this.state.noteEditing == item.id) {
         item.itemNote = this.state.itemNote;
-        // item.itemNote[0].ghiChuId = this.state.dropdown_tmp;
         if (this.state.cbDiscount) {
           item.itemPromotion = (this.state.promotion * this.state.notePrice) / 100;
           item.priceAndQuantum = item.priceAndQuantum - (item.itemPromotion * item.quantum);
+        } else {
+          delete item.itemPromotion;
         }
       }
       priceTotal = priceTotal + item.priceAndQuantum;
       arrayTmp.push(item);
     });
+    let discountPriceTotal = (priceTotal * parseInt(this.state.discountInput, 10)) / 100;
     this.setState({
       productsBill: arrayTmp,
       priceTotal: priceTotal,
-      discountPriceTotal: priceTotal / 10,
-      discountAfter: priceTotal - (priceTotal / 10)
+      discountPriceTotal: discountPriceTotal,
+      discountAfter: priceTotal - discountPriceTotal
     });
     this.closeModel();
   }
 
   render() {
-
     return(
       <div className="bill-order-block">
         <div className="bill-box">
@@ -501,7 +521,7 @@ class Bill_Order extends Component {
                   'position-input' : this.props.showNumberic && this.props.filedCurrent == 'discountInput',
                 })}
                 name="discountInput"
-                value = {this.props.discountInput} type="text"
+                value = {this.state.discountInput == 1 ? '' : this.state.discountInput} type="text"
                 onClick = {this.props.onClickFiledInput.bind(this)}
               />
               <div className={classnames('bg-discount', {
@@ -509,14 +529,16 @@ class Bill_Order extends Component {
                 })}
               >
                 <p className="discount-text">
-                <NumberFormat value={this.state.discountPriceTotal} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+                {this.state.discountInput && this.state.discountInput != 1 &&
+                  <NumberFormat value={Number((this.state.discountPriceTotal).toFixed(3))} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+                }
                 </p>
               </div>
             </div>
             <div className="discount-after">
               <p className="text">Sau chiết khấu</p>
               <p className="text-results">
-              <NumberFormat value={this.state.discountAfter} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+              <NumberFormat value={Number((this.state.discountAfter).toFixed(3))} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
               </p>
             </div>
             <div className="outlay">
@@ -544,13 +566,13 @@ class Bill_Order extends Component {
             </div>
           </div>
           <div className="bill-footer">
-            <button className="fill-again" onClick={this.clearForm.bind(this)}>
+            <button className="fill-again btn-active" onClick={this.clearForm.bind(this)}>
               Nhập lại
             </button>
-            <button className="save" onClick={this.submitOrders.bind(this, 'Store')}>
+            <button className="save btn-active" onClick={this.submitOrders.bind(this, 'Store')}>
               Lưu
             </button>
-            <button className="pay" onClick={this.submitOrders.bind(this, 'Order')}>
+            <button className="pay btn-active" onClick={this.submitOrders.bind(this, 'Order')}>
               Thanh Toán
             </button>
           </div>
