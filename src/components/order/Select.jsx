@@ -1,22 +1,27 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import classnames from 'classnames';
 import NumberFormat from 'react-number-format';
+import Select from 'react-select';
 
-class Item_Bill extends Component {
+class S extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
       quantum: 1,
       bill_data: [],
-      noteOrders: []
+      itemArray: [
+        'Không đường',
+        'Không đá',
+        'Không sữa',
+        'ít đường'
+      ]
     }
   }
 
   componentWillMount() {
     this.setState({
       bill_data :  this.props.data,
-      quantum: this.props.data.quantum,
-      noteOrders: this.props.noteOrders ? this.props.noteOrders : []
+      quantum: this.props.data.quantum
     });
   }
 
@@ -35,7 +40,6 @@ class Item_Bill extends Component {
     if (promotion) {
       return (price - promotion) * quantum;
     }
-
     return price  * quantum;
   }
 
@@ -73,19 +77,6 @@ class Item_Bill extends Component {
     return trimmedText;
   }
 
-  renderItem(idsString) {
-    let itemArray = [];
-    let idsArray = [];
-    if (typeof idsString == 'string') {
-      idsArray = idsString.split(",").map(Number);
-      if (idsArray && idsArray.length > 0) {
-        itemArray = this.state.noteOrders.filter(item => idsArray.includes(item.id));
-      }
-    };
-
-    return itemArray ? itemArray : [];
-  }
-
   render() {
     return(
       <div className={classnames('bill-item', {
@@ -97,8 +88,8 @@ class Item_Bill extends Component {
           })}
         >
           <div className={classnames('info-block', {
-              'add-note-item-scroll' : this.props.itemNote && (this.props.itemNote.length > 1 || (this.props.itemNote.length == 1 && this.props.data.itemPromotion))
-            })}
+                'add-note-item-scroll' : this.props.itemNote && (this.props.itemNote.length > 1 || (this.props.itemNote.length == 1 && this.props.data.itemPromotion))
+              })}
           >
             <p className="text" onClick={this.props.chooseItemProduct.bind(this, this.props.data)}>{this.truncate(this.props.data.ten)}</p>
             { this.props.itemNote &&
@@ -106,18 +97,7 @@ class Item_Bill extends Component {
                 {
                   this.props.itemNote.map((item, i) => {
                     return (
-                        <div key={i} className="note-item">
-                            <span className="note-quatum-item">{item.soLuong} x </span> 
-                            <div className="note-name-item">
-                            {
-                              this.renderItem(item.ghiChuId).map((itemChild, j) => {
-                                return (
-                                  <p key={j}>{itemChild.ten}</p>
-                                )
-                              })
-                            }
-                            </div>
-                        </div>
+                        <p key ={i} className="note-item">{item.soLuong} x {this.state.itemArray[item.ghiChuId-1]}</p>
                       )
                   })
                 }

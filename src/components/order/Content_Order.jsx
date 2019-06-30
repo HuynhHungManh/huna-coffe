@@ -5,7 +5,7 @@ import Item_Order from './Item_Order.jsx';
 import Bill_Order from './Bill_Order.jsx';
 import {PropTypes} from 'prop-types';
 import {Numberic} from 'components/keyboarded';
-import {Orders, Promotion} from 'api';
+import {Orders, Promotion, NoteOrder, TotalPromotion} from 'api';
 
 class Content_Order extends Component {
   constructor(props, context) {
@@ -32,8 +32,34 @@ class Content_Order extends Component {
     localStorage.removeItem('products');
     let date = new Date();
     let dateTodayFormat = JSON.parse(JSON.stringify(date));
-    this.props.dispatch(Orders.actions.getOrders({ngayOrder: dateTodayFormat}));
+    this.props.dispatch(Orders.actions.getOrders({ngayOrder: dateTodayFormat})).then((res) => {
+      if (res.data.content) {
+        let data = res.data;
+        this.setState({
+          getOrders :  data.content,
+          billTotal: data.totalElements
+        });
+        let priceTotal = 0;
+        let priceDiscount = 0;
+        data.content.forEach(function(item, index) {
+          priceTotal = priceTotal + item.thanhTien;
+          priceDiscount = priceDiscount + item.tongGia;
+        });
+        this.setState({
+          priceTotal :  priceTotal,
+          priceDiscount: priceTotal - priceDiscount
+        });
+        let dataCache = {
+          getOrders: data.content,
+          billTotal: data.totalElements,
+          priceTotal: priceTotal,
+          priceDiscount: priceTotal - priceDiscount
+        };
+        localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
+      }
+    });
     this.props.dispatch(Promotion.actions.promotion());
+    this.props.dispatch(NoteOrder.actions.noteOrders());
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -41,6 +67,7 @@ class Content_Order extends Component {
       let getStoreProducts = JSON.parse(localStorage.getItem('products'));
       let products = this.props.products;
       let preProduct = [];
+      let categoriesIdCurrent = JSON.parse(localStorage.getItem('categoriesIdCurrent'));
       products.forEach((item, index) => {
         if (getStoreProducts != null
           && getStoreProducts.length > 0
@@ -57,6 +84,7 @@ class Content_Order extends Component {
           item.selectStatus = true;
           item.quantum = sameProduct.quantum;
         }
+        item.categoriesId = categoriesIdCurrent;
         item.priceAndQuantum = item.quantum * item.donGia;
         preProduct.push(item);
       });
@@ -172,42 +200,44 @@ class Content_Order extends Component {
     let priceTotal = 0;
     this.state.products.forEach((item, index) => {
       if (item.id == idBill) {
-        if (operator === 'minus') {
+        if (operator == 'minus') {
           item.quantum = item.quantum - 1;
         } else {
           item.quantum = item.quantum + 1;
         }
         if (promotion && promotion > 0) {
-          item.priceAndQuantum = item.priceAndQuantum - (promotion * item.quantum);
+          // item.priceAndQuantum = (item.donGia - promotion) * item.quantum;
           item.itemPromotion = promotion;
         } else {
           item.priceAndQuantum = item.quantum * item.donGia;
+          item.itemPromotion = 0;
         }
       }
       priceTotal = priceTotal + item.priceAndQuantum;
       productsBillPre.push(item);
     });
-    console.log(productsBillPre);
     this.setState({
       products : productsBillPre
     });
     let getStoreProducts = JSON.parse(localStorage.getItem('products'));
+    let arrayTmp = [];
     if (getStoreProducts && getStoreProducts.find(x => x.id == idBill)) {
       getStoreProducts.forEach((item, index) => {
         if (item.id == idBill) {
           if (operator === 'minus') {
-            getStoreProducts[index].quantum = getStoreProducts[index].quantum - 1;
+            item.quantum = item.quantum && item.quantum > 1 ? item.quantum - 1 : 1;
           } else {
-            getStoreProducts[index].quantum = getStoreProducts[index].quantum + 1;
+            item.quantum = item.quantum ? item.quantum + 1 : 1;
           }
           if (promotion && promotion > 0) {
-            item.priceAndQuantum = item.priceAndQuantum - (promotion * item.quantum);
+            item.priceAndQuantum = (item.donGia - promotion) * item.quantum;
             item.itemPromotion = promotion;
           } else {
             item.priceAndQuantum = item.quantum * item.donGia;
+            item.itemPromotion = 0;
           }
         }
-        getStoreProducts[index].priceAndQuantum = getStoreProducts[index].quantum * getStoreProducts[index].donGia;
+        arrayTmp.push(item);
       });
       localStorage.setItem('products', JSON.stringify(getStoreProducts));
     }
@@ -216,7 +246,8 @@ class Content_Order extends Component {
   copyProductsBill() {
     this.clearFormOrder();
     let getStoreProducts = JSON.parse(localStorage.getItem('products'));
-    let getCopyProductsBill = JSON.parse(localStorage.getItem('copyProductsBill')).productsBill;
+    let getCopyProducts = JSON.parse(localStorage.getItem('copyProductsBill')).productsBill;
+    let getCopyProductsBill = getCopyProducts.productsBill;
     let productsCurrent = this.state.products;
     if (getCopyProductsBill) {
       getCopyProductsBill.forEach((item, index) => {
@@ -227,7 +258,8 @@ class Content_Order extends Component {
         });
       });
       this.setState({
-        products: productsCurrent
+        products: productsCurrent,
+        numberTable: getCopyProducts.numberTable
       });
 
       if (getStoreProducts) {
@@ -238,8 +270,10 @@ class Content_Order extends Component {
             }
           });
         });
+
         localStorage.setItem('products', JSON.stringify(getStoreProducts));
       }
+
     }
   }
 
@@ -294,7 +328,7 @@ class Content_Order extends Component {
         }
       } else {
         this.setState({
-          discountInput: ''
+          discountInput: 'clear'
         });
       }
     } else if (this.state.filedCurrent == 'outLay') {
@@ -310,7 +344,7 @@ class Content_Order extends Component {
         });
       } else {
         this.setState({
-          outLay: ''
+          outLay: 0
         });
       }
     }

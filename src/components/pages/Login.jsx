@@ -49,10 +49,10 @@ class Login extends React.Component {
         'Email': this.state.input['username'],
         'Password': this.state.input['password']
       }
-      console.log(this.state.input['username']);
       this.props.dispatch(Auth.actions.login(null, header))
       .then((res) => {
         if (res.data && res.data.token) {
+          // console.log(res.data);
           localStorage.setItem('auth', JSON.stringify(res.data));
           this.props.history.push('/coffee');
         } else {

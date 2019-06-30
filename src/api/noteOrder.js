@@ -2,37 +2,18 @@ import reduxApi, {transformers} from 'redux-api';
 import customFetch from 'api/axios';
 import CONFIG from 'base/constants/config';
 
-let auth = JSON.parse(localStorage.getItem('auth'));
-let token = '';
-if (auth && auth.token) {
-  token = auth.token;
-}
-
 // Example
 const rest = reduxApi({
-  login: {
-    url: '/auth/login',
+  noteOrders: {
+    url: '/ghichumons',
     options:(url, params, getState) => {
-      return {
-        method: "POST",
-        headers: params,
-        data: {}
-      };
-    },
-    postfetch: [
-      function({data, actions, dispatch, getState, request}) {
-        dispatch({
-          type: 'LOGIN',
-          login: data.data
-        });
+      let auth = JSON.parse(localStorage.getItem('auth'));
+      let token = '';
+      if (auth && auth.token) {
+        token = auth.token;
       }
-    ]
-  },
-  logout: {
-    url: '/auth/logout',
-    options:(url, params, getState) => {
       return {
-        method: "POST",
+        method: "GET",
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -44,8 +25,8 @@ const rest = reduxApi({
     postfetch: [
       function({data, actions, dispatch, getState, request}) {
         dispatch({
-          type: 'LOGOUT',
-          logout: data.data
+          type: 'LIST_NOTE_ORDER',
+          noteOrders: data.data
         });
       }
     ]

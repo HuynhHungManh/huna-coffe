@@ -101,7 +101,7 @@ const rest = reduxApi({
           'Accept': 'application/json',
           'Authorization': 'Bearer ' + token
         },
-        data: {params}
+        data: params
       };
     },
     postfetch: [

@@ -4,6 +4,8 @@ import {connect} from 'react-redux';
 import Spinner from 'react-spinkit';
 import classnames from 'classnames';
 Modal.setAppElement('body');
+import {Auth} from 'api';
+import Alert from 'react-s-alert';
 
 class Footer extends Component {
   constructor(props, context) {
@@ -43,7 +45,10 @@ class Footer extends Component {
       if (window.location.href.indexOf(item.url) !== -1) {
         if (item.url == '/coffee' || item.url == '/temporary-bill' ||  item.url == '/store-tmp') {
           item.status = true;
-        }
+        } 
+        // else {
+        //   JSON.parse(localStorage.removeItem('auth'));
+        // }
       }
       // if (item.id === idTab) {
       //   item.status = true;
@@ -79,11 +84,40 @@ class Footer extends Component {
     this.setState({
       tabs : preTabs
     })
+    if (url == '/' && idTab == 4) {
+      this.props.dispatch(Auth.actions.logout())
+      .then((res) => {
+        // localStorage.removeItem('auth');
+        this.alertNotification('Bạn đã đăng xuất thành công!', 'success');
+      });
+    }
     this.gotoPage(url);
   }
 
   gotoPage(page) {
     this.context.router.history.push(page);
+  }
+
+  alertNotification(message, type) {
+    let option = {
+      position: 'top-right',
+      timeout: 3000
+    };
+    switch (type) {
+      case 'info':
+        Alert.info(message, option);
+        break;
+      case 'success':
+        Alert.success(message, option);
+        break;
+      case 'warning':
+        Alert.warning(message, option);
+        break;
+      case 'error':
+        Alert.error(message, option);
+      default:
+          break;
+    };
   }
 
   render() {

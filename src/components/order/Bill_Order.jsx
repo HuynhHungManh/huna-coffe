@@ -6,8 +6,9 @@ import {Orders} from 'api';
 import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
 import Modal from 'react-modal';
-Modal.setAppElement('body');
 import NumberFormat from 'react-number-format';
+Modal.setAppElement('body');
+import  MultiSelectReact  from 'multi-select-react';
 
 class Bill_Order extends Component {
   constructor(props, context) {
@@ -39,16 +40,22 @@ class Bill_Order extends Component {
       idNoteCurrent: 0,
       promotion: 0,
       notePrice: 0,
-      itemNote_tmp: [],
+      itemNoteTmp: [],
       dropdown_tmp: 1,
-      discountInput: 1
+      discountInput: '',
+      promotionGroup: 0,
+      promotionGroupId: [],
+      promotionItems: [],
+      multiSelected: [],
+      isPromotionTypeBill: false,
+      numberTable: 0
     }
   }
 
   componentWillMount() {
     this.setState({
       productsBill: this.props.productsBill,
-      discountInput: this.props.discountInput && this.props.discountInput != '' ?  parseInt(this.props.discountInput, 10) : 1
+      discountInput: this.props.discountInput && this.props.discountInput != '' ?  parseInt(this.props.discountInput, 10) : ''
     });
     this.timerID = setInterval(
       () => this.tick(),
@@ -65,6 +72,21 @@ class Bill_Order extends Component {
     this.setState({
       date: new Date()
     });
+  }
+
+  toTimestamp(strDate){
+    var datum = Date.parse(strDate);
+    return datum/1000;
+  }
+
+  checkPromotionDate(startDateParams, endDateParams) {
+    let startDate = this.toTimestamp(startDateParams);
+    let endDate = this.toTimestamp(endDateParams);
+    let today = Math.round(+new Date()/1000);
+    if (startDate <= today && today <= endDate) {
+      return true;
+    }
+    return false;
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -90,10 +112,11 @@ class Bill_Order extends Component {
           if (updateQuantum && updateQuantum.length > 0) {
             productsAfter.forEach((item, index) => {
               let findUpdate = updateQuantum.find(value => value.id == item.id);
+              // console.log(findUpdate);
               if (findUpdate) {
                 productsAfter[index].quantum = findUpdate.quantum;
                 if (item.itemPromotion && item.itemPromotion > 0) {
-                  productsAfter[index].priceAndQuantum = productsAfter[index].quantum * (productsAfter[index].donGia - item.itemPromotion);
+                  // productsAfter[index].priceAndQuantum = productsAfter[index].quantum * (productsAfter[index].donGia - item.itemPromotion);
                 } else {
                   productsAfter[index].priceAndQuantum = productsAfter[index].quantum * productsAfter[index].donGia;
                 }
@@ -103,33 +126,105 @@ class Bill_Order extends Component {
           getChooses = productsAfter.concat(unique);
         }
         getChooses.forEach((item, index) => {
+          if (this.state.promotionGroup) {
+            let promotionGroup = this.state.promotionGroup.find(itemPromotion => itemPromotion.loaiThucDonId == item.categoriesId);
+            if (promotionGroup) {
+              item.discount = promotionGroup.chietKhau;
+              item.itemPromotion = (promotionGroup.chietKhau * item.donGia) / 100;
+              item.priceAndQuantum = (item.donGia - item.itemPromotion) * item.quantum;
+            } else {
+              let promotionItem = this.state.promotionItems.find(itemPromotion => itemPromotion.thucDonId == item.id);
+              if (promotionItem) {
+                item.discount = promotionItem.chietKhau;
+                item.itemPromotion = (promotionItem.chietKhau * item.donGia) / 100;
+                item.priceAndQuantum = (item.donGia - item.itemPromotion) * item.quantum;
+              }
+            }
+          }
           priceTotal = priceTotal + item.priceAndQuantum;
         });
-        let discountPriceTotal = (priceTotal * parseInt(this.state.discountInput, 10)) / 100;
+
+        let discountInput = this.state.discountInput;
+        if (discountInput == '' && this.state.isPromotionTypeBill == true) {
+           discountInput = 0;
+           getChooses.forEach((item, index) => {
+            item.discount = discountInput;
+          });
+        };
+        let discountPriceTotal = discountInput > 0 && discountInput != '' ? (priceTotal * parseInt(discountInput, 10)) / 100 : 0;
+
         this.setState({
           productsBill :  getChooses,
           priceTotal: priceTotal,
           discountPriceTotal: discountPriceTotal,
-          discountAfter: priceTotal - discountPriceTotal
+          discountAfter: discountPriceTotal >= 0 && discountPriceTotal <= priceTotal ? priceTotal - discountPriceTotal : 0
         });
       }
     }
     if (prevProps.promotion !== this.props.promotion) {
-      let promotion = this.props.promotion.find(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_HOA_DON');
-      this.setState({
-        promotion: promotion.chietKhau
-      });
+      let promotionBill = this.props.promotion.find(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_HOA_DON' 
+        && this.checkPromotionDate(item.tuNgay, item.denNgay));
+      if (promotionBill) {
+        this.setState({
+          discountInput: promotionBill.chietKhau,
+          isPromotionTypeBill: true
+        });
+      } else {
+        let promotionGroup = this.props.promotion.filter(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_NHOM_MON' 
+          && this.checkPromotionDate(item.tuNgay, item.denNgay));
+        let promotionItems = this.props.promotion.filter(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_MON' 
+          && this.checkPromotionDate(item.tuNgay, item.denNgay));
+        if (promotionGroup) {
+          let arrayId = [];
+          promotionGroup.forEach((item, index) => {
+            arrayId.push(item.loaiThucDonId);
+          });
+          this.setState({
+            promotionGroup: promotionGroup,
+            promotionGroupId: arrayId
+          });
+        }
+        if (promotionItems) {
+          if (this.state.promotionGroupId) {
+            promotionItems = promotionItems.filter(item => this.state.promotionGroupId.indexOf(item.loaiThucDonId) === -1);
+          }
+          this.setState({
+            promotionItems: promotionItems
+          });
+        }
+      }
     }
     if (prevProps.discountInput !== this.props.discountInput) {
-      if (this.props.discountInput != '') {
+      if (this.props.discountInput != '' && this.props.discountInput != 'clear') {
         let discountPriceTotal = (this.state.priceTotal * parseInt(this.props.discountInput, 10)) / 100;
         this.setState({
           discountInput: parseInt(this.props.discountInput, 10),
           discountPriceTotal: discountPriceTotal,
           discountAfter: this.state.priceTotal - discountPriceTotal
         });
+      } else {
+        this.setState({
+          discountInput: ''
+        });
       }
     }
+    if (prevProps.noteOrders !== this.props.noteOrders) {
+      let arrayTmp = [];
+      this.props.noteOrders.map((item) => {
+        if (item.id && item.ten) {
+          arrayTmp.push({ label: item.ten, id:item.id });
+        }
+      });
+      this.setState({
+        multiSelected: arrayTmp
+      });
+    }
+    // if (prevProps.numberTable !== this.props.numberTable) {
+    //   numberTable
+    //   this.setState({
+    //     numberTable: this.props.numberTable
+    //   });
+    // }
   }
 
   updateQuantum(idBill, operator) {
@@ -144,28 +239,32 @@ class Bill_Order extends Component {
     if (getStoreProducts) {
       tmp = getStoreProducts.find(x => x.id == idBill);
     }
+    // console.log(this.state.productsBill);
     this.state.productsBill.forEach((item, index) => {
       if (item.id == idBill) {
-        if (operator === 'minus' && item.quantum > 1) {
+        if (operator === 'minus' && item.quantum > 1 && tmp) {
           item.quantum = item.quantum - 1;
         } else if (operator === 'plus') {
           if (tmp) {
             item.quantum = item.quantum + 1;
           }
         }
-        item.itemNote = this.state.itemNote;
+        // item.itemNote = this.state.itemNote;
       }
       let priceAndQuantum = 0;
       if (item.itemPromotion && item.itemPromotion > 0) {
-        item.priceAndQuantum = item.priceAndQuantum - (item.itemPromotion * item.quantum);
+        // item.priceAndQuantum = (item.priceAndQuantum - item.itemPromotion) * item.quantum;
       } else {
-        item.priceAndQuantum = item.quantum * item.donGia;
+        // item.priceAndQuantum = item.quantum * item.donGia;
       }
       priceTotal = priceTotal + item.priceAndQuantum;
       productsBillPre.push(item);
     });
-    let discountPriceTotal = (priceTotal * parseInt(this.state.discountInput, 10)) / 100;
-    // console.log(productsBillPre);
+    let discountInput = this.state.discountInput;
+    if (discountInput == '') {
+      discountInput = 0;
+    }
+    let discountPriceTotal = discountInput > 0 ? (priceTotal * parseInt(this.state.discountInput, 10)) / 100 : 0;
     this.setState({
       productsBill :  productsBillPre,
       priceTotal: priceTotal,
@@ -188,7 +287,7 @@ class Bill_Order extends Component {
       dateOrder: datetime,
       date: new Date(),
       statusCopyPreBill: false,
-      discountInput: 1
+      discountInput: ''
     });
     localStorage.removeItem('productsBill');
     localStorage.removeItem('products');
@@ -202,20 +301,21 @@ class Bill_Order extends Component {
     this.state.productsBill.forEach((item, index) => {
       let dataProducts = {
         'donGia': item.donGia,
-        'ghiChuMonOrderThucDon': this.state.itemNote,
-        'khuyenMai': item.itemPromotion,
+        'ghiChuMonOrderThucDon': item.itemNote,
+        'khuyenMai': item.itemPromotion ? item.itemPromotion : 0,
         'ngayOrder': dateFormat,
         'soLuong': item.quantum,
         'thanhTien': item.priceAndQuantum,
         'thucDonId': item.id,
-        'tongGia': this.state.discountInput && this.props.state.length > 0 ? ((item.priceAndQuantum * this.state.discountInput) / 100) : item.priceAndQuantum,
-        'ten': item.ten
+        'tongGia': this.state.discountInput && this.state.discountInput.length > 0 ? ((item.priceAndQuantum * this.state.discountInput) / 100) : item.priceAndQuantum,
+        'ten': item.ten,
+        'chietKhau' : item.discount ? item.discount : 0
       }
       orderProducts.push(dataProducts);
     });
-
+    let payBack = this.props.outLay - this.state.discountAfter;
     let data = {
-      'khuyenMai': 0,
+      'khuyenMai': this.state.discountInput && this.state.isPromotionTypeBill == true ? this.state.discountInput : 0,
       'ngayOrder': dateFormat,
       'nguoiChietKhauId': 1,
       'nhanVienOrderId': auth.userId ? auth.userId : 0,
@@ -225,15 +325,18 @@ class Bill_Order extends Component {
       'trangThaiOrder': 'DA_THANH_TOAN',
       'soBan': this.props.numberTable,
       'tienKhachDua': this.props.outLay,
-      'tienThoiLai': (this.props.outLay - this.state.discountAfter)
+      'tienThoiLai': payBack
     };
     if (typeSubmit == "Order") {
-      this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
+      if (!this.props.outLay || this.props.outLay == 0 || payBack < 0) {
+        this.alertNotification('Khách chưa đưa tiền hoặc không đủ!', 'warning');
+      } else {
+        this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
         this.alertNotification('Bạn đã order thành công!', 'success');
         let d = new Date();
         let hour = d.getHours();
         let minutes = date.getMinutes();
-        let timeCopy = hour + ":" + minutes;
+        let timeCopy = hour + ':' + minutes;
         let copyProductsBill = {
           productsBill: this.state.productsBill,
           priceTotal: this.state.priceTotal,
@@ -241,13 +344,15 @@ class Bill_Order extends Component {
           discountAfter: this.state.discountAfter,
           dateCopy: timeCopy,
           dateOrder: this.state.dateOrder,
-          outLay: this.state.outLay
+          outLay: this.state.outLay,
+          numberTable: this.props.numberTable
         }
         localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
         this.clearForm();
-      }).catch((reason) => {
-        this.alertNotification('Order không thành công!', 'error');
-      });
+        }).catch((reason) => {
+          this.alertNotification('Order không thành công!', 'error');
+        });
+      }
     } else if (typeSubmit == 'Store') {
       let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
       let orderNewListTmp = [];
@@ -277,7 +382,8 @@ class Bill_Order extends Component {
         discountAfter: getCopyProductsBill.discountAfter,
         dateCopy: getCopyProductsBill.dateCopy,
         dateOrder: getCopyProductsBill.dateOrder,
-        statusCopyPreBill: true
+        statusCopyPreBill: true,
+        numberTable: getCopyProductsBill.numberTable
       });
     }
   }
@@ -336,6 +442,24 @@ class Bill_Order extends Component {
   }
 
   chooseItemProduct(data) {
+    // console.log(data);
+    // promotionBill: 0,
+    // promotionGroup: 0,
+    // promotionGroupId: [],
+    // promotionItems: 0
+    // let cbDiscount = true;
+    // if (this.state.promotionGroup) {
+    //   let promotion = this.state.promotionGroup.find(item => item.loaiThucDonId == data.categoriesId);
+    // }multiSelect
+    // console.log(data.itemNote);
+    // if (data.itemNote && data.itemNote.length > 0) {
+    //   // let idSelected = filter(item => item);
+    //   data.itemNote.forEach((item, index) => {
+    //     if (item.ghiChuId) {
+
+    //     }
+    //   });
+    // }
     this.setState({
       statusPopup : true,
       noteEditing: data.id,
@@ -345,7 +469,9 @@ class Bill_Order extends Component {
       idNoteCurrent: data.id,
       itemNote: data.itemNote ? data.itemNote : [],
       cbDiscount: data.itemPromotion ? true : false,
-      itemNote_tmp: 1
+      promotion: data.itemPromotion ? data.itemPromotion : 0,
+      discount: data.discount ? data.discount : 0,
+      itemNoteTmp: data.itemNote ? data.itemNote : []
     });
   }
 
@@ -366,38 +492,42 @@ class Bill_Order extends Component {
   }
 
   addNote(id) {
-    let note = {
-      "ghiChuId": 1,
-      "soLuong": 1,
-      "id": id
-    };
     let noteState = this.state.itemNote;
-    noteState.push(note);
-    this.setState({
-      itemNote_tmp: noteState
-    });
-  }
-
-  removeNote(index) {
-    if (this.state.itemNote && this.state.itemNote.length > 0) {
-      this.state.itemNote.splice(index, 1);
+    let noteFilter = this.state.itemNoteTmp.filter(item => item.id == id);
+    let noteFilterCheckEmpty = this.state.itemNoteTmp.filter(item => item.ghiChuId == 0);
+    let idIndex = 0;
+    if (noteFilter && noteFilter.length > 0) {
+      idIndex = noteFilter.length;
+    }
+    let arrayTmp = [];
+    if (this.props.noteOrders) {
+      this.props.noteOrders.map((item) => {
+        if (item.id && item.ten) {
+          arrayTmp.push({ label: item.ten, id:item.id });
+        }
+      });
+    }
+    if (noteFilterCheckEmpty && noteFilterCheckEmpty.length == 0) {
+      let note = {
+        'ghiChuId': 0,
+        'soLuong': 1,
+        'id': id,
+        'idIndex' : idIndex,
+        'multiSelect' : arrayTmp
+      };
+      noteState.push(note);
+      this.setState({
+        itemNoteTmp: noteState
+      });
+    } else {
+      this.alertNotification('Bạn chưa ghi chú!', 'info');
     }
   }
 
-  handleChangeDropDown(event) {
-    let index_dd = event.target.name;
-    let note = this.state.itemNote;
-    let arrayTmp = [];
-    if (index_dd && note && note.length > 0) {
-      note.forEach((item, index) => {
-        if (index_dd == index) {
-          item.ghiChuId = event.target.value;
-        }
-        arrayTmp.push(item);
-      });
-      this.setState({
-        itemNote: arrayTmp
-      });
+  removeNote(index) {
+    let itemNoteTmp = this.state.itemNoteTmp;
+    if (itemNoteTmp && itemNoteTmp.length > 0) {
+      itemNoteTmp.splice(index, 1);
     }
   }
 
@@ -411,7 +541,7 @@ class Bill_Order extends Component {
         }
       });
       this.setState({
-        itemNote_tmp: note
+        itemNoteTmp: note
       });
     }
   }
@@ -422,17 +552,28 @@ class Bill_Order extends Component {
     let priceTotal = 0;
     productsBill.forEach((item, index) => {
       if (this.state.noteEditing == item.id) {
-        item.itemNote = this.state.itemNote;
-        if (this.state.cbDiscount) {
-          item.itemPromotion = (this.state.promotion * this.state.notePrice) / 100;
-          item.priceAndQuantum = item.priceAndQuantum - (item.itemPromotion * item.quantum);
-        } else {
-          delete item.itemPromotion;
-        }
+        let itemNote = this.state.itemNote;
+        itemNote.forEach((item, index) => {
+          if (item.ghiChuId == 0) {
+            itemNote.splice(index, 1);
+          }
+          item.soLuong = item.soLuong > 0 ? item.soLuong : 1
+        });
+        item.itemNote = itemNote;
+        // if (this.state.promotionGroup) {
+        //   let promotionItem = this.state.promotionGroup.find(itemPromotion => itemPromotion.loaiThucDonId == item.categoriesId);
+        //   if (promotionItem) {
+        //     item.itemPromotion = (promotionItem.chietKhau * this.state.notePrice) / 100;
+        //     item.priceAndQuantum = item.priceAndQuantum - (item.itemPromotion * item.quantum);
+        //   }
+        // } else {
+        //   delete item.itemPromotion;
+        // }
       }
       priceTotal = priceTotal + item.priceAndQuantum;
       arrayTmp.push(item);
     });
+
     let discountPriceTotal = (priceTotal * parseInt(this.state.discountInput, 10)) / 100;
     this.setState({
       productsBill: arrayTmp,
@@ -443,7 +584,65 @@ class Bill_Order extends Component {
     this.closeModel();
   }
 
+  optionClicked(optionsList) {
+    let index_dd = this.state.idNoteCurrent;
+    let note = this.state.itemNote;
+    let multiSelected = optionsList.filter(item => item.value == true);
+    let idNote = [];
+    let arrayTmp = [];
+    optionsList.forEach((item, index) => {
+      if (item.value == true) {
+        idNote.push(item.id);
+      }
+    });
+    if (index_dd && note && note.length > 0) {
+      note.forEach((item, index) => {
+        if (index_dd == item.id && idNote.length > 0) {
+          item.ghiChuId = idNote.toString();
+          item.multiSelect = optionsList;
+        }
+        arrayTmp.push(item);
+      });
+      this.setState({
+        itemNote: arrayTmp
+      });
+    }
+  }
+
+  selectedBadgeClicked(callback, indexSelect, optionsList) {
+    let index_dd = this.state.idNoteCurrent;
+    let note = this.state.itemNote;
+    let multiSelected = optionsList.filter(item => item.value == true);
+    let idNote = [];
+    let arrayTmp = [];
+    optionsList.forEach((item, index) => {
+      if (item.value == true) {
+        idNote.push(item.id);
+      }
+    });
+    if (index_dd && note && note.length > 0) {
+      note.forEach((item, index) => {
+        if (idNote.length > 0 && index_dd == item.id && item.idIndex == indexSelect) {
+          item.ghiChuId = idNote.toString();
+          item.multiSelect = optionsList;
+        }
+        arrayTmp.push(item);
+      });
+      this.setState({
+        itemNote: arrayTmp
+      });
+    }
+  }
+
   render() {
+    const selectedOptionsStyles = {
+      color: "#3c763d",
+      backgroundColor: "#dff0d8"
+    };
+    const optionsListStyles = {
+      backgroundColor: "#dff0d8",
+      color: "#3c763d"
+    };
     return(
       <div className="bill-order-block">
         <div className="bill-box">
@@ -502,6 +701,7 @@ class Bill_Order extends Component {
                       openModel={this.openModel}
                       chooseItemProduct = {this.chooseItemProduct}
                       itemNote = {item.itemNote}
+                      noteOrders = {this.props.noteOrders}
                     />
                   )
                 })
@@ -521,7 +721,7 @@ class Bill_Order extends Component {
                   'position-input' : this.props.showNumberic && this.props.filedCurrent == 'discountInput',
                 })}
                 name="discountInput"
-                value = {this.state.discountInput == 1 ? '' : this.state.discountInput} type="text"
+                value = {this.state.discountInput} type="text"
                 onClick = {this.props.onClickFiledInput.bind(this)}
               />
               <div className={classnames('bg-discount', {
@@ -529,7 +729,7 @@ class Bill_Order extends Component {
                 })}
               >
                 <p className="discount-text">
-                {this.state.discountInput && this.state.discountInput != 1 &&
+                {this.state.discountInput &&
                   <NumberFormat value={Number((this.state.discountPriceTotal).toFixed(3))} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
                 }
                 </p>
@@ -548,7 +748,7 @@ class Bill_Order extends Component {
                     'position-input' : this.state.discountPriceTotal > 0
                       && this.props.showNumberic
                       && this.props.filedCurrent == 'outLay',
-                    'display-input' : this.state.discountPriceTotal == 0
+                    'display-input' : !this.state.discountAfter || this.state.discountAfter <= 0
                   })}
                 name="outLay"
                 onClick = {this.props.onClickFiledInput.bind(this)}
@@ -600,7 +800,7 @@ class Bill_Order extends Component {
                         classnames('checkbox-inp-block discount', {
                           'cb-active icon-checkmark' : this.state.cbDiscount,
                         })}
-                        onClick={this.changCbDiscount.bind(this)}
+                
                         name="discount" ref="cb_discount" />
                     </div>
                     <div className="text-discount-right">
@@ -619,15 +819,14 @@ class Bill_Order extends Component {
                           <div className="title-item-right-discount">Số tiền khuyến mãi giảm giá</div>
                         </div>
                       </div>
-
                       <div className="item-info-discount">
                         <div className="checkbox-item-discount">
-                          <input type="text" className="checkbox-inp-block" value = {this.state.promotion}/>
+                          <input type="text" className="checkbox-inp-block" value = {this.state.discount}/>
                         </div>
                         <div className="input-item">
                           <NumberFormat
                             className="inp-price-discount-text"
-                            value= {(this.state.promotion * this.state.notePrice)/100}
+                            value= {this.state.promotion ? this.state.promotion : 0}
                             type="text"
                             thousandSeparator={true}
                           />
@@ -649,7 +848,7 @@ class Bill_Order extends Component {
                     })}
                   >
                     {
-                      this.state.itemNote.map((item, i) => {
+                      this.state.itemNoteTmp.map((item, i) => {
                         return (
                           <div className="item-note-box" key = {i}>
                             <div className="title-item">
@@ -661,15 +860,12 @@ class Bill_Order extends Component {
                                 <input type="text" className="checkbox-inp-block" name={i} defaultValue={item.soLuong} onChange={this.handleChangeQuantum.bind(this)}/>
                               </div>
                               <div className="input-item">
-                                <select className="checkbox-inp-block dropdown-discount" name = {i}
-                                  value={item.ghiChuId}
-                                  onChange={this.handleChangeDropDown.bind(this)}
-                                >
-                                  <option value={1}>Không đường</option>
-                                  <option value={2}>Không đá</option>
-                                  <option value={3}>Không sữa</option>
-                                  <option value={4}>ít đường</option>
-                                </select>
+                                <MultiSelectReact 
+                                  className="checkbox-inp-block dropdown-discount"
+                                  options={item.multiSelect}
+                                  optionClicked={this.optionClicked.bind(this)}
+                                  selectedBadgeClicked={this.selectedBadgeClicked.bind(this, this, i)}
+                                />
                                 <span className="input-item-icon icon-bin" onClick={this.removeNote.bind(this, i)}></span>
                               </div>
                             </div>
@@ -702,7 +898,8 @@ class Bill_Order extends Component {
 
 const bindStateToProps = (state) => {
   return {
-    promotion: state.promotion
+    promotion: state.promotion,
+    noteOrders: state.noteOrders
   }
 }
 

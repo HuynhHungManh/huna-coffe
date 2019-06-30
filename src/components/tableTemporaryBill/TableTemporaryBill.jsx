@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import {connect} from 'react-redux';
 import {PropTypes} from 'prop-types';
-import {Orders} from 'api';
+import {Orders, TotalPromotion } from 'api';
 import moment from 'moment';
 import {DatetimePickerTrigger} from 'rc-datetime-picker';
 import 'rc-datetime-picker/dist/picker.css';
 import Modal from 'react-modal';
 Modal.setAppElement('body');
 import NumberFormat from 'react-number-format';
+import Alert from 'react-s-alert';
 
 class TableTemporaryBill extends Component {
   constructor(props, context) {
@@ -30,16 +31,39 @@ class TableTemporaryBill extends Component {
       orderThucDons: [],
       viewOrderPriceTotal: 0,
       viewOrderPriceDiscount: 0,
-      viewOrderAfterDiscount: 0
+      viewOrderAfterDiscount: 0,
+      totalPromotion: 0
     };
     this.handleChange = this.handleChange.bind(this);
+  }
+
+  alertNotification(message, type) {
+    let option = {
+      position: 'top-right',
+      timeout: 3000
+    };
+    switch (type) {
+      case 'info':
+        Alert.info(message, option);
+        break;
+      case 'success':
+        Alert.success(message, option);
+        break;
+      case 'warning':
+        Alert.warning(message, option);
+        break;
+      case 'error':
+        Alert.error(message, option);
+      default:
+          break;
+    };
   }
 
   handleChange(moment) {
     this.setState({
       moment: moment
     });
-    this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.moment.toJSON()}));
+    this.props.dispatch(Orders.actions.getOrders({ngayOrder: moment.toJSON()}));
   }
 
   componentWillMount() {
@@ -52,7 +76,8 @@ class TableTemporaryBill extends Component {
         priceDiscount: dataCacheOrder.priceDiscount
       });
     }
-    // this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder}));
+    this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder}));
+    this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: this.state.dateOreder}));
     // this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
     //   if (res.data) {
     //     let data = res.data.content;
@@ -88,11 +113,12 @@ class TableTemporaryBill extends Component {
         getOrders :  data.content,
         billTotal: data.totalElements
       });
+      // console.log(this.state.getOrders);
       let priceTotal = 0;
       let priceDiscount = 0;
       data.content.forEach(function(item, index) {
-        priceTotal = priceTotal + item.thanhTien;
-        priceDiscount = priceDiscount + item.tongGia;
+        priceTotal = priceTotal + item.tongGia;
+        // priceDiscount = priceDiscount + item.tongGia;
       });
       this.setState({
         priceTotal :  priceTotal,
@@ -102,10 +128,21 @@ class TableTemporaryBill extends Component {
         getOrders: data.content,
         billTotal: data.totalElements,
         priceTotal: priceTotal,
-        priceDiscount: priceTotal - priceDiscount
       };
       localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
     }
+    if (prevProps.totalPromotion !== this.props.totalPromotion) {
+      this.setState({
+        totalPromotion: this.props.totalPromotion.tongChietKhau
+      });
+
+    }
+    // if (prevProps.numberTable !== this.props.numberTable) {
+    //   numberTable
+    //   this.setState({
+    //     numberTable: this.props.numberTable
+    //   });
+    // }
   }
 
   getDate(jsonDate) {
@@ -143,11 +180,12 @@ class TableTemporaryBill extends Component {
   }
 
   cancelOrder(id) {
-    this.props.dispatch(Orders.actions.cancelOrders({idOrder: id, "lyDoHuyOrderId": this.state.valueCancel})).then((res) => {
+    // console.log(this.state.valueCancel);
+    this.props.dispatch(Orders.actions.cancelOrders({idOrder: id}, {'lyDoHuyOrderId': 0})).then((res) => {
       this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder}));
     })
     .catch((e) => {
-
+      this.alertNotification('Bạn không thể hủy order!', 'error');
     });
   }
 
@@ -158,7 +196,7 @@ class TableTemporaryBill extends Component {
         let priceDiscount = 0;
         let afterDiscount = 0;
         res.data.forEach(function(item, index) {
-          priceTotal = priceTotal + item.thanhTien;
+          priceTotal = priceTotal + item.tongGia;
         });
         priceDiscount = (priceTotal * 10) / 100;
         afterDiscount = priceTotal - priceDiscount;
@@ -174,6 +212,11 @@ class TableTemporaryBill extends Component {
       }
     });
 
+  }
+
+  printOrder() {
+    // const mainProcess = window.require("electron").remote.require('./print.js');
+    // mainProcess.print('123');
   }
 
   render() {
@@ -201,11 +244,15 @@ class TableTemporaryBill extends Component {
           <div className="price-box">
             <div className="price-total">
               <p className="text">Tổng tiền thu đươc trong ca</p>
-              <p className="price-text"><span className="price-text-color">{this.state.priceTotal.toLocaleString()} đ</span></p>
+              <p className="price-text"><span className="price-text-color">
+                <NumberFormat value={this.state.priceTotal ? this.state.priceTotal : 0} displayType={'text'} thousandSeparator={true} /> đ
+              </span></p>
             </div>
             <div className="discount-total">
               <p className="text">Tổng tiền chiếc khấu trong ca</p>
-              <p className="price-text"><span className="price-discount-color">{this.state.priceDiscount.toLocaleString()} đ</span></p>
+              <p className="price-text"><span className="price-discount-color">
+                <NumberFormat value={this.state.totalPromotion ? this.state.totalPromotion : 0} displayType={'text'} thousandSeparator={true} /> đ
+              </span></p>
             </div>
             <div className="bill-total-tmp">
               <p className="text">Tổng hóa đơn bán trong ca</p>
@@ -252,7 +299,7 @@ class TableTemporaryBill extends Component {
                             <button className="btn view-order-btn btn-active" onClick={this.viewOrder.bind(this, item.id)}>
                               Xem order
                             </button>
-                            <button className="btn print-btn btn-active">
+                            <button className="btn print-btn btn-active" onClick={this.printOrder.bind(this)}>
                               In
                             </button>
                           </td>
@@ -308,12 +355,13 @@ class TableTemporaryBill extends Component {
                 <p className="close-model" onClick={this.closeCancelForm.bind(this)}>X</p>
               </div>
               <div className="table-view-order-content">
-                <table className="table-view-order">
+                <table className="table-view-order display-header">
                   <thead>
                     <tr>
                       <th>MẶT HÀNG</th>
                       <th>ĐƠN GIÁ</th>
-                      <th>SỐ LƯỢNG</th>
+                      <th>SL</th>
+                      <th>CK</th>
                       <th>TỔNG TIỀN</th>
                     </tr>
                   </thead>
@@ -325,8 +373,9 @@ class TableTemporaryBill extends Component {
                             <td>{item.tenThucDon}</td>
                             <td>{item.donGia}</td>
                             <td>{item.soLuong}</td>
+                            <td>{item.chietKhau}</td>
                             <td>
-                              <NumberFormat value={item.thanhTien - item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
+                              <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
                             </td>
                           </tr>
                         )
@@ -438,7 +487,8 @@ TableTemporaryBill.contextTypes = {
 
 const bindStateToProps = (state) => {
   return {
-    orders: state.orders
+    orders: state.orders,
+    totalPromotion: state.totalPromotion
   }
 }
 

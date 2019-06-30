@@ -63,6 +63,7 @@ class Categories_Tab extends Component {
   }
 
   chooseCategory(categoriesId) {
+    localStorage.setItem('categoriesIdCurrent', JSON.stringify(categoriesId));
     let today = new Date();
     let paramMost = {
       soKetQua: 20,

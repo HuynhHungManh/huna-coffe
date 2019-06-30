@@ -9,6 +9,8 @@ import {productsBill} from 'base/reducers/productsBill';
 import {orders} from 'base/reducers/orders';
 import {status} from 'base/reducers/status';
 import {promotion} from 'base/reducers/promotion';
+import {noteOrders} from 'base/reducers/noteOrders';
+import {totalPromotion} from 'base/reducers/totalPromotion';
 
 let rootReducer = combineReducers(
   {
@@ -19,7 +21,9 @@ let rootReducer = combineReducers(
     productsBill,
     orders,
     status,
-    promotion
+    promotion,
+    noteOrders,
+    totalPromotion
   }
 );
 

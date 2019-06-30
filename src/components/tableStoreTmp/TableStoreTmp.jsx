@@ -43,11 +43,21 @@ class TableStoreTmp extends Component {
       viewOrderAfterDiscount: 0,
       optionCancel: optionCancel,
       timeCurrentOrder: 0,
-      tableCurrentOrder: ''
+      tableCurrentOrder: '',
+      cashier: 'No Name',
+      outLay: 0,
+      outLayBack : 0
     }
   }
 
   componentWillMount() {
+    let auth = JSON.parse(localStorage.getItem('auth'));
+    if (auth.hoVaTen) {
+      this.setState({
+        cashier : auth.hoVaTen
+      });
+    }
+
     let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
     if (orderListTmp && orderListTmp.length > 0) {
       orderListTmp.forEach((item, index) => {
@@ -114,7 +124,10 @@ class TableStoreTmp extends Component {
     dataOrder[index].orderThucDons.forEach(function(item, index) {
       priceTotal = priceTotal + item.thanhTien;
     });
-    priceDiscount = (priceTotal * 10) / 100;
+    if (dataOrder[index].khuyenMai && dataOrder[index].khuyenMai > 0) {
+      priceDiscount = (priceTotal * dataOrder[index].khuyenMai) / 100;
+    }
+    
     afterDiscount = priceTotal - priceDiscount;
     this.setState({
       orderThucDons: dataOrder[index].orderThucDons,
@@ -125,7 +138,10 @@ class TableStoreTmp extends Component {
       viewOrderPriceDiscount: priceDiscount,
       viewOrderAfterDiscount: afterDiscount,
       timeCurrentOrder: this.getDate(dataOrder[index].ngayOrder),
-      tableCurrentOrder: dataOrder[index].soBan
+      tableCurrentOrder: dataOrder[index].soBan,
+      promotionBill: dataOrder[index].khuyenMai,
+      outLay: dataOrder[index].tienKhachDua ? dataOrder[index].tienKhachDua : 0,
+      outLayBack: dataOrder[index].tienThoiLai && dataOrder[index].tienThoiLai > 0 ? dataOrder[index].tienThoiLai : 0
     });
   }
 
@@ -223,7 +239,9 @@ class TableStoreTmp extends Component {
                         }
                       </td>
                       <td width="10%">-</td>
-                      <td width="13%">{item.tongGia}</td>
+                      <td width="13%">
+                        <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
+                      </td>
                       <td width="40%">
                         <button className={
                           classnames('btn cancel-table btn-active', {
@@ -314,7 +332,10 @@ class TableStoreTmp extends Component {
                   ĐƠN GIÁ
                 </div>
                 <div className="table-header quantum-h">
-                  SỐ LƯỢNG
+                  SL
+                </div>
+                <div className="table-header promotion-h">
+                  CK
                 </div>
                 <div className="table-header total-h">
                   TỔNG TIỀN
@@ -326,7 +347,8 @@ class TableStoreTmp extends Component {
                     <tr>
                       <th width="35%">MẶT HÀNG</th>
                       <th width="20%">ĐƠN GIÁ</th>
-                      <th width="20%">SỐ LƯỢNG</th>
+                      <th width="10%">SL</th>
+                      <th width="10%">CK</th>
                       <th width="25%">TỔNG TIỀN</th>
                     </tr>
                   </thead>
@@ -336,10 +358,13 @@ class TableStoreTmp extends Component {
                         return (
                           <tr key={i}>
                             <td>{item.ten}</td>
-                            <td>{item.donGia}</td>
-                            <td>{item.soLuong}</td>
                             <td>
-                              <NumberFormat value={item.thanhTien - item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
+                              <NumberFormat value={item.donGia} displayType={'text'} thousandSeparator={true} /> đ
+                            </td>
+                            <td>{item.soLuong}</td>
+                            <td>{item.chietKhau} %</td>
+                            <td>
+                              <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
                             </td>
                           </tr>
                         )
@@ -368,11 +393,11 @@ class TableStoreTmp extends Component {
                 <div className="view-order-discount">
                   <div className="title-left">
                     <p className="title-text">
-                      Thu ngân: <span className="bold">Nguyễn Thị Mai</span>
+                      Thu ngân: <span className="bold">{this.state.cashier}</span>
                     </p>
                   </div>
                   <div className="title-right">
-                    Chiếc khấu  <span className="bold">10%</span>:
+                    Chiếc khấu  <span className="bold">{this.state.promotionBill} %</span>:
                   </div>
                   <div className="price-right">
                     <span className="bold">
@@ -387,7 +412,7 @@ class TableStoreTmp extends Component {
                       <span className="bold">
                         { this.state.tableCurrentOrder == ""
                           ? ' Mang về'
-                          : this.state.tableCurrentOrder
+                          : ' '+this.state.tableCurrentOrder
                         }
                       </span>
                     </p>
@@ -411,7 +436,9 @@ class TableStoreTmp extends Component {
                     Tiền khách đưa:
                   </div>
                   <div className="price-right">
-                    <span className="bold">122,500 đ</span>
+                    <span className="bold">
+                      <NumberFormat value={this.state.outLay} displayType={'text'} thousandSeparator={true} /> đ
+                    </span>
                   </div>
                 </div>
 
@@ -425,7 +452,7 @@ class TableStoreTmp extends Component {
                     Tiền thối lại:
                   </div>
                   <div className="price-right">
-                    <span className="bold">122,500 đ</span>
+                    <NumberFormat value={this.state.outLayBack} displayType={'text'} thousandSeparator={true} /> đ
                   </div>
                 </div>
               </div>

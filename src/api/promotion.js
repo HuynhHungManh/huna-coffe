@@ -31,6 +31,28 @@ const rest = reduxApi({
         });
       }
     ]
+  },
+  totalPromotion: {
+    url: '/orders/chietKhauTrongCa',
+    options:(url, params, getState) => {
+      return {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        data: {}
+      };
+    },
+    postfetch: [
+      function({data, actions, dispatch, getState, request}) {
+        dispatch({
+          type: 'GET_TOTAL_PROMOTION_TODAY',
+          totalPromotion: data.data
+        });
+      }
+    ]
   }
 })
 .use('fetch', customFetch)
