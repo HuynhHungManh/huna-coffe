@@ -147,7 +147,7 @@ class Bill_Order extends Component {
         let discountInput = this.state.discountInput;
         if (discountInput == '' && this.state.isPromotionTypeBill == true) {
            discountInput = 0;
-           getChooses.forEach((item, index) => {
+          getChooses.forEach((item, index) => {
             item.discount = discountInput;
           });
         };
@@ -315,6 +315,8 @@ class Bill_Order extends Component {
     });
     let payBack = this.props.outLay - this.state.discountAfter;
     let data = {
+      'hinhThucThanhToan' : 'TIEN_MAT',
+      'ma' : '1021000',
       'khuyenMai': this.state.discountInput && this.state.isPromotionTypeBill == true ? this.state.discountInput : 0,
       'ngayOrder': dateFormat,
       'nguoiChietKhauId': 1,

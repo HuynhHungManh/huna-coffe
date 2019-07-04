@@ -10,10 +10,16 @@ import Modal from 'react-modal';
 Modal.setAppElement('body');
 import NumberFormat from 'react-number-format';
 import Alert from 'react-s-alert';
+import ReactToPrint from 'react-to-print';
+import ComponentToPrint from './ComponentToPrint.jsx';
+import PrintProvider, { Print, NoPrint } from 'react-easy-print';
+import Spinner from 'react-spinkit';
+import NumPad from 'react-numpad';
 
 class TableTemporaryBill extends Component {
   constructor(props, context) {
     super(props, context);
+    this.componentRef =[];
     let date = new Date();
     let dateTodayFormat = JSON.parse(JSON.stringify(date));
     this.state = {
@@ -32,7 +38,9 @@ class TableTemporaryBill extends Component {
       viewOrderPriceTotal: 0,
       viewOrderPriceDiscount: 0,
       viewOrderAfterDiscount: 0,
-      totalPromotion: 0
+      totalPromotion: 0,
+      orderDetail: [],
+      isLoadingOrder: false
     };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -67,6 +75,7 @@ class TableTemporaryBill extends Component {
   }
 
   componentWillMount() {
+    localStorage.removeItem('dataCacheOrder');
     let dataCacheOrder = JSON.parse(localStorage.getItem('dataCacheOrder'));
     if (dataCacheOrder) {
       this.setState({
@@ -76,8 +85,67 @@ class TableTemporaryBill extends Component {
         priceDiscount: dataCacheOrder.priceDiscount
       });
     }
-    this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder}));
-    this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: this.state.dateOreder}));
+    this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
+      if (res.data.content && res.data.content.length > 0) {
+
+        let arrayTmpDetail = [];
+        res.data.content.forEach((item, index) => {
+          this.props.dispatch(Orders.actions.orderThucDons({orderId: item.id})).then((res) => {
+            if (res.data) {
+              res.data.forEach((item, index) => {
+                arrayTmpDetail.push(item);
+              });
+              this.setState({
+                orderDetail : arrayTmpDetail,
+                isLoadingOrder: true
+              });
+              localStorage.setItem('dataOrderDetail', JSON.stringify(arrayTmpDetail));
+            }
+          });
+        });
+        this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: this.state.dateOreder}));
+
+        let data = res.data;
+        let priceTotal = 0;
+        let priceDiscount = 0;
+        let arrayTmp = [];
+
+        let dataOrderDetail = JSON.parse(localStorage.getItem('dataOrderDetail'));
+        if (data.content[0].id) {
+          this.props.dispatch(Orders.actions.orderThucDons({orderId: data.content[0].id})).then((res) => {
+            if (res.data) {
+              let newData = res.data[0];
+              this.setState({
+                orderDetail: dataOrderDetail.concat(newData),
+                isLoadingOrder: true
+              });
+              localStorage.setItem('dataOrderDetail', JSON.stringify(dataOrderDetail.concat(newData)));
+
+              data.content.forEach(function(item, index) {
+                priceTotal = priceTotal + item.tongGia;
+                let dataDetail = dataOrderDetail.filter(itemChild => itemChild.orderId == item.id);
+                if (dataDetail) {
+                  item.orderDetail = dataDetail;
+                }
+                arrayTmp.push(item);
+              });
+              this.setState({
+                billTotal: data.totalElements,
+                getOrders :  arrayTmp,
+                priceTotal :  priceTotal,
+                priceDiscount: priceTotal - priceDiscount
+              });
+              let dataCache = {
+                getOrders: data.content,
+                billTotal: data.totalElements,
+                priceTotal: priceTotal,
+              };
+              localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
+            }
+          });
+        }
+      }
+    });
     // this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
     //   if (res.data) {
     //     let data = res.data.content;
@@ -107,42 +175,58 @@ class TableTemporaryBill extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.orders !== this.props.orders && this.props.orders.content) {
-      let data = this.props.orders;
-      this.setState({
-        getOrders :  data.content,
-        billTotal: data.totalElements
-      });
-      // console.log(this.state.getOrders);
-      let priceTotal = 0;
-      let priceDiscount = 0;
-      data.content.forEach(function(item, index) {
-        priceTotal = priceTotal + item.tongGia;
-        // priceDiscount = priceDiscount + item.tongGia;
-      });
-      this.setState({
-        priceTotal :  priceTotal,
-        priceDiscount: priceTotal - priceDiscount
-      });
-      let dataCache = {
-        getOrders: data.content,
-        billTotal: data.totalElements,
-        priceTotal: priceTotal,
-      };
-      localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
-    }
-    if (prevProps.totalPromotion !== this.props.totalPromotion) {
-      this.setState({
-        totalPromotion: this.props.totalPromotion.tongChietKhau
-      });
+    if (prevProps.orders !== this.props.orders) {
+    //   let data = this.props.orders;
+    //   let priceTotal = 0;
+    //   let priceDiscount = 0;
+    //   let arrayTmp = [];
+    //   let arrayTmpDetail = [];
 
-    }
+    //   let dataOrderDetail = JSON.parse(localStorage.getItem('dataOrderDetail'));
+    //   if (data.content && data.content[0] && data.content[0].id) {
+    //     this.props.dispatch(Orders.actions.orderThucDons({orderId: data.content[0].id})).then((res) => {
+    //       if (res.data) {
+    //         let newData = res.data[0];
+    //         this.setState({
+    //           orderDetail: dataOrderDetail.concat(newData)
+    //         });
+    //         localStorage.setItem('dataOrderDetail', JSON.stringify(dataOrderDetail.concat(newData)));
+    //       }
+    //     });
+    //   }
+
+    //   data.content.forEach(function(item, index) {
+    //     priceTotal = priceTotal + item.tongGia;
+    //     let dataDetail = dataOrderDetail.filter(itemChild => itemChild.orderId == item.id);
+    //     if (dataDetail) {
+    //       item.orderDetail = dataDetail;
+    //     }
+    //     arrayTmp.push(item);
+    //   });
+    //   this.setState({
+    //     billTotal: data.totalElements,
+    //     getOrders :  arrayTmp,
+    //     priceTotal :  priceTotal,
+    //     priceDiscount: priceTotal - priceDiscount
+    //   });
+    //   let dataCache = {
+    //     getOrders: data.content,
+    //     billTotal: data.totalElements,
+    //     priceTotal: priceTotal,
+    //   };
+    //   localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
+    // }
+      // if (prevProps.totalPromotion !== this.props.totalPromotion) {
+      //   this.setState({
+      //     totalPromotion: this.props.totalPromotion.tongChietKhau
+      //   });
+      // }
     // if (prevProps.numberTable !== this.props.numberTable) {
     //   numberTable
     //   this.setState({
     //     numberTable: this.props.numberTable
     //   });
-    // }
+    }
   }
 
   getDate(jsonDate) {
@@ -211,12 +295,29 @@ class TableTemporaryBill extends Component {
         });
       }
     });
-
   }
 
-  printOrder() {
-    // const mainProcess = window.require("electron").remote.require('./print.js');
-    // mainProcess.print('123');
+  // printOrder(id) {
+  //   console.log(id);
+  //   let arrayTmp = [];
+  //   getOrders.forEach((item, index) => {
+  //     if (item.id == id) {
+  //       item.isPrint = true;
+  //     }
+  //     arrayTmp.push(item);
+  //   });
+    
+  //   this.setState({
+  //     getOrders: arrayTmp
+  //   });
+  // }
+
+  omponentWillReceiveProps(nextProps) {
+    if(nextProps.orders !== this.props.orders){
+      this.setState({
+        isLoading : false
+      });
+    }
   }
 
   render() {
@@ -227,6 +328,7 @@ class TableTemporaryBill extends Component {
     };
     return(
       <div className="show-order-block">
+
         <div className="search-order-block">
           <div className="search-box">
             <input type="text" className="search-order" placeholder="Tìm kiếm ..." readOnly />
@@ -281,7 +383,7 @@ class TableTemporaryBill extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {
+                  { this.state.isLoadingOrder &&
                     this.state.getOrders.map((item, i) => {
                       return (
                         <tr key = {i}>
@@ -299,9 +401,14 @@ class TableTemporaryBill extends Component {
                             <button className="btn view-order-btn btn-active" onClick={this.viewOrder.bind(this, item.id)}>
                               Xem order
                             </button>
-                            <button className="btn print-btn btn-active" onClick={this.printOrder.bind(this)}>
-                              In
-                            </button>
+        
+                            <ReactToPrint trigger={() => 
+                              <button className="btn print-btn btn-active">
+                                In
+                              </button>
+                            }
+                              content={() => this.componentRef[i]}/>
+                              <ComponentToPrint ref={el => (this.componentRef[i] = el)} data={item.orderDetail} orderData={item} />
                           </td>
                         </tr>
                       )

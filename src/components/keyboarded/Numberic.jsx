@@ -51,16 +51,49 @@ class Numberic extends Component {
       }
     ];
     this.state = {
-      number: number
+      number: number,
+      valueNumber: 0
     };
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if(prevProps.discountInput !== this.props.discountInput) {
+      console.log(Number(this.props.numberTable));
+
+      if (this.props.filedCurrent == 'numberTable' && this.props.numberTable != 'NaN') {
+        this.setState({
+          valueNumber: this.props.numberTable
+        });
+      } else if (this.props.filedCurrent == 'discountInput'){
+        // this.setState({
+        //   valueNumber: parseInt(this.props.numberTable, 10)
+        // });
+      }
+    }
+  }
+
+  showValue(type) {
+    if (type == 'numberTable') {
+      this.setState({
+        valueNumber: this.props.numberTable
+      });
+    } else {
+      this.setState({
+        valueNumber: this.props.discountInput
+      });
+    }
+  }
+
   render() {
+    console.log(this.props.discountInput);
     return (
       <div className="numberic-model">
         <div className="numberic-box">
           <div className="head-numberic-box">
             <span className="icon-close-numberic icon-cross" onClick = {this.props.closeNumberic.bind(this)}></span>
+          </div>
+          <div className="screen-show">
+            <p className="number-show">{this.state.valueNumber != '' ? this.state.valueNumber : 0}</p>
           </div>
           <ul className="item-numberic-box">
             {

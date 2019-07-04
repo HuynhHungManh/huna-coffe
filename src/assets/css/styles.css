@@ -242,6 +242,15 @@ main {
   transform: translate(-50%, -50%);
   font-weight: bold;
 }
+.item-order-block .item-order-box .item-order .item-text .text, .price {
+  display: block;
+}
+.item-order-block .item-order-box .item-order .item-text .text {
+  margin-bottom: 7px;
+}
+.item-order-block .item-order-box .item-order .item-text .price {
+  font-size: 13px;
+}
 .item-order-block .item-order-box .item-order.active {
   color: #f4a900;
   border: 1px solid #f4a900;
@@ -348,27 +357,38 @@ main {
 }
 .bill-item .text-item {
   width: 28% !important;
+  height: auto;
 }
+.bill-item .price-item {
+  text-align: center;
+} 
+
 .text-item, .price-item, .quantum-item, .total-price-item {
   display: inline-block;
-  width: 23%;
-  height: 48px;
   text-align: center;
   font-size: 14px;
   vertical-align: top;
+  height: 48px;
 }
-.quantum-item {
+/*.quantum-item {
   width: 24% !important;
-}
-.bill-title .bill-item {
+}*/
+.price-block .bill-item {
   width: 28% !important;
+}
+.price-block .quantum-item {
+  width: 31% !important;
+}
+.price-block .total-price-item {
+  width: 30% !important;
 }
 .bill-calculate .bill-item {
   border-bottom: 1px solid #ccc;
-  height: 48px;
+ /* height: 48px;*/
+ position: relative;
 }
 .price-item {
-  width: 20% !important;
+  width: 29% !important;
 }
 .icon-cancel-box {
   display: inline-block;
@@ -686,7 +706,7 @@ main {
 .datetime-picker {
   border-radius: 0px 0px !important;
   border-left: none;
-  line-height: 27px;
+  line-height: 25px;
   border: 1px solid #ccc;
   width: 260px !important;
   padding: 4px 16px !important;
@@ -1235,26 +1255,26 @@ main {
   padding: 4px 0;
 }
 
-.add-note-item {
+/*.add-note-item {
   height: 52px !important;
-}
-.info-block.add-note-item-scroll {
+}*/
+/*.info-block.add-note-item-scroll {
   top: 0 !important;
   left: 0 !important;
   transform: none !important;
-}
+}*/
 .info-block {
-  position: relative;
+/*  position: relative;
   float: left;
   top: 50%;
   left: 50%;
   display: inline-block;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);*/
 }
-.text-item.add-note-item {
+/*.text-item.add-note-item {
   position: relative;
   overflow-y: scroll !important;
-}
+}*/
 .btn-active:active{
   background-image: linear-gradient(#fffefe00, #0202026e);
 }
@@ -1278,4 +1298,98 @@ main {
   position: relative;
   top: -11px;
   color: red;
+}
+.bill-item .price-block{
+  display: inline-block;
+  width: 72%;
+}
+.screen-show .number-show{
+  font-size: 42px;
+  line-height: 50px;
+  padding: 0 15px;
+  text-align: right;
+}
+
+.template-print {
+  margin-top: 34px;
+  display: none;
+  font-size: 17px;
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  width: 240px;
+/*  position: absolute;
+  left: 0;
+  overflow-y: overlay;*/
+}
+.header-print {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.info-print {
+  text-align: left;
+  margin-bottom: 30px;
+}
+.info-print p {
+  margin-bottom: 5px;
+}  
+.content-print {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.content-print .content-title {
+  width: 100%;
+  margin-bottom: 15px;
+}
+.content-print .content-title .content-name, .content-quatum, .content-promotion, .content-price {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 15px;
+}
+.content-print .content-info {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.content-print .content-info p{
+  display: inline-block;
+  font-size: 15px;
+}
+.content-print .content-name, .content-info-name {
+  width: 40%;
+}
+.content-print .content-quatum, .content-info-quatum{
+  width: 15%;
+}
+.content-print .content-promotion, .content-info-promotion {
+  width: 20%;
+}
+.content-print .content-price, .content-info-price {
+  width: 25%;
+}
+
+@media print {
+  .template-print{
+     display:inline-block;
+  }
+}
+
+.template-print .total-price-print {
+  width: 100%;
+  float: left;
+  margin-bottom: 50px;
+}
+.template-print .total-price-print .text, .price{
+  display: inline-block;
+}
+.template-print .total-price-print .text {
+  float: left;
+}
+.template-print .total-price-print .price {
+  float: right;
+}
+.loading {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%,-50%) !important;
 }

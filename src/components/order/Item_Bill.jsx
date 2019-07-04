@@ -97,7 +97,7 @@ class Item_Bill extends Component {
           })}
         >
           <div className={classnames('info-block', {
-              'add-note-item-scroll' : this.props.itemNote && (this.props.itemNote.length > 1 || (this.props.itemNote.length == 1 && this.props.data.itemPromotion))
+              'add-note-item-scroll' : this.props.itemNote && (this.props.itemNote.length > 0 || (this.props.itemNote.length == 1 && this.props.data.itemPromotion))
             })}
           >
             <p className="text" onClick={this.props.chooseItemProduct.bind(this, this.props.data)}>{this.truncate(this.props.data.ten)}</p>
@@ -131,40 +131,33 @@ class Item_Bill extends Component {
             }
           </div>
         </div>
-        <div className={classnames('price-item', {
-              'add-note-item' : this.props.itemNote
-            })}
-        >
+        <div className='price-block'>
+          <div className='price-item'>
           <p className="text-price">
-          <NumberFormat value={this.props.data.donGia} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+            <NumberFormat value={this.props.data.donGia} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
           </p>
-        </div>
-        <div className={classnames('quantum-item', {
-              'add-note-item' : this.props.itemNote
-            })}
-        >
-          <div className="calculate-box">
-            <button className="minus-quantum"
-              onClick={this.minusQuantum.bind(this, this.props.data.id)}>
-              -
-            </button>
-            <p className="text-quantum">{this.state.quantum}</p>
-            <button className="plus-quantum"
-              onClick={this.plusQuantum.bind(this, this.props.data.id)}>
-              +
-            </button>
           </div>
-        </div>
-        <div className={classnames('total-price-item', {
-              'add-note-item' : this.props.itemNote
-            })}
-        >
-          <p className="total-price-text">
-            <NumberFormat value={this.calculatePrice(this.props.data.donGia, this.props.data.quantum, this.props.data.itemPromotion)} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
-          </p>
-        </div>
-        <div className="btn-cancel-row" onClick={this.props.cancelItemBill.bind(this, this.props.data.id)}>
-          <span className="icon-cancel-box icon-bin"></span>
+          <div className='quantum-item'>
+            <div className="calculate-box">
+              <button className="minus-quantum"
+                onClick={this.minusQuantum.bind(this, this.props.data.id)}>
+                -
+              </button>
+              <p className="text-quantum">{this.state.quantum}</p>
+              <button className="plus-quantum"
+                onClick={this.plusQuantum.bind(this, this.props.data.id)}>
+                +
+              </button>
+            </div>
+          </div>
+          <div className='total-price-item'>
+            <p className="total-price-text">
+              <NumberFormat value={this.calculatePrice(this.props.data.donGia, this.props.data.quantum, this.props.data.itemPromotion)} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+            </p>
+          </div>
+          <div className="btn-cancel-row" onClick={this.props.cancelItemBill.bind(this, this.props.data.id)}>
+            <span className="icon-cancel-box icon-bin"></span>
+          </div>
         </div>
       </div>
     );

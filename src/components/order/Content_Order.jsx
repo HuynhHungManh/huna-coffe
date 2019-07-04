@@ -60,6 +60,21 @@ class Content_Order extends Component {
     });
     this.props.dispatch(Promotion.actions.promotion());
     this.props.dispatch(NoteOrder.actions.noteOrders());
+    this.props.dispatch(Orders.actions.getOrders({ngayOrder: dateTodayFormat})).then((res) => {
+      if (res.data.content) {
+        let arrayTmp = [];
+        res.data.content.forEach((item, index) => {
+          this.props.dispatch(Orders.actions.orderThucDons({orderId: item.id})).then((res) => {
+            if (res.data) {
+              res.data.forEach((item, index) => {
+                arrayTmp.push(item);
+              });
+              localStorage.setItem('dataOrderDetail', JSON.stringify(arrayTmp));
+            }
+          });
+        });
+      }
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -287,7 +302,8 @@ class Content_Order extends Component {
   changeNumbericInput(number) {
     if (this.state.filedCurrent == 'numberTable') {
       if (number != 'clear') {
-        if (this.state.numberTable && this.state.numberTable < 100) {
+        let numberTableStore = Number(this.state.numberTable);
+        if (numberTableStore && numberTableStore < 100) {
           let numbers = (this.state.numberTable * 10) + number;
           if (numbers < 100) {
             this.setState({
@@ -295,12 +311,12 @@ class Content_Order extends Component {
             });
           } else {
             this.setState({
-              numberTable: '0' + number
+              numberTable: '0' + number.toString()
             });
           }
         } else {
           this.setState({
-            numberTable: '0' + number
+            numberTable: '0' + number.toString()
           });
         }
       } else {
@@ -360,7 +376,10 @@ class Content_Order extends Component {
     return(
       <div className="content-order">
         { this.state.showNumberic
-          ? <Numberic changeNumbericInput = {this.changeNumbericInput.bind(this)} closeNumberic = {this.closeNumberic}/>
+          ? <Numberic changeNumbericInput = {this.changeNumbericInput.bind(this)} 
+            discountInput = {this.state.numberTable} 
+            filedCurrent = {this.state.filedCurrent} 
+            closeNumberic = {this.closeNumberic}/>
           : ""
         }
         <div className="item-order-block">
