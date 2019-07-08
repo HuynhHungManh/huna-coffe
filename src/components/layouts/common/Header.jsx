@@ -34,6 +34,11 @@ class Header extends React.Component {
     }
   }
 
+  minimazScreen() {
+    const mainProcess = window.require("electron").remote.require('./print.js');
+    mainProcess.print('hide');
+  }
+
   render() {
     return (
       <header className="box-header">
@@ -46,6 +51,7 @@ class Header extends React.Component {
             <p className="account-text">
               Xin chào:
               <span className="text">{this.state.hoVaTen}</span>
+              <span className="icon-shrink" onClick={this.minimazScreen.bind(this)}></span>
             </p>
           </div>
         </div>

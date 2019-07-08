@@ -17,6 +17,7 @@ class Content_Order extends Component {
     this.copyProductsBill = this.copyProductsBill.bind(this);
     this.onClickFiledInput = this.onClickFiledInput.bind(this);
     this.closeNumberic = this.closeNumberic.bind(this);
+    this.changePayment = this.changePayment.bind(this);
     this.state = {
       products: [],
       statusClear: false,
@@ -24,7 +25,8 @@ class Content_Order extends Component {
       showNumberic: false,
       filedCurrent: '',
       discountInput: '',
-      outLay: 0
+      outLay: 0,
+      cardPayment: 0
     }
   }
 
@@ -82,7 +84,7 @@ class Content_Order extends Component {
       let getStoreProducts = JSON.parse(localStorage.getItem('products'));
       let products = this.props.products;
       let preProduct = [];
-      let categoriesIdCurrent = JSON.parse(localStorage.getItem('categoriesIdCurrent'));
+      // let categoriesIdCurrent = JSON.parse(localStorage.getItem('categoriesIdCurrent'));
       products.forEach((item, index) => {
         if (getStoreProducts != null
           && getStoreProducts.length > 0
@@ -99,7 +101,7 @@ class Content_Order extends Component {
           item.selectStatus = true;
           item.quantum = sameProduct.quantum;
         }
-        item.categoriesId = categoriesIdCurrent;
+        // item.categoriesId = categoriesIdCurrent;
         item.priceAndQuantum = item.quantum * item.donGia;
         preProduct.push(item);
       });
@@ -302,12 +304,12 @@ class Content_Order extends Component {
   changeNumbericInput(number) {
     if (this.state.filedCurrent == 'numberTable') {
       if (number != 'clear') {
-        let numberTableStore = Number(this.state.numberTable);
+        let numberTableStore = this.state.numberTable != '' ? Number(this.state.numberTable) : 0;
         if (numberTableStore && numberTableStore < 100) {
           let numbers = (this.state.numberTable * 10) + number;
-          if (numbers < 100) {
+          if (numbers < 100 && numbers > 9) {
             this.setState({
-              numberTable: numbers
+              numberTable: numbers.toString()
             });
           } else {
             this.setState({
@@ -372,6 +374,12 @@ class Content_Order extends Component {
     });
   }
 
+  changePayment(payment) {
+    this.setState({
+      outLay: payment
+    });    
+  }
+
   render() {
     return(
       <div className="content-order">
@@ -406,6 +414,7 @@ class Content_Order extends Component {
           discountInput = {this.state.discountInput}
           filedCurrent = {this.state.filedCurrent}
           outLay = {this.state.outLay}
+          changePayment = {this.changePayment}
         />
       </div>
     );

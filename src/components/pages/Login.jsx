@@ -33,43 +33,42 @@ class Login extends React.Component {
   }
 
   submitLogin() {
-    this.props.history.push('/coffee');
-    // if(this.state.input['username'] == '') {
-    //   this.setState({
-    //     hasError: true,
-    //     message: 'Vui lòng nhập username',
-    //   })
-    // } else if (this.state.input['password'] == '') {
-    //   this.setState({
-    //     hasError: true,
-    //     message: 'Vui lòng nhập password',
-    //   })
-    // } else {
-    //   let header = {
-    //     'Content-Type': 'application/json',
-    //     'Accept': 'application/json',
-    //     'Email': this.state.input['username'],
-    //     'Password': this.state.input['password']
-    //   }
-    //   this.props.dispatch(Auth.actions.login(null, header))
-    //   .then((res) => {
-    //     if (res.data && res.data.token) {
-    //       // console.log(res.data);
-    //       localStorage.setItem('auth', JSON.stringify(res.data));
-    //       this.props.history.push('/coffee');
-    //     } else {
-    //       this.setState({
-    //         hasError: true,
-    //         message: 'Not found token',
-    //       })
-    //     }
-    //   }).catch((error) =>{
-    //     this.setState({
-    //       hasError: true,
-    //       message: error.response.data.errors[0].description ? error.response.data.errors[0].description : 'Kiểm tra mạng!'
-    //     })
-    //   });
-    // }
+    if(this.state.input['username'] == '') {
+      this.setState({
+        hasError: true,
+        message: 'Vui lòng nhập username',
+      })
+    } else if (this.state.input['password'] == '') {
+      this.setState({
+        hasError: true,
+        message: 'Vui lòng nhập password',
+      })
+    } else {
+      let header = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Email': this.state.input['username'],
+        'Password': this.state.input['password']
+      }
+      this.props.dispatch(Auth.actions.login(null, header))
+      .then((res) => {
+        if (res.data && res.data.token) {
+          // console.log(res.data);
+          localStorage.setItem('auth', JSON.stringify(res.data));
+          this.props.history.push('/coffee');
+        } else {
+          this.setState({
+            hasError: true,
+            message: 'Not found token',
+          })
+        }
+      }).catch((error) =>{
+        this.setState({
+          hasError: true,
+          message: error.response.data.errors[0].description ? error.response.data.errors[0].description : 'Kiểm tra mạng!'
+        })
+      });
+    }
   }
 
   setActiveInput(event) {

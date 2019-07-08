@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+// import Numpad from 'react-numberpad';
 
 class Numberic extends Component {
   constructor(props, context) {
     super(props, context);
     const number = [
+      {
+        name: 'AC',
+        value: 'clear'
+      },
       {
         name: '0',
         value: 0
@@ -44,33 +49,28 @@ class Numberic extends Component {
       {
         name: '9',
         value: 9
-      },
-      {
-        name: 'AC',
-        value: 'clear'
       }
     ];
     this.state = {
       number: number,
-      valueNumber: 0
+      valueNumber: ''
     };
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if(prevProps.discountInput !== this.props.discountInput) {
-      console.log(Number(this.props.numberTable));
-
-      if (this.props.filedCurrent == 'numberTable' && this.props.numberTable != 'NaN') {
-        this.setState({
-          valueNumber: this.props.numberTable
-        });
-      } else if (this.props.filedCurrent == 'discountInput'){
-        // this.setState({
-        //   valueNumber: parseInt(this.props.numberTable, 10)
-        // });
-      }
-    }
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  //   if(prevProps.discountInput !== this.props.discountInput) {
+  //     if (this.props.filedCurrent == 'numberTable' && prevProps.numberTable !== this.props.numberTable) {
+  //       console.log(this.props.numberTable);
+  //       this.setState({
+  //         valueNumber: this.props.numberTable
+  //       });
+  //     } else if (this.props.filedCurrent == 'discountInput') {
+  //       // this.setState({
+  //       //   valueNumber: parseInt(this.props.numberTable, 10)
+  //       // });
+  //     }
+  //   }
+  // }
 
   showValue(type) {
     if (type == 'numberTable') {
@@ -84,6 +84,39 @@ class Numberic extends Component {
     }
   }
 
+  changeNumbericInput(number) {
+    if (this.props.filedCurrent == 'numberTable') {
+      if (number != 'clear') {
+
+        let numberTableStore = this.state.valueNumber != '' ? Number(this.state.valueNumber) : 0;
+
+        if (numberTableStore && numberTableStore < 100) {
+          // console.log(numberTableStore);
+          let numbers = (this.state.numberTable * 10) + number;
+          if (numbers < 100) {
+            this.setState({
+              valueNumber: numbers.toString()
+            });
+          } else {
+            this.setState({
+              valueNumber: '0' + number.toString()
+            });
+          }
+        } else {
+          this.setState({
+            valueNumber: '0' + number.toString()
+          });
+        }
+      } else {
+        this.setState({
+          valueNumber: ''
+        });
+      }
+    }
+
+    this.props.changeNumbericInput(number);
+  }
+
   render() {
     console.log(this.props.discountInput);
     return (
@@ -93,13 +126,13 @@ class Numberic extends Component {
             <span className="icon-close-numberic icon-cross" onClick = {this.props.closeNumberic.bind(this)}></span>
           </div>
           <div className="screen-show">
-            <p className="number-show">{this.state.valueNumber != '' ? this.state.valueNumber : 0}</p>
+            <p className="number-show">{this.state.valueNumber}</p>
           </div>
           <ul className="item-numberic-box">
             {
               this.state.number.map((item, i) => {
                 return (
-                  <li key = {i} className="numberic-button" onClick = {this.props.changeNumbericInput.bind(this, item.value)}>
+                  <li key = {i} className="numberic-button" onClick = {this.changeNumbericInput.bind(this, item.value)}>
                     <span className="number-text">{item.name}</span>
                   </li>
                 )

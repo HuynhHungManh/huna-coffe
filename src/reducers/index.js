@@ -11,6 +11,7 @@ import {status} from 'base/reducers/status';
 import {promotion} from 'base/reducers/promotion';
 import {noteOrders} from 'base/reducers/noteOrders';
 import {totalPromotion} from 'base/reducers/totalPromotion';
+import {totalPrice} from 'base/reducers/totalPrice';
 
 let rootReducer = combineReducers(
   {
@@ -23,7 +24,8 @@ let rootReducer = combineReducers(
     status,
     promotion,
     noteOrders,
-    totalPromotion
+    totalPromotion,
+    totalPrice
   }
 );
 

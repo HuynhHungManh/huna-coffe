@@ -53,6 +53,28 @@ const rest = reduxApi({
         });
       }
     ]
+  },
+  peolePromotion: {
+    url: '/orders/nguoiChietKhau',
+    options:(url, params, getState) => {
+      return {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        data: {}
+      };
+    },
+    postfetch: [
+      function({data, actions, dispatch, getState, request}) {
+        dispatch({
+          type: 'GET_PEOPLE_PROMOTION',
+          promotion: data.data
+        });
+      }
+    ]
   }
 })
 .use('fetch', customFetch)

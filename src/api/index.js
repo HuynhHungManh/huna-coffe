@@ -4,5 +4,6 @@ import Orders from 'api/payment.js';
 import Promotion from 'api/promotion.js';
 import NoteOrder from 'api/noteOrder.js';
 import TotalPromotion from 'api/totalPromotion.js';
+import TotalPrice from 'api/totalPrice.js';
 
-export {Categories, Auth, Orders, Promotion, NoteOrder, TotalPromotion};
+export {Categories, Auth, Orders, Promotion, NoteOrder, TotalPromotion, TotalPrice};

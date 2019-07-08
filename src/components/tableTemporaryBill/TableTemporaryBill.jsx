@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import {connect} from 'react-redux';
 import {PropTypes} from 'prop-types';
-import {Orders, TotalPromotion } from 'api';
+import {Orders, TotalPromotion, TotalPrice} from 'api';
 import moment from 'moment';
 import {DatetimePickerTrigger} from 'rc-datetime-picker';
 import 'rc-datetime-picker/dist/picker.css';
@@ -14,7 +14,6 @@ import ReactToPrint from 'react-to-print';
 import ComponentToPrint from './ComponentToPrint.jsx';
 import PrintProvider, { Print, NoPrint } from 'react-easy-print';
 import Spinner from 'react-spinkit';
-import NumPad from 'react-numpad';
 
 class TableTemporaryBill extends Component {
   constructor(props, context) {
@@ -40,7 +39,17 @@ class TableTemporaryBill extends Component {
       viewOrderAfterDiscount: 0,
       totalPromotion: 0,
       orderDetail: [],
-      isLoadingOrder: false
+      isLoadingOrder: false,
+      viewDateOrder: '',
+      numberTable: '',
+      promotionBill: 0,
+      priceCustomerCash: 0,
+      priceCustomerCard: 0,
+      priceCustomerTransfer: 0,
+      priceCustomerBack: 0,
+      formality: '',
+      statusOrder: '',
+      codeOrder: ''
     };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -81,7 +90,6 @@ class TableTemporaryBill extends Component {
       this.setState({
         getOrders: dataCacheOrder.getOrders,
         billTotal: dataCacheOrder.billTotal,
-        priceTotal: dataCacheOrder.priceTotal,
         priceDiscount: dataCacheOrder.priceDiscount
       });
     }
@@ -95,19 +103,20 @@ class TableTemporaryBill extends Component {
               res.data.forEach((item, index) => {
                 arrayTmpDetail.push(item);
               });
-              this.setState({
-                orderDetail : arrayTmpDetail,
-                isLoadingOrder: true
-              });
-              localStorage.setItem('dataOrderDetail', JSON.stringify(arrayTmpDetail));
+              if (arrayTmpDetail && arrayTmpDetail.length > 0) {
+                this.setState({
+                  orderDetail : arrayTmpDetail,
+                  isLoadingOrder: true
+                });
+                localStorage.setItem('dataOrderDetail', JSON.stringify(arrayTmpDetail));
+              }
             }
           });
         });
         this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: this.state.dateOreder}));
+        this.props.dispatch(TotalPrice.actions.totalPrice({ngayOrder: this.state.dateOreder}));
 
         let data = res.data;
-        let priceTotal = 0;
-        let priceDiscount = 0;
         let arrayTmp = [];
 
         let dataOrderDetail = JSON.parse(localStorage.getItem('dataOrderDetail'));
@@ -122,7 +131,7 @@ class TableTemporaryBill extends Component {
               localStorage.setItem('dataOrderDetail', JSON.stringify(dataOrderDetail.concat(newData)));
 
               data.content.forEach(function(item, index) {
-                priceTotal = priceTotal + item.tongGia;
+
                 let dataDetail = dataOrderDetail.filter(itemChild => itemChild.orderId == item.id);
                 if (dataDetail) {
                   item.orderDetail = dataDetail;
@@ -131,14 +140,11 @@ class TableTemporaryBill extends Component {
               });
               this.setState({
                 billTotal: data.totalElements,
-                getOrders :  arrayTmp,
-                priceTotal :  priceTotal,
-                priceDiscount: priceTotal - priceDiscount
+                getOrders :  arrayTmp
               });
               let dataCache = {
                 getOrders: data.content,
                 billTotal: data.totalElements,
-                priceTotal: priceTotal,
               };
               localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
             }
@@ -216,16 +222,21 @@ class TableTemporaryBill extends Component {
     //   };
     //   localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
     // }
-      // if (prevProps.totalPromotion !== this.props.totalPromotion) {
-      //   this.setState({
-      //     totalPromotion: this.props.totalPromotion.tongChietKhau
-      //   });
-      // }
     // if (prevProps.numberTable !== this.props.numberTable) {
     //   numberTable
     //   this.setState({
     //     numberTable: this.props.numberTable
     //   });
+    }
+    if (prevProps.totalPromotion !== this.props.totalPromotion) {
+      this.setState({
+        totalPromotion: this.props.totalPromotion.tongChietKhau
+      });
+    }
+    if (prevProps.totalPrice !== this.props.totalPrice) {
+      this.setState({
+        priceTotal: this.props.totalPrice.tongTien
+      });
     }
   }
 
@@ -264,9 +275,10 @@ class TableTemporaryBill extends Component {
   }
 
   cancelOrder(id) {
-    // console.log(this.state.valueCancel);
-    this.props.dispatch(Orders.actions.cancelOrders({idOrder: id}, {'lyDoHuyOrderId': 0})).then((res) => {
+    this.props.dispatch(Orders.actions.cancelOrders({idOrder: id}, {'lyDoHuyOrderId': Number(this.state.valueCancel)}))
+    .then((res) => {
       this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder}));
+      this.alertNotification('Bạn đã hủy thành công!', 'success');
     })
     .catch((e) => {
       this.alertNotification('Bạn không thể hủy order!', 'error');
@@ -276,41 +288,47 @@ class TableTemporaryBill extends Component {
   viewOrder(id) {
     this.props.dispatch(Orders.actions.orderThucDons({orderId: id})).then((res) => {
       if (res.data) {
-        let priceTotal = 0;
         let priceDiscount = 0;
-        let afterDiscount = 0;
-        res.data.forEach(function(item, index) {
-          priceTotal = priceTotal + item.tongGia;
+        let dataOrder = this.state.getOrders.find(item => item.id == id);
+        let promotionBill = 0;
+        let data = res.data;
+        let status = '';
+        data.forEach(function(item, index) {
+          item.promotion = Math.round((item.khuyenMai / item.donGia) * 100);
         });
-        priceDiscount = (priceTotal * 10) / 100;
-        afterDiscount = priceTotal - priceDiscount;
+        if (dataOrder) {
+          promotionBill = (dataOrder.khuyenMai / dataOrder.tongGia) * 100;
+          status = dataOrder.textTrangThaiOrder ? dataOrder.textTrangThaiOrder : '';
+        }
+
         this.setState({
-          orderThucDons: res.data,
+          orderThucDons: data,
           statusPopup: true,
           idItemCurrent: id,
           modelCurrent: 'viewOrder',
-          viewOrderPriceTotal: priceTotal,
-          viewOrderPriceDiscount: priceDiscount,
-          viewOrderAfterDiscount: afterDiscount
+          viewOrderPriceTotal: dataOrder.tongGia,
+          viewOrderPriceDiscount: dataOrder.khuyenMai ? dataOrder.khuyenMai : 0,
+          viewOrderAfterDiscount: dataOrder.thanhTien ? dataOrder.thanhTien : 0,
+          viewDateOrder: dataOrder ? dataOrder.ngayOrder : '',
+          priceCustomerCash: dataOrder.tienKhachDua ? dataOrder.tienKhachDua : 0,
+          priceCustomerCard: dataOrder.tienCaThe ? dataOrder.tienCaThe : 0,
+          priceCustomerTransfer: dataOrder.tienChuyenKhoan ? dataOrder.tienChuyenKhoan : 0,
+          priceCustomerBack: dataOrder.tienThoiLai ? dataOrder.tienThoiLai : 0,
+          numberTable: dataOrder && dataOrder.soBan != 0 ? dataOrder.soBan : 'Mang về',
+          promotionBill: promotionBill,
+          statusOrder: status,
+          codeOrder: dataOrder.ma ? dataOrder.ma : ''
         });
       }
     });
   }
 
-  // printOrder(id) {
-  //   console.log(id);
-  //   let arrayTmp = [];
-  //   getOrders.forEach((item, index) => {
-  //     if (item.id == id) {
-  //       item.isPrint = true;
-  //     }
-  //     arrayTmp.push(item);
-  //   });
-    
-  //   this.setState({
-  //     getOrders: arrayTmp
-  //   });
-  // }
+  printOrder() {
+    const mainProcess = window.require("electron").remote.require('./print.js');
+    mainProcess.print('hide');
+    // mainProcess.getFocusedWindow().minimize();
+
+  }
 
   omponentWillReceiveProps(nextProps) {
     if(nextProps.orders !== this.props.orders){
@@ -326,15 +344,17 @@ class TableTemporaryBill extends Component {
       'Yesterday': moment().subtract(1, 'days'),
       'Clear': ''
     };
+    const auth = JSON.parse(localStorage.getItem('auth'));
     return(
       <div className="show-order-block">
-
         <div className="search-order-block">
-          <div className="search-box">
+          <div className="search-box" onClick={this.printOrder.bind(this)}>
             <input type="text" className="search-order" placeholder="Tìm kiếm ..." readOnly />
           </div>
           <div className="datepicker-box">
             <DatetimePickerTrigger
+              minDate={this.state.moment}
+              showTimePicker={false}
               shortcuts={shortcuts}
               moment={this.state.moment}
               onChange={this.handleChange}>
@@ -351,7 +371,7 @@ class TableTemporaryBill extends Component {
               </span></p>
             </div>
             <div className="discount-total">
-              <p className="text">Tổng tiền chiếc khấu trong ca</p>
+              <p className="text">Tổng tiền chiết khấu trong ca</p>
               <p className="price-text"><span className="price-discount-color">
                 <NumberFormat value={this.state.totalPromotion ? this.state.totalPromotion : 0} displayType={'text'} thousandSeparator={true} /> đ
               </span></p>
@@ -408,6 +428,7 @@ class TableTemporaryBill extends Component {
                               </button>
                             }
                               content={() => this.componentRef[i]}/>
+                              
                               <ComponentToPrint ref={el => (this.componentRef[i] = el)} data={item.orderDetail} orderData={item} />
                           </td>
                         </tr>
@@ -429,7 +450,7 @@ class TableTemporaryBill extends Component {
               <div className="header-order-block">
                 <span className="close-cancel-form icon-cross" onClick={this.closeCancelForm.bind(this)}></span>
                 <p>Bạn có chắc muốn hủy hóa đơn</p>
-                <p><span className="code-text">0000123</span> không? Vui lòng chọn lý do</p>
+                <p><span className="code-text">{this.state.codeOrder}</span> không? Vui lòng chọn lý do</p>
                 <p>hủy bên dưới và xác nhận</p>
               </div>
               <div className="dropdown-block">
@@ -458,8 +479,9 @@ class TableTemporaryBill extends Component {
           :
             <div className="view-order-block">
               <div className="header-view-order">
-                <p className="text-title">0000123</p>
-                <p className="close-model" onClick={this.closeCancelForm.bind(this)}>X</p>
+                <p className="text-title">{this.state.codeOrder}</p>
+                <p className="close-model" onClick={this.closeCancelForm.bind(this)}><span className="icon-cross"></span>
+                </p>
               </div>
               <div className="table-view-order-content">
                 <table className="table-view-order display-header">
@@ -478,9 +500,11 @@ class TableTemporaryBill extends Component {
                         return (
                           <tr key={i}>
                             <td>{item.tenThucDon}</td>
-                            <td>{item.donGia}</td>
+                            <td>
+                              <NumberFormat value={item.donGia} displayType={'text'} thousandSeparator={true} /> đ
+                            </td>
                             <td>{item.soLuong}</td>
-                            <td>{item.chietKhau}</td>
+                            <td>{item.promotion}%</td>
                             <td>
                               <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
                             </td>
@@ -496,7 +520,7 @@ class TableTemporaryBill extends Component {
                 <div className="view-order-price-tmp">
                   <div className="title-left">
                     <p className="title-text">
-                      Thời gian: <span className="bold">25/02/2015  11:08</span>
+                      Thời gian: <span className="bold">{this.state.viewDateOrder}</span>
                     </p>
                   </div>
                   <div className="title-right">
@@ -511,11 +535,11 @@ class TableTemporaryBill extends Component {
                 <div className="view-order-discount">
                   <div className="title-left">
                     <p className="title-text">
-                      Thu ngân: <span className="bold">Nguyễn Thị Mai</span>
+                      Thu ngân: <span className="bold">{auth.hoVaTen}</span>
                     </p>
                   </div>
                   <div className="title-right">
-                    Chiếc khấu  <span className="bold">10%</span>:
+                    Chiết khấu  <span className="bold"> {this.state.promotionBill}%</span>:
                   </div>
                   <div className="price-right">
                     <span className="bold">
@@ -527,7 +551,7 @@ class TableTemporaryBill extends Component {
                 <div className="view-order-after-discount">
                   <div className="title-left">
                     <p className="title-text">
-                      Bàn số: <span className="bold">05</span>
+                      Bàn số: <span className="bold">{this.state.numberTable}</span>
                     </p>
                   </div>
                   <div className="title-right">
@@ -539,7 +563,25 @@ class TableTemporaryBill extends Component {
                     </span>
                   </div>
                 </div>
-
+       
+                <div className="view-order-custumer-price">
+                  <div className="title-left">
+                    <p className="title-text">
+                      Trạng thái:
+                    </p>
+                    <p className="title-text-right">
+                      {this.state.statusOrder}
+                    </p>
+                  </div>
+                  <div className="title-right">
+                    Tiền khách đưa:
+                  </div>
+                  <div className="price-right">
+                    <span className="bold">
+                      <NumberFormat value={this.state.priceCustomerCash ? this.state.priceCustomerCash : 0} displayType={'text'} thousandSeparator={true} /> đ
+                    </span>
+                  </div>
+                </div>
 
                 <div className="view-order-custumer-price">
                   <div className="title-left">
@@ -548,10 +590,28 @@ class TableTemporaryBill extends Component {
                     </p>
                   </div>
                   <div className="title-right">
-                    Tiền khách đưa:
+                    Tiền quẹt thẻ:
                   </div>
                   <div className="price-right">
-                    <span className="bold">122,500 đ</span>
+                    <span className="bold">
+                      <NumberFormat value={this.state.priceCustomerCard ? this.state.priceCustomerCard : 0} displayType={'text'} thousandSeparator={true} /> đ
+                    </span>
+                  </div>
+                </div>
+   
+                <div className="view-order-custumer-price">
+                  <div className="title-left">
+                    <p className="title-text tmp">
+                      tmp
+                    </p>
+                  </div>
+                  <div className="title-right">
+                    Tiền chuyển khoản:
+                  </div>
+                  <div className="price-right">
+                    <span className="bold">
+                      <NumberFormat value={this.state.priceCustomerTransfer ? this.state.priceCustomerTransfer : 0} displayType={'text'} thousandSeparator={true} /> đ
+                    </span>
                   </div>
                 </div>
 
@@ -565,7 +625,9 @@ class TableTemporaryBill extends Component {
                     Tiền thối lại:
                   </div>
                   <div className="price-right">
-                    <span className="bold">122,500 đ</span>
+                    <span className="bold">
+                      <NumberFormat value={this.state.priceCustomerBack} displayType={'text'} thousandSeparator={true} /> đ
+                    </span>
                   </div>
                 </div>
               </div>
@@ -575,9 +637,6 @@ class TableTemporaryBill extends Component {
                 </button>
                 <button className="btn cancel-table" onClick={this.closeCancelForm.bind(this)}>
                   Hủy Bàn
-                </button>
-                <button className="btn pay" onClick={this.cancelOrder.bind(this, this.state.idItemCurrent)}>
-                  Thanh Toán
                 </button>
               </div>
             </div>
@@ -595,7 +654,8 @@ TableTemporaryBill.contextTypes = {
 const bindStateToProps = (state) => {
   return {
     orders: state.orders,
-    totalPromotion: state.totalPromotion
+    totalPromotion: state.totalPromotion,
+    totalPrice: state.totalPrice
   }
 }
 

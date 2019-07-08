@@ -3,6 +3,9 @@
    -moz-box-sizing: border-box;
    -webkit-box-sizing: border-box;
 }
+body {
+  font-family: 'Roboto-Regular';
+}
 main {
   height: 602px;
 }
@@ -115,13 +118,21 @@ main {
 }
 .account-info-box .account-text {
   line-height: 80px;
-  margin-right: 30px;
+  margin-right: 60px;
+  position: relative;
 }
 .account-info-box .account-text .text {
   margin-left: 7px;
   font-weight: bold;
 }
-
+.account-info-box .account-text .icon-shrink::before {
+  position: absolute;
+  position: absolute;
+  top: 38%;
+  right: -45px;
+  font-size: 20px;
+  color: #989898;
+}
 /* Footer page*/
 .footer {
   width: 100%;
@@ -285,7 +296,11 @@ main {
 
 .title-bill, .number-bill, .date-bill {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+.title-bill, {
+  font-size: 17px !important;
 }
 .bill-header {
   width: 100%;
@@ -293,6 +308,7 @@ main {
   background-color: #fff;
   font-size: 16px;
   border-bottom: 1px solid #ccc;
+  height: 125px;
 }
 .title-bill {
   font-family: 'Roboto-Bold';
@@ -309,6 +325,11 @@ main {
   display: inline-block;
   float: right;
 }
+.bill-header .people-promotion-header {
+  float: left;
+  width: 100%;
+  margin-top: 8px;
+}
 .bill-header .right-header .btn-copy-bill {
   float: right;
 }
@@ -319,6 +340,7 @@ main {
   display: inline-block;
   line-height: 28px;
   float: left;
+  font-size: 15px;
 }
 .bill-header .right-header .table-box-block .inp-number-table {
   width: 65px;
@@ -335,7 +357,7 @@ main {
 .bill-title p {
   font-family: 'Roboto-Bold';
   font-weight: bold;
-  width: 23%;
+ /* width: 23%;*/
   display: inline-block;
   text-align: center;
   padding: 12px 10px;
@@ -353,7 +375,7 @@ main {
   width: 20% !important;
 }
 .bill-content .bill-quatium {
-  width: 25% !important;
+  width: 24% !important;
 }
 .bill-item .text-item {
   width: 28% !important;
@@ -380,7 +402,7 @@ main {
   width: 31% !important;
 }
 .price-block .total-price-item {
-  width: 30% !important;
+  width: 31% !important;
 }
 .bill-calculate .bill-item {
   border-bottom: 1px solid #ccc;
@@ -403,7 +425,7 @@ main {
   text-align: center;
 }
 .bill-item .text-item {
-  padding: 5px;
+  padding: 8px 5px 0 7px;
   font-size: 14px;
 
 }
@@ -435,10 +457,13 @@ main {
   width: 100%;
 }
 .bill-content .info-block .text{
-  font-weight: bold;
+  font-family: 'Roboto-Medium';
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .bill-content .bill-calculate {
-  height: 200px;
+  height: 190px;
   background-color: #fff;
   border-bottom: 2px solid #ccc;
   overflow-y: scroll;
@@ -453,11 +478,20 @@ main {
 .bill-results {
   background-color: #fff;
   border-bottom: 2px solid #ccc;
+  font-size: 14px;
+  font-family: 'Roboto-Medium';
 }
 .bill-results .text{
   width: 50%;
   text-align: left;
   display: inline-block;
+  position: relative;
+}
+.bill-results .text .icon-credit-card::before {
+  right: 5px;
+  position: absolute;
+  font-size: 25px;
+  color: #195ffe;
 }
 .bill-results .text-results{
   width: 50%;
@@ -465,7 +499,7 @@ main {
   display: inline-block;
 }
 .calculate-tmp, .discount, .discount-after, .outlay,.exchange {
-  padding: 8px 10px;
+  padding: 7px 10px;
 }
 .discount {
   position: relative;
@@ -513,7 +547,7 @@ main {
 }
 .bill-footer {
   width: 100%;
-  padding: 10px 7px;
+  padding: 8px 7px;
   background-color: #fff;
   text-align: center;
 }
@@ -714,7 +748,7 @@ main {
 }
 .table-box-block {
   width: 100%;
-  margin-top: 14px;
+  margin-top: 7px;
   float: left;
 }
 .datepicker-box .datetime-picker.datetime-picker-popup {
@@ -745,6 +779,9 @@ main {
   display: inline-block;
   text-align: center;
 /*  overflow: hidden;*/
+}
+.header-info-plus .close-model.icon-cross::before {
+  font-size: 13px;
 }
 .info-plus-block .header-info-plus, .header-view-order {
   color: #fff;
@@ -782,6 +819,7 @@ main {
 }
 .text-title {
   float: left;
+  font-size: 15px;
 }
 .name-product-info {
   float: right;
@@ -966,7 +1004,7 @@ main {
 .icon-cancel-box.icon-bin:before {
   position: absolute;
   top: 14px;
-  left: -14px;
+  left: -6px;
   font-size: 18px;
 }
 
@@ -1039,17 +1077,38 @@ main {
   float: left;
   display: inline-block;
 }
-
+.view-order-back-price .title-text, .title-text-right{
+  display: inline-block;
+}
+.view-order-back-price .title-text-right {
+  float: left;
+  margin-left: 3px;
+  font-weight: bold
+}
+.view-order-back-price .title-text {
+  float: left;
+}
+.view-order-custumer-price .title-text, .title-text-right{
+  display: inline-block;
+}
+.view-order-custumer-price .title-text-right {
+  float: left;
+  margin-left: 3px;
+  font-weight: bold;
+}
+.view-order-custumer-price .title-text {
+  float: left;
+}
 .footer-view-order .title-left {
   width: 50%;
 }
 .footer-view-order .title-right {
   text-align: right;
-  width: 25%;
+  width: 29%;
 }
 .footer-view-order .price-right {
   text-align: right;
-  width: 25%;
+  width: 21%;
 }
 .footer-view-order .title-left .title-text {
   text-align: left;
@@ -1251,43 +1310,36 @@ main {
   font-size: 11px;
   margin: 0 3px;
   position: relative;
-  border-bottom: 1px solid #ccc;
+ /* border-bottom: 1px solid #ccc;*/
   padding: 4px 0;
 }
 
-/*.add-note-item {
-  height: 52px !important;
-}*/
-/*.info-block.add-note-item-scroll {
-  top: 0 !important;
-  left: 0 !important;
-  transform: none !important;
-}*/
-.info-block {
-/*  position: relative;
-  float: left;
-  top: 50%;
-  left: 50%;
-  display: inline-block;
-  transform: translate(-50%, -50%);*/
+.bill-item .text-item.add-note-item {
+  line-height: 34px;
 }
-/*.text-item.add-note-item {
-  position: relative;
-  overflow-y: scroll !important;
-}*/
 .btn-active:active{
   background-image: linear-gradient(#fffefe00, #0202026e);
 }
 .note-item .note-name-item {
   display: inline-block;
-  margin-left: 4px;
+  margin-left: 20px;
   padding-bottom: 3px;
-/*  border-bottom: 1px solid #ccc;*/
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.note-item .note-name-item p {
+  margin-bottom: 3px;
+}
+.note-item .note-name-item .custom-one {
+  position: absolute;
+  transform: translateY(-50%);
+  left: 26px;
 }
 .note-item .note-quatum-item {
   position: absolute;
   top: 50%;
-  left: 5px;
+  left: 7px;
   font-size: 9px;
   transform: translate(-50%,-50%);
 }
@@ -1308,6 +1360,7 @@ main {
   line-height: 50px;
   padding: 0 15px;
   text-align: right;
+  height: 65px;
 }
 
 .template-print {
@@ -1393,3 +1446,176 @@ main {
   left: 50% !important;
   transform: translate(-50%,-50%) !important;
 }
+
+.people-promotion-header .title-header, .combobox-header {
+  display: inline-block;
+  float: left;
+  font-size: 15px;
+}
+.people-promotion-header .combobox-header {
+  width: 60%;
+}
+.people-promotion-header .combobox-header .options  {
+  height: unset !important
+}
+.people-promotion-header .combobox-header .multi-select  {
+  height: 30px !important;
+}
+.people-promotion-header .combobox-header .arrow  {
+  line-height: 28px !important;
+}
+.people-promotion-header .title-header {
+  line-height: 31px;
+  width: 40%;
+}
+
+.people-promotion-header .margin-top-right {
+  margin: 0 !important;
+}
+.bill-content .bill-title .bill-item {
+  width: 28%;
+}
+.payment-content {
+  width: 100%;
+  float: left;
+}
+.payment-content {
+  text-align: center;
+  position: relative;
+  width: 100%;
+  top: 9px;
+}
+.button-block {
+  width: 100%;
+  float: left;
+}
+.payment-content .button-block button {
+  margin: 10px 5px;
+  width: 30%;
+  background-color: #55c757;
+  display: inline-block;
+}
+.info-plus-block.payment-block {
+  width: 55% !important;
+}
+.payment-content .total-bill-block .title-total-bill-block, .price-total-bill-block {
+  width: 50%;
+  display: inline-block;
+}
+.payment-content .total-bill-block {
+  padding: 20px;
+  float: left;
+  width: 100%;
+}
+.payment-content .total-bill-block .title-total-bill-block {
+  text-align: left;
+}
+.payment-content .total-bill-block .price-total-bill-block {
+  text-align: right;
+}
+.payment-content .total-bill-block .price-total-bill-block .price-total-bill-input {
+  text-align: right;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  font-size: 18px;
+}
+.payment-content .total-bill-block .price-total-bill-block .price-total-bill-input:focus {
+  outline: none;
+}
+.payment-content .detail-payment-block .title{
+  text-align: left;
+  display: inline-block;
+  width: 50%;
+}
+.payment-content .detail-payment-block .price{
+  text-align: right;
+  display: inline-block;
+  width: 50%;
+}
+.detail-payment-block .need-payment-block, .customer-payment-block, .customer-card-block {
+  float: left;
+  width: 100%;
+}
+.detail-payment-block .need-payment-block {
+  padding: 10px 20px;
+}
+.detail-payment-block .customer-payment-block, .customer-card-block {
+  padding: 10px 20px 10px 70px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ccc;
+}
+.button-block .btn.choose {
+  background-color: #368e37 !important;
+}
+.detail-payment-block .customer-payment-block .title {
+  position: relative;
+}
+.detail-payment-block .customer-payment-block .title .icon-cross::before {
+  position: absolute;
+  left: -30px;
+  font-size: 14px;
+  color: #e65454;
+  top: 2px;
+}
+.customer-payout-block {
+  width: 100%;
+  padding: 10px 20px;
+  float: left;
+  margin-bottom: 25px;
+}
+.detail-payment-block .customer-card-block .title {
+  position: relative;
+  width: 30%;
+}
+.detail-payment-block .customer-card-block .select-number-account {
+  width: 50%;
+  display: inline-block;
+}
+.detail-payment-block .customer-card-block .select-number-account .selected-options {
+  height: 30px !important;
+}
+.detail-payment-block .customer-card-block .select-number-account .selected-options .selected-options-badges {
+  margin: 0px 5px 2px 0;
+}
+.detail-payment-block .customer-card-block .select-number-account .arrow {
+  margin-top: 9px !important; 
+}
+.detail-payment-block .customer-card-block .select-number-account .options {
+  height: unset;
+}
+.detail-payment-block .customer-card-block .title .icon-cross::before {
+  position: absolute;
+  left: -30px;
+  font-size: 14px;
+  color: #e65454;
+  top: 2px;
+}
+.detail-payment-block .customer-card-block .price {
+  text-align: right;
+  width: 20%;
+}
+.customer-payout-block .customer-payment-block .title {
+  text-align: left;
+  display: inline-block;
+  width: 50%;
+}
+.payment-content .customer-payment-block .price{
+  text-align: right;
+  display: inline-block;
+  width: 50%;
+}
+.outlay .type-payment-show {
+  position: absolute;
+  top: 24px;
+  font-size: 11px;
+  left: 0;
+  font-family: 'Roboto-Regular';
+  color: #717171;
+}
+.bill-results .outlay .text .icon-credit-card.hidden {
+  color: #757575 !important;
+}
+/*.bill-item .item-block .note-item:last-child {
+  border-bottom: unset;
+}*/

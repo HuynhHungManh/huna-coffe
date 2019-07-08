@@ -77,7 +77,7 @@ class Item_Bill extends Component {
     let itemArray = [];
     let idsArray = [];
     if (typeof idsString == 'string') {
-      idsArray = idsString.split(",").map(Number);
+      idsArray = idsString.split(";").map(Number);
       if (idsArray && idsArray.length > 0) {
         itemArray = this.state.noteOrders.filter(item => idsArray.includes(item.id));
       }
@@ -87,13 +87,11 @@ class Item_Bill extends Component {
   }
 
   render() {
+    console.log(this.props.itemNote);
     return(
-      <div className={classnames('bill-item', {
-            'add-note-item' : this.props.itemNote
-          })}
-      >
+      <div className="bill-item">
         <div className={classnames('text-item', {
-            'add-note-item' : this.props.itemNote
+            'add-note-item' : !this.props.itemNote && !this.props.data.itemPromotion
           })}
         >
           <div className={classnames('info-block', {
@@ -102,17 +100,26 @@ class Item_Bill extends Component {
           >
             <p className="text" onClick={this.props.chooseItemProduct.bind(this, this.props.data)}>{this.truncate(this.props.data.ten)}</p>
             { this.props.itemNote &&
-              <div>
+              <div className=
+                {classnames('', {
+                  'item-block' : this.props.itemNote && (this.props.itemNote.length > 0 || (this.props.itemNote.length == 1 && this.props.data.itemPromotion))
+                })}
+              >
                 {
                   this.props.itemNote.map((item, i) => {
                     return (
                         <div key={i} className="note-item">
                             <span className="note-quatum-item">{item.soLuong} x </span> 
-                            <div className="note-name-item">
+                            <div className='note-name-item'>
                             {
                               this.renderItem(item.ghiChuId).map((itemChild, j) => {
                                 return (
-                                  <p key={j}>{itemChild.ten}</p>
+                                  <p className={
+                                  classnames('', {
+                                    'custom-one': this.renderItem(item.ghiChuId) && this.renderItem(item.ghiChuId).length == 1
+                                  })}
+                                  key={j}>{itemChild.ten}
+                                  </p>
                                 )
                               })
                             }
@@ -121,13 +128,14 @@ class Item_Bill extends Component {
                       )
                   })
                 }
-                { this.props.data.itemPromotion && this.props.data.itemPromotion > 0 &&
-                  <p className="note-item">- <span className="price-text-color">
-                    <NumberFormat value={this.props.data.itemPromotion * this.props.data.quantum} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
-                    </span>
-                  </p>
-                }
               </div>
+            }
+            { this.props.data.itemPromotion && this.props.data.itemPromotion > 0 ?
+              <p className="note-item">- <span className="price-text-color">
+                <NumberFormat value={this.props.data.itemPromotion * this.props.data.quantum} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+                </span>
+              </p>
+              : ""
             }
           </div>
         </div>

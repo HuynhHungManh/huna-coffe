@@ -2,17 +2,21 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import {connect} from 'react-redux';
 import Item_Bill from './Item_Bill.jsx';
-import {Orders} from 'api';
+import {Orders, Promotion} from 'api';
 import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
 import Modal from 'react-modal';
 import NumberFormat from 'react-number-format';
 Modal.setAppElement('body');
 import  MultiSelectReact  from 'multi-select-react';
+import PrintProvider, { Print, NoPrint } from 'react-easy-print';
+import ComponentToPrint from '../tableTemporaryBill/ComponentToPrint.jsx';
+import ReactToPrint from 'react-to-print';
 
 class Bill_Order extends Component {
   constructor(props, context) {
     super(props, context);
+
     this.openModel = this.openModel.bind(this);
     this.chooseItemProduct = this.chooseItemProduct.bind(this);
     this.cancelItemBill = this.cancelItemBill.bind(this);
@@ -48,7 +52,25 @@ class Bill_Order extends Component {
       promotionItems: [],
       multiSelected: [],
       isPromotionTypeBill: false,
-      numberTable: 0
+      numberTable: 0,
+      peopleSelect: [],
+      nameModel: 'addInfo',
+      typePayment: 'cash',
+      typePaymentTmp: [],
+      paymentTmp: 0,
+      numberAcc: [{
+        label: 'Tài khoản Admin',
+        id: 1
+      }],
+      numberAccTransfer: [{
+        label: 'Tài khoản Admin',
+        id: 1
+      }],
+      numberAccSelected: 0 ,
+      orderDetail: [],
+      inputPayment: 0,
+      customerPayment: 0,
+      typePaymentShow: ''
     }
   }
 
@@ -62,6 +84,22 @@ class Bill_Order extends Component {
       1000
     );
     localStorage.removeItem('productsBill');
+
+    
+    this.props.dispatch(Promotion.actions.peolePromotion()).then((res) => {
+      if (res.data && res.data.content) {
+        let data = [];
+        res.data.content.forEach((item, index) => {
+          data.push({
+            id: item.id,
+            label : item.hoVaTen
+          });
+        });
+        this.setState({
+          peopleSelect: data
+        });
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -127,7 +165,7 @@ class Bill_Order extends Component {
         }
         getChooses.forEach((item, index) => {
           if (this.state.promotionGroup) {
-            let promotionGroup = this.state.promotionGroup.find(itemPromotion => itemPromotion.loaiThucDonId == item.categoriesId);
+            let promotionGroup = this.state.promotionGroup.find(itemPromotion => itemPromotion.loaiThucDonId == item.loaiThucDonId);
             if (promotionGroup) {
               item.discount = promotionGroup.chietKhau;
               item.itemPromotion = (promotionGroup.chietKhau * item.donGia) / 100;
@@ -152,15 +190,17 @@ class Bill_Order extends Component {
           });
         };
         let discountPriceTotal = discountInput > 0 && discountInput != '' ? (priceTotal * parseInt(discountInput, 10)) / 100 : 0;
-
+        let discountAfter = discountPriceTotal >= 0 && discountPriceTotal <= priceTotal ? priceTotal - discountPriceTotal : 0;
         this.setState({
-          productsBill :  getChooses,
+          inputPayment: discountAfter,
+          productsBill : getChooses,
           priceTotal: priceTotal,
           discountPriceTotal: discountPriceTotal,
-          discountAfter: discountPriceTotal >= 0 && discountPriceTotal <= priceTotal ? priceTotal - discountPriceTotal : 0
+          discountAfter: discountAfter
         });
       }
     }
+
     if (prevProps.promotion !== this.props.promotion) {
       let promotionBill = this.props.promotion.find(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_HOA_DON' 
         && this.checkPromotionDate(item.tuNgay, item.denNgay));
@@ -287,7 +327,10 @@ class Bill_Order extends Component {
       dateOrder: datetime,
       date: new Date(),
       statusCopyPreBill: false,
-      discountInput: ''
+      discountInput: '',
+      typePaymentTmp : [],
+      paymentTmp: 0,
+      customerPayment: 0
     });
     localStorage.removeItem('productsBill');
     localStorage.removeItem('products');
@@ -314,63 +357,80 @@ class Bill_Order extends Component {
       orderProducts.push(dataProducts);
     });
     let payBack = this.props.outLay - this.state.discountAfter;
+    let payCash = 0;
+    let payCard = 0;
+    let payTransfer = 0;
+    this.state.typePaymentTmp.forEach((item, index) => {
+      if (item.type == 'cash') {
+        payCash = item.price;
+      } else if (item.type == 'card') {
+        payCard = item.price;
+      } else if (item.type == 'transfer') {
+        payTransfer = item.price;
+      } 
+    });
     let data = {
-      'hinhThucThanhToan' : 'TIEN_MAT',
+      'tienCaThe': payCard,
+      'tienChuyenKhoan': payTransfer,
       'ma' : '1021000',
       'khuyenMai': this.state.discountInput && this.state.isPromotionTypeBill == true ? this.state.discountInput : 0,
       'ngayOrder': dateFormat,
-      'nguoiChietKhauId': 1,
+      'nguoiChietKhauId': this.state.peopleSelect[0].id ? this.state.peopleSelect[0].id : 1,
       'nhanVienOrderId': auth.userId ? auth.userId : 0,
       'orderThucDons': orderProducts,
       'thanhTien': this.state.priceTotal,
       'tongGia': this.state.discountAfter,
       'trangThaiOrder': 'DA_THANH_TOAN',
       'soBan': this.props.numberTable,
-      'tienKhachDua': this.props.outLay,
+      'tienKhachDua': payCash,
       'tienThoiLai': payBack
     };
-    if (typeSubmit == "Order") {
-      if (!this.props.outLay || this.props.outLay == 0 || payBack < 0) {
-        this.alertNotification('Khách chưa đưa tiền hoặc không đủ!', 'warning');
-      } else {
-        this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
-        this.alertNotification('Bạn đã order thành công!', 'success');
-        let d = new Date();
-        let hour = d.getHours();
-        let minutes = date.getMinutes();
-        let timeCopy = hour + ':' + minutes;
-        let copyProductsBill = {
-          productsBill: this.state.productsBill,
-          priceTotal: this.state.priceTotal,
-          discountPriceTotal: this.state.discountPriceTotal,
-          discountAfter: this.state.discountAfter,
-          dateCopy: timeCopy,
-          dateOrder: this.state.dateOrder,
-          outLay: this.state.outLay,
-          numberTable: this.props.numberTable
-        }
-        localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
-        this.clearForm();
-        }).catch((reason) => {
-          this.alertNotification('Order không thành công!', 'error');
-        });
-      }
-    } else if (typeSubmit == 'Store') {
-      let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
-      let orderNewListTmp = [];
-      data.productsBill = this.state.productsBill;
-      data.priceTotal = this.state.priceTotal;
-      data.discountPriceTotal = this.state.discountPriceTotal;
-      data.discountAfter = this.state.discountAfter;
-      data.dateOrder = this.state.dateOrder;
-      if (orderListTmp) {
-        orderNewListTmp = orderListTmp.concat(data);
-      } else {
-        orderNewListTmp.push(data);
-      }
-      localStorage.setItem('orderListTmp', JSON.stringify(orderNewListTmp.reverse()));
-      this.alertNotification('Bạn đã lưu thành công!', 'success');
-    }
+    this.setState({
+      orderDetail: [data]
+    });
+    console.log(data);
+    // if (typeSubmit == "Order") {
+    //   if (!this.props.outLay || this.props.outLay == 0 || payBack < 0) {
+    //     this.alertNotification('Khách chưa đưa tiền hoặc không đủ!', 'warning');
+    //   } else {
+    //     this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
+    //     this.alertNotification('Bạn đã order thành công!', 'success');
+    //     let d = new Date();
+    //     let hour = d.getHours();
+    //     let minutes = date.getMinutes();
+    //     let timeCopy = hour + ':' + minutes;
+    //     let copyProductsBill = {
+    //       productsBill: this.state.productsBill,
+    //       priceTotal: this.state.priceTotal,
+    //       discountPriceTotal: this.state.discountPriceTotal,
+    //       discountAfter: this.state.discountAfter,
+    //       dateCopy: timeCopy,
+    //       dateOrder: this.state.dateOrder,
+    //       outLay: this.state.outLay,
+    //       numberTable: this.props.numberTable
+    //     }
+    //     localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
+    //     this.clearForm();
+    //     }).catch((reason) => {
+    //       this.alertNotification('Order không thành công!', 'error');
+    //     });
+    //   }
+    // } else if (typeSubmit == 'Store') {
+    //   let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
+    //   let orderNewListTmp = [];
+    //   data.productsBill = this.state.productsBill;
+    //   data.priceTotal = this.state.priceTotal;
+    //   data.discountPriceTotal = this.state.discountPriceTotal;
+    //   data.discountAfter = this.state.discountAfter;
+    //   data.dateOrder = this.state.dateOrder;
+    //   if (orderListTmp) {
+    //     orderNewListTmp = orderListTmp.concat(data);
+    //   } else {
+    //     orderNewListTmp.push(data);
+    //   }
+    //   localStorage.setItem('orderListTmp', JSON.stringify(orderNewListTmp.reverse()));
+    //   this.alertNotification('Bạn đã lưu thành công!', 'success');
+    // }
   };
 
   copyProductsBill() {
@@ -473,7 +533,8 @@ class Bill_Order extends Component {
       cbDiscount: data.itemPromotion ? true : false,
       promotion: data.itemPromotion ? data.itemPromotion : 0,
       discount: data.discount ? data.discount : 0,
-      itemNoteTmp: data.itemNote ? data.itemNote : []
+      itemNoteTmp: data.itemNote ? data.itemNote : [],
+      nameModel: 'addInfo'
     });
   }
 
@@ -494,9 +555,10 @@ class Bill_Order extends Component {
   }
 
   addNote(id) {
-    let noteState = this.state.itemNote;
+    const noteState = this.state.itemNoteTmp;
     let noteFilter = this.state.itemNoteTmp.filter(item => item.id == id);
-    let noteFilterCheckEmpty = this.state.itemNoteTmp.filter(item => item.ghiChuId == 0);
+    let noteFilterCheckEmpty = this.state.itemNoteTmp.find(item => item.ghiChuId == '');
+    // console.log(!noteFilterCheckEmpty);
     let idIndex = 0;
     if (noteFilter && noteFilter.length > 0) {
       idIndex = noteFilter.length;
@@ -509,20 +571,20 @@ class Bill_Order extends Component {
         }
       });
     }
-    if (noteFilterCheckEmpty && noteFilterCheckEmpty.length == 0) {
-      let note = {
-        'ghiChuId': 0,
+    if (!noteFilterCheckEmpty) {
+      let note = [{
+        'ghiChuId': '',
         'soLuong': 1,
         'id': id,
         'idIndex' : idIndex,
         'multiSelect' : arrayTmp
-      };
-      noteState.push(note);
+      }];
+      let tmp = noteState.concat(note);
       this.setState({
-        itemNoteTmp: noteState
+        itemNoteTmp: tmp
       });
     } else {
-      this.alertNotification('Bạn chưa ghi chú!', 'info');
+      this.alertNotification('Bạn chưa ghi chú!', 'warning');
     }
   }
 
@@ -548,47 +610,101 @@ class Bill_Order extends Component {
     }
   }
 
-  saveUpdateNote() {
-    let productsBill = this.state.productsBill;
-    let arrayTmp = [];
-    let priceTotal = 0;
-    productsBill.forEach((item, index) => {
-      if (this.state.noteEditing == item.id) {
-        let itemNote = this.state.itemNote;
-        itemNote.forEach((item, index) => {
-          if (item.ghiChuId == 0) {
-            itemNote.splice(index, 1);
-          }
-          item.soLuong = item.soLuong > 0 ? item.soLuong : 1
-        });
-        item.itemNote = itemNote;
-        // if (this.state.promotionGroup) {
-        //   let promotionItem = this.state.promotionGroup.find(itemPromotion => itemPromotion.loaiThucDonId == item.categoriesId);
-        //   if (promotionItem) {
-        //     item.itemPromotion = (promotionItem.chietKhau * this.state.notePrice) / 100;
-        //     item.priceAndQuantum = item.priceAndQuantum - (item.itemPromotion * item.quantum);
-        //   }
-        // } else {
-        //   delete item.itemPromotion;
-        // }
-      }
-      priceTotal = priceTotal + item.priceAndQuantum;
-      arrayTmp.push(item);
-    });
+  saveUpdateNote(typeModel) {
+    if (typeModel == 'addInfo') {
+      let productsBill = this.state.productsBill;
+      let arrayTmp = [];
+      let priceTotal = 0;
+      productsBill.forEach((item, index) => {
+        if (this.state.noteEditing == item.id) {
+          // this.state.itemNote = this.state.itemNoteTmp;
+          let itemNote = this.state.itemNoteTmp;
+          itemNote.forEach((item, index) => {
+            if (item.ghiChuId == 0) {
+              itemNote.splice(index, 1);
+            }
+            item.soLuong = item.soLuong > 0 ? item.soLuong : 1
+          });
+          item.itemNote = itemNote;
+          // if (this.state.promotionGroup) {
+          //   let promotionItem = this.state.promotionGroup.find(itemPromotion => itemPromotion.loaiThucDonId == item.categoriesId);
+          //   if (promotionItem) {
+          //     item.itemPromotion = (promotionItem.chietKhau * this.state.notePrice) / 100;
+          //     item.priceAndQuantum = item.priceAndQuantum - (item.itemPromotion * item.quantum);
+          //   }
+          // } else {
+          //   delete item.itemPromotion;
+          // }
+        }
+        priceTotal = priceTotal + item.priceAndQuantum;
+        arrayTmp.push(item);
+      });
 
-    let discountPriceTotal = (priceTotal * parseInt(this.state.discountInput, 10)) / 100;
-    this.setState({
-      productsBill: arrayTmp,
-      priceTotal: priceTotal,
-      discountPriceTotal: discountPriceTotal,
-      discountAfter: priceTotal - discountPriceTotal
-    });
+      let discountPriceTotal = (priceTotal * Number(this.state.discountInput)) / 100;
+      console.log(arrayTmp);
+      this.setState({
+        productsBill: arrayTmp,
+        priceTotal: priceTotal,
+        discountPriceTotal: discountPriceTotal ? discountPriceTotal : 0,
+        discountAfter: priceTotal - discountPriceTotal
+      });
+    } else {
+      if (this.state.inputPayment == 0 && this.state.customerPayment == this.state.discountAfter) {
+        this.props.changePayment(this.state.discountAfter);
+      } else if (this.state.inputPayment == 0 && this.state.customerPayment > this.state.discountAfter) { 
+        this.props.changePayment(this.state.customerPayment);
+      } else {
+        this.props.changePayment(this.state.inputPayment);
+      }
+      if (this.state.typePaymentTmp && this.state.typePaymentTmp.length > 0) {
+        let arrayTmp = [];
+        this.state.typePaymentTmp.forEach((item, index) => {
+          if (item.type == 'cash') {
+            arrayTmp.push('Tiền mặt');
+          } else if (item.type == 'card') {
+            arrayTmp.push('Thẻ');
+          } else if (item.type == 'transfer') {
+            arrayTmp.push('Chuyển khoản');
+          }
+        });
+        if (arrayTmp.length > 0) {
+          this.setState({
+            typePaymentShow: arrayTmp.join(', '),
+            typePaymentTmpStore: this.state.typePaymentTmp
+          });
+        }
+      }
+      // if (this.state.typePaymentTmp == 'cash') {
+      //   this.props.changePayment(this.state.paymentTmp);
+      //   this.setState({
+      //     typePayment : this.state.typePaymentTmp
+      //   });
+      //   this.closeModel();
+      // } else if (this.state.typePaymentTmp == 'card') {
+      //   let chooseAcc = this.state.numberAcc.find(item => item.value == true);
+      //   if (chooseAcc) {
+      //     this.props.changePayment(this.state.paymentTmp);
+      //     this.setState({
+      //       typePayment : this.state.typePaymentTmp
+      //     });
+      //     this.closeModel();
+      //   } else {
+      //     this.alertNotification('Bạn chưa chọn tài khoản người nhận!', 'warning');
+      //   }
+      // } else if (this.state.typePaymentTmp == '') {
+      //   this.props.changePayment(this.state.paymentTmp);
+      //   this.setState({
+      //     typePayment : this.state.typePaymentTmp
+      //   });
+      //   this.closeModel();
+      // }
+    }
     this.closeModel();
   }
 
   optionClicked(optionsList) {
     let index_dd = this.state.idNoteCurrent;
-    let note = this.state.itemNote;
+    let note = this.state.itemNoteTmp;
     let multiSelected = optionsList.filter(item => item.value == true);
     let idNote = [];
     let arrayTmp = [];
@@ -600,20 +716,20 @@ class Bill_Order extends Component {
     if (index_dd && note && note.length > 0) {
       note.forEach((item, index) => {
         if (index_dd == item.id && idNote.length > 0) {
-          item.ghiChuId = idNote.toString();
+          item.ghiChuId = idNote.join(';'),
           item.multiSelect = optionsList;
         }
         arrayTmp.push(item);
       });
       this.setState({
-        itemNote: arrayTmp
+        itemNoteTmp: arrayTmp
       });
     }
   }
 
   selectedBadgeClicked(callback, indexSelect, optionsList) {
     let index_dd = this.state.idNoteCurrent;
-    let note = this.state.itemNote;
+    let note = this.state.itemNoteTmp;
     let multiSelected = optionsList.filter(item => item.value == true);
     let idNote = [];
     let arrayTmp = [];
@@ -625,26 +741,126 @@ class Bill_Order extends Component {
     if (index_dd && note && note.length > 0) {
       note.forEach((item, index) => {
         if (idNote.length > 0 && index_dd == item.id && item.idIndex == indexSelect) {
-          item.ghiChuId = idNote.toString();
+          item.ghiChuId = idNote.join(';'),
           item.multiSelect = optionsList;
         }
         arrayTmp.push(item);
       });
+      console.log(arrayTmp);
       this.setState({
-        itemNote: arrayTmp
+        itemNoteTmp: arrayTmp
       });
     }
   }
 
+  optionClickedSingle(optionsList) {
+    this.setState({ peopleSelect: optionsList });
+  }
+  selectedBadgeClickedSingle(optionsList) {
+    this.setState({ peopleSelect: optionsList });
+  }
+
+  optionClickedSingleNumberAcc(optionsList) {
+    this.setState({ numberAcc: optionsList });
+  }
+  selectedBadgeClickedSingleNumberAcc(optionsList) {
+    this.setState({ numberAcc: optionsList });
+  }
+
+  optionClickedSingleNumberAccTransfer(optionsList) {
+    this.setState({ numberAccTransfer: optionsList });
+  }
+  selectedBadgeClickedSingleNumberAccTransfer(optionsList) {
+    this.setState({ numberAccTransfer: optionsList });
+  }
+
+  showFormChart() {
+    if (!this.state.productsBill || this.state.productsBill && this.state.productsBill.length == 0) {
+      this.alertNotification('Bạn chưa order món!', 'warning');
+    } else {
+      this.setState({
+      nameModel: 'chart',
+        statusPopup: true
+      });
+    }
+  }
+
+  handlePayment(type) {
+    this.state.typePayment()
+    this.setState({
+      typePayment: []
+    });
+  }
+
+  changePayment(type, price) {
+    let arrType = this.state.typePaymentTmp ? this.state.typePaymentTmp : [];
+    let isChoose = arrType.find(item => item.type == type);
+    let arrayChoose = arrType.filter(item => item.type != type);
+    let priceTotal = 0;
+    arrayChoose.forEach((item, index) => {
+      priceTotal = priceTotal + item.price;
+    });
+    if (!isChoose && this.state.inputPayment != 0) {
+      let inputPayment = 0;
+      let customerPayment = 0;
+      if (this.state.discountAfter >= (price + priceTotal)) {
+        inputPayment = this.state.discountAfter - (price + priceTotal);
+        customerPayment = price + priceTotal;
+      } else {
+        customerPayment = price + this.state.customerPayment;
+        price = this.state.discountAfter - priceTotal;
+      }
+      arrType.push({
+        type: type,
+        price: Number(price)
+      });
+      this.setState({
+        typePaymentTmp : arrType,
+        paymentTmp: this.state.discountAfter,
+        inputPayment: inputPayment,
+        customerPayment: customerPayment
+      });
+      console.log(customerPayment);
+    }
+  }
+
+  handleChangePayment(e) {
+    this.setState({
+      inputPayment: Number(e.target.value),
+    });
+    // console.log(e.target.value);
+  }
+
+  removePayment(type) {
+    let filterChoosed = this.state.typePaymentTmp.filter(item => item.type != type);
+    let priceTotal = 0;
+    filterChoosed.forEach((item, index) => {
+      priceTotal = priceTotal + item.price;
+    });
+    this.setState({
+      typePaymentTmp: filterChoosed ? filterChoosed : [],
+      paymentTmp: 0,
+      inputPayment: this.state.discountAfter - priceTotal,
+    });
+  }
+
   render() {
-    const selectedOptionsStyles = {
-      color: "#3c763d",
-      backgroundColor: "#dff0d8"
-    };
-    const optionsListStyles = {
-      backgroundColor: "#dff0d8",
-      color: "#3c763d"
-    };
+    let cashPaymentData = this.state.typePaymentTmp.find(item => item.type  == 'cash');
+    let cardPaymentData = this.state.typePaymentTmp.find(item => item.type  == 'card');
+    let transferPaymentData = this.state.typePaymentTmp.find(item => item.type  == 'transfer'); 
+
+    
+    // let customerPayment = 0;
+    // if (cashPaymentData && cashPaymentData.price) {
+    //   customerPayment = customerPayment + cashPaymentData.price;
+    // }
+    // if (cardPaymentData && cardPaymentData.price) {
+    //   customerPayment = customerPayment + cardPaymentData.price;
+    // }
+    // if (transferPaymentData && transferPaymentData.price) {
+    //   customerPayment = customerPayment + transferPaymentData.price;
+    // }
+
     return(
       <div className="bill-order-block">
         <div className="bill-box">
@@ -682,6 +898,18 @@ class Bill_Order extends Component {
                   value = {this.props.numberTable}
                   onClick = {this.props.onClickFiledInput.bind(this)}
                 />
+              </div>
+            </div>
+            <div className="people-promotion-header">
+              <div className="title-header">
+                Người chiết khấu :
+              </div>
+              <div className="combobox-header">
+                <MultiSelectReact 
+                  options={this.state.peopleSelect}
+                  optionClicked={this.optionClickedSingle.bind(this)}
+                  selectedBadgeClicked={this.selectedBadgeClickedSingle.bind(this)}
+                  isSingleSelect={true} />
               </div>
             </div>
           </div>
@@ -744,7 +972,22 @@ class Bill_Order extends Component {
               </p>
             </div>
             <div className="outlay">
-              <p className="text">Tiền khách đưa</p>
+              <p className="text " onClick={this.showFormChart.bind(this)}>
+                <span className={classnames('icon-credit-card', {
+                  'hidden' : !this.state.productsBill || this.state.productsBill && this.state.productsBill.length == 0
+                })}
+                >
+                </span>
+                Tiền khách đưa
+                <span className="type-payment-show">
+                (
+                  { this.state.typePaymentShow && this.state.typePaymentShow != '' ? 
+                    this.state.typePaymentShow
+                    : 'Tiền mặt'
+                  }
+                )
+                </span>
+              </p>
               <NumberFormat
                 className={classnames('inp-outlay', {
                     'position-input' : this.state.discountPriceTotal > 0
@@ -771,12 +1014,18 @@ class Bill_Order extends Component {
             <button className="fill-again btn-active" onClick={this.clearForm.bind(this)}>
               Nhập lại
             </button>
-            <button className="save btn-active" onClick={this.submitOrders.bind(this, 'Store')}>
+            <button id="check" className="save btn-active" onClick={this.submitOrders.bind(this, 'Store')}>
               Lưu
             </button>
-            <button className="pay btn-active" onClick={this.submitOrders.bind(this, 'Order')}>
-              Thanh Toán
-            </button>
+            <ReactToPrint onClick={this.submitOrders.bind(this, 'Order')} 
+              onBeforePrint = {this.submitOrders.bind(this, 'Order')}
+              trigger={() => 
+                <button className="pay btn-active" onClick={this.submitOrders.bind(this, 'Order')} >
+                  Thanh Toán
+                </button>
+              }
+              content={() => this.componentRef}/>
+              <ComponentToPrint ref={el => (this.componentRef = el)} data={this.state.orderDetail}/>
           </div>
         </div>
         <Modal
@@ -784,13 +1033,20 @@ class Bill_Order extends Component {
           contentLabel="Modal"
           className="modal popup info-plus"
         >
-          <div className="info-plus-block">
+          <div className={
+            classnames('info-plus-block', {
+              'payment-block' : this.state.nameModel == 'chart',
+            })}
+          >
             <div className="header-info-plus">
-              <p className="text-title">Thông tin thêm</p>
-              <p className="close-model" onClick={this.closeModel.bind(this)}>X</p>
-              <p className="name-product-info">{this.state.noteQuantum} x {this.state.noteName}</p>
+              <p className="text-title">{this.state.nameModel == 'addInfo' ? 'Thông tin thêm' : 'Thanh toán'}</p>
+              <p className="close-model icon-cross" onClick={this.closeModel.bind(this)}></p>
+              { this.state.nameModel == 'addInfo' &&
+                <p className="name-product-info">{this.state.noteQuantum} x {this.state.noteName}</p>
+              }
             </div>
-            <div className="content-info-plus">
+            { this.state.nameModel == 'addInfo' &&
+              <div className="content-info-plus">
                 <div className="checkbox-block">
                   <div className = {
                     classnames('checkbox-block-header', {
@@ -883,12 +1139,112 @@ class Bill_Order extends Component {
                   </div>
                 </div>
               </div>
+            }
+            { this.state.nameModel == 'chart' &&
+              <div className="payment-content">
+                <div className="total-bill-block">
+                  <p className="title-total-bill-block">Thanh toán</p>
+                  <p className="price-total-bill-block">
+                    <input type="text" className="price-total-bill-input" onChange={this.handleChangePayment.bind(this)} value={this.state.inputPayment}/>
+                  </p>
+                </div>
+                <div className="button-block">
+                  <button className= {
+                    classnames('btn', {
+                      'choose' : cashPaymentData
+                    })}
+                    onClick={this.changePayment.bind(this, 'cash', this.state.inputPayment)}
+                  >
+                    Tiền Mặt
+                  </button>
+                  <button className= {
+                    classnames('btn', {
+                      'choose' : cardPaymentData
+                    })}
+                    onClick={this.changePayment.bind(this, 'card', this.state.inputPayment)}
+                  >
+                    Thẻ
+                  </button>
+                  <button className={
+                    classnames('btn', {
+                      'choose' : transferPaymentData
+                    })}
+                    onClick={this.changePayment.bind(this, 'transfer', this.state.inputPayment)}
+                  >
+                    Chuyển Khoản
+                  </button>
+                </div>
+                <div className="detail-payment-block">
+                  <div className="need-payment-block">
+                    <p className="title">Tiền cần trả</p>
+                    <p className="price">
+                      <NumberFormat value={Number((this.state.discountAfter).toFixed(3))} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+                    </p>
+                  </div>
+                  { cashPaymentData ?
+                    <div className="customer-payment-block">
+                        <p className="title"><span className="icon-cross" onClick={this.removePayment.bind(this, 'cash')}></span>Tiền mặt</p>
+                        <p className="price">
+                          <NumberFormat value={cashPaymentData.price} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+                        </p>
+                    </div>
+                    :
+                    ""
+                  }
+                  { cardPaymentData ? 
+                    <div className="customer-card-block">
+                        <p className="title"><span className="icon-cross" onClick={this.removePayment.bind(this, 'card')}></span>Thẻ</p>
+                        <div className="select-number-account">
+                          <MultiSelectReact 
+                            options={this.state.numberAcc}
+                            optionClicked={this.optionClickedSingleNumberAcc.bind(this)}
+                            selectedBadgeClicked={this.selectedBadgeClickedSingleNumberAcc.bind(this)}
+                            isSingleSelect={true} />
+                        </div>
+                        <p className="price">
+                          <NumberFormat value={cardPaymentData.price} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+                        </p>
+                    </div>
+                    :
+                    ""
+                  }
+                  { transferPaymentData ? 
+                    <div className="customer-card-block">
+                        <p className="title"><span className="icon-cross" onClick={this.removePayment.bind(this, 'transfer')}></span>Chuyển khoản</p>
+                        <div className="select-number-account">
+                          <MultiSelectReact 
+                            options={this.state.numberAccTransfer}
+                            optionClicked={this.optionClickedSingleNumberAccTransfer.bind(this)}
+                            selectedBadgeClicked={this.selectedBadgeClickedSingleNumberAccTransfer.bind(this)}
+                            isSingleSelect={true} />
+                        </div>
+                        <p className="price">
+                          <NumberFormat value={transferPaymentData.price} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+                        </p>
+                    </div>
+                    :
+                    ""
+                  }
+                  <div className="customer-payout-block">
+                    <p className="title">Khách thanh toán</p>
+                    <p className="price">
+                      <NumberFormat value={this.state.customerPayment} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            }
             <div className="footer-info-plus">
               <button className="btn close-add-info" onClick={this.closeModel.bind(this)}>
                 Đóng
               </button>
-              <button className="btn save-update-info" onClick={this.saveUpdateNote.bind(this)}>
-                Lưu cập nhập
+              <button className="btn save-update-info" onClick={this.saveUpdateNote.bind(this, this.state.nameModel)}>
+                { this.state.nameModel == 'addInfo' &&
+                  'Lưu cập nhập'
+                }
+                { this.state.nameModel == 'chart' &&
+                  'Xong'
+                }
               </button>
             </div>
           </div>
