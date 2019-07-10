@@ -10,13 +10,14 @@ import NumberFormat from 'react-number-format';
 Modal.setAppElement('body');
 import  MultiSelectReact  from 'multi-select-react';
 import PrintProvider, { Print, NoPrint } from 'react-easy-print';
-import ComponentToPrint from '../tableTemporaryBill/ComponentToPrint.jsx';
+// import ComponentToPrint from '../tableTemporaryBill/ComponentToPrint.jsx';
 import ReactToPrint from 'react-to-print';
+import NumPad from 'react-numpad';
+import jsxToString from 'jsx-to-string';
 
 class Bill_Order extends Component {
   constructor(props, context) {
     super(props, context);
-
     this.openModel = this.openModel.bind(this);
     this.chooseItemProduct = this.chooseItemProduct.bind(this);
     this.cancelItemBill = this.cancelItemBill.bind(this);
@@ -25,6 +26,7 @@ class Bill_Order extends Component {
     let datetime = currentdate.getDate() + "/"
     + (currentdate.getMonth()+1)  + "/"
     + currentdate.getFullYear();
+
     this.state = {
       productsBill: [],
       priceTotal: 0,
@@ -40,7 +42,7 @@ class Bill_Order extends Component {
       noteEditing: 0,
       noteQuantum: 0,
       noteName: '',
-      outlay: '',
+      outlay: 0,
       idNoteCurrent: 0,
       promotion: 0,
       notePrice: 0,
@@ -50,6 +52,7 @@ class Bill_Order extends Component {
       promotionGroup: 0,
       promotionGroupId: [],
       promotionItems: [],
+      promotionBill: 0,
       multiSelected: [],
       isPromotionTypeBill: false,
       numberTable: 0,
@@ -70,7 +73,9 @@ class Bill_Order extends Component {
       orderDetail: [],
       inputPayment: 0,
       customerPayment: 0,
-      typePaymentShow: ''
+      typePaymentShow: '',
+      outlayBack: 0,
+      codeOrder: ''
     }
   }
 
@@ -84,15 +89,14 @@ class Bill_Order extends Component {
       1000
     );
     localStorage.removeItem('productsBill');
-
-    
     this.props.dispatch(Promotion.actions.peolePromotion()).then((res) => {
       if (res.data && res.data.content) {
         let data = [];
         res.data.content.forEach((item, index) => {
           data.push({
             id: item.id,
-            label : item.hoVaTen
+            label : item.hoVaTen,
+            value: true
           });
         });
         this.setState({
@@ -100,6 +104,8 @@ class Bill_Order extends Component {
         });
       }
     });
+
+    this.getCode(this.props.countCode);
   }
 
   componentWillUnmount() {
@@ -109,6 +115,22 @@ class Bill_Order extends Component {
   tick() {
     this.setState({
       date: new Date()
+    });
+  }
+
+  getCode(code) {
+    let date = new Date();
+    let dateCode = date.getDate();
+    let monthCode = date.getMonth()+1;
+    if ((date.getMonth()+1) < 10) {
+      monthCode = '0'+(date.getMonth()+1)
+    }
+    if (date.getDate() < 10) {
+      dateCode = '0'+date.getDate();
+    }
+    let codeOrder = 'M01.'+date.getFullYear()+monthCode+dateCode+code;
+    this.setState({
+      codeOrder: codeOrder
     });
   }
 
@@ -125,6 +147,55 @@ class Bill_Order extends Component {
       return true;
     }
     return false;
+  }
+
+  templatePrint(data) {
+    const totalPrice = data && data.thanhTien ? data.thanhTien : 0;
+    return jsxToString(
+      <div className="template-print">
+        <div className="header-print">
+          <h1>HUNA COFFEE</h1>
+          <img className="" src={require('assets/images/logo/logo-huna.jpg')}></img>
+        </div>
+        <div className="info-print">
+          <p>Họ và tên: Huỳnh Bá Mạnh Hùng</p>
+          <p>Máy tính tiền </p>
+          <p>Địa chỉ: Lý triện</p>
+          <p>Thành Phố : Đà Nẵng</p>
+        </div>
+        <div className="content-print">
+          <div className="content-title">
+            <div className="content-name">Tên món</div>
+            <div className="content-quatum">SL</div>
+            <div className="content-promotion">CK</div>
+            <div className="content-price">Đơn giá</div>
+          </div>
+          { data.orderThucDons && data.orderThucDons.length > 0 &&
+            data.orderThucDons.map((item, i) => {
+              return (
+                <div key ={i} className="content-info">
+                  <p className="content-info-name">{item.ten}</p>
+                  <p className="content-info-quatum">{item.soLuong}</p>
+                  <p className="content-info-promotion">{(item.khuyenMai / item.donGia) * 100}%</p>
+                  <p className="content-info-price">
+                    {item.donGia}
+                  </p>
+                </div>
+              )
+            })
+          }
+        </div>
+        <div className="total-price-print">
+          <p className="text">Tổng tiền</p>
+          <p className="price">
+            {totalPrice}
+          </p>
+        </div>
+        <div className="footer-print">
+          Cám ơn quý khách đã ghé quán!
+        </div>
+      </div>
+    );
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -182,14 +253,15 @@ class Bill_Order extends Component {
           priceTotal = priceTotal + item.priceAndQuantum;
         });
 
-        let discountInput = this.state.discountInput;
-        if (discountInput == '' && this.state.isPromotionTypeBill == true) {
-           discountInput = 0;
-          getChooses.forEach((item, index) => {
-            item.discount = discountInput;
-          });
-        };
-        let discountPriceTotal = discountInput > 0 && discountInput != '' ? (priceTotal * parseInt(discountInput, 10)) / 100 : 0;
+        // let discountInput = this.state.discountInput;
+        // let discountInput = this.state.promotionBill;
+        // if (discountInput && this.state.isPromotionTypeBill == true) {
+        //   // discountInput = 0;
+        //   getChooses.forEach((item, index) => {
+        //     item.discount = discountInput;
+        //   });
+        // };
+        let discountPriceTotal = this.state.promotionBill > 0 && this.state.isPromotionTypeBill == true ? (priceTotal * this.state.promotionBill) / 100 : 0;
         let discountAfter = discountPriceTotal >= 0 && discountPriceTotal <= priceTotal ? priceTotal - discountPriceTotal : 0;
         this.setState({
           inputPayment: discountAfter,
@@ -206,7 +278,7 @@ class Bill_Order extends Component {
         && this.checkPromotionDate(item.tuNgay, item.denNgay));
       if (promotionBill) {
         this.setState({
-          discountInput: promotionBill.chietKhau,
+          promotionBill: promotionBill.chietKhau,
           isPromotionTypeBill: true
         });
       } else {
@@ -234,6 +306,7 @@ class Bill_Order extends Component {
         }
       }
     }
+
     if (prevProps.discountInput !== this.props.discountInput) {
       if (this.props.discountInput != '' && this.props.discountInput != 'clear') {
         let discountPriceTotal = (this.state.priceTotal * parseInt(this.props.discountInput, 10)) / 100;
@@ -265,6 +338,9 @@ class Bill_Order extends Component {
     //     numberTable: this.props.numberTable
     //   });
     // }
+    if (prevProps.countCode !== this.props.countCode) {
+      this.getCode(this.props.countCode);
+    }
   }
 
   updateQuantum(idBill, operator) {
@@ -330,7 +406,11 @@ class Bill_Order extends Component {
       discountInput: '',
       typePaymentTmp : [],
       paymentTmp: 0,
-      customerPayment: 0
+      customerPayment: 0,
+      numberTable: ' ',
+      outlay: ' ',
+      outlayBack: ' ',
+      inputPayment: ' '
     });
     localStorage.removeItem('productsBill');
     localStorage.removeItem('products');
@@ -344,10 +424,10 @@ class Bill_Order extends Component {
     this.state.productsBill.forEach((item, index) => {
       let dataProducts = {
         'donGia': item.donGia,
-        'ghiChuMonOrderThucDon': item.itemNote,
+        'ghiChuMonOrderThucDon': item.itemNote && item.itemNote != 'undefined' ? item.itemNote : [],
         'khuyenMai': item.itemPromotion ? item.itemPromotion : 0,
         'ngayOrder': dateFormat,
-        'soLuong': item.quantum,
+        'soLuong': Number(item.quantum),
         'thanhTien': item.priceAndQuantum,
         'thucDonId': item.id,
         'tongGia': this.state.discountInput && this.state.discountInput.length > 0 ? ((item.priceAndQuantum * this.state.discountInput) / 100) : item.priceAndQuantum,
@@ -356,23 +436,27 @@ class Bill_Order extends Component {
       }
       orderProducts.push(dataProducts);
     });
-    let payBack = this.props.outLay - this.state.discountAfter;
+    let payBack = Number(this.state.outlay) - Number(this.state.discountAfter);
     let payCash = 0;
     let payCard = 0;
     let payTransfer = 0;
-    this.state.typePaymentTmp.forEach((item, index) => {
-      if (item.type == 'cash') {
-        payCash = item.price;
-      } else if (item.type == 'card') {
-        payCard = item.price;
-      } else if (item.type == 'transfer') {
-        payTransfer = item.price;
-      } 
-    });
+    if (this.state.typePaymentTmp && this.state.typePaymentTmp.length > 0) {
+      this.state.typePaymentTmp.forEach((item, index) => {
+        if (item.type == 'cash') {
+          payCash = item.price;
+        } else if (item.type == 'card') {
+          payCard = item.price;
+        } else if (item.type == 'transfer') {
+          payTransfer = item.price;
+        } 
+      });
+    } else {
+      payCash = Number(this.state.outlay);
+    }
     let data = {
       'tienCaThe': payCard,
       'tienChuyenKhoan': payTransfer,
-      'ma' : '1021000',
+      'ma' : this.state.codeOrder,
       'khuyenMai': this.state.discountInput && this.state.isPromotionTypeBill == true ? this.state.discountInput : 0,
       'ngayOrder': dateFormat,
       'nguoiChietKhauId': this.state.peopleSelect[0].id ? this.state.peopleSelect[0].id : 1,
@@ -383,54 +467,59 @@ class Bill_Order extends Component {
       'trangThaiOrder': 'DA_THANH_TOAN',
       'soBan': this.props.numberTable,
       'tienKhachDua': payCash,
-      'tienThoiLai': payBack
+      'tienThoiLai': payBack ? payBack : 0
     };
     this.setState({
       orderDetail: [data]
     });
-    console.log(data);
-    // if (typeSubmit == "Order") {
-    //   if (!this.props.outLay || this.props.outLay == 0 || payBack < 0) {
-    //     this.alertNotification('Khách chưa đưa tiền hoặc không đủ!', 'warning');
-    //   } else {
-    //     this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
-    //     this.alertNotification('Bạn đã order thành công!', 'success');
-    //     let d = new Date();
-    //     let hour = d.getHours();
-    //     let minutes = date.getMinutes();
-    //     let timeCopy = hour + ':' + minutes;
-    //     let copyProductsBill = {
-    //       productsBill: this.state.productsBill,
-    //       priceTotal: this.state.priceTotal,
-    //       discountPriceTotal: this.state.discountPriceTotal,
-    //       discountAfter: this.state.discountAfter,
-    //       dateCopy: timeCopy,
-    //       dateOrder: this.state.dateOrder,
-    //       outLay: this.state.outLay,
-    //       numberTable: this.props.numberTable
-    //     }
-    //     localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
-    //     this.clearForm();
-    //     }).catch((reason) => {
-    //       this.alertNotification('Order không thành công!', 'error');
-    //     });
-    //   }
-    // } else if (typeSubmit == 'Store') {
-    //   let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
-    //   let orderNewListTmp = [];
-    //   data.productsBill = this.state.productsBill;
-    //   data.priceTotal = this.state.priceTotal;
-    //   data.discountPriceTotal = this.state.discountPriceTotal;
-    //   data.discountAfter = this.state.discountAfter;
-    //   data.dateOrder = this.state.dateOrder;
-    //   if (orderListTmp) {
-    //     orderNewListTmp = orderListTmp.concat(data);
-    //   } else {
-    //     orderNewListTmp.push(data);
-    //   }
-    //   localStorage.setItem('orderListTmp', JSON.stringify(orderNewListTmp.reverse()));
-    //   this.alertNotification('Bạn đã lưu thành công!', 'success');
-    // }
+    this.props.countCodeAfterSubmit();
+
+    if (typeSubmit == "Order") {
+      if (payBack < 0) {
+        this.alertNotification('Khách chưa đưa tiền hoặc không đủ!', 'warning');
+      } else {
+        this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
+        this.alertNotification('Bạn đã order thành công!', 'success');
+        let d = new Date();
+        let hour = d.getHours();
+        let minutes = date.getMinutes();
+        let timeCopy = hour + ':' + minutes;
+        let copyProductsBill = {
+          productsBill: this.state.productsBill,
+          priceTotal: this.state.priceTotal,
+          discountPriceTotal: this.state.discountPriceTotal,
+          discountAfter: this.state.discountAfter,
+          dateCopy: timeCopy,
+          dateOrder: this.state.dateOrder,
+          outlay: this.state.outlay,
+          numberTable: this.props.numberTable,
+          orderCode: this.state.codeOrder
+        }
+        localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
+        // const mainProcess = window.require("electron").remote.require('./print.js');
+        // mainProcess.print(this.templatePrint(data));
+        this.clearForm();
+        }).catch((reason) => {
+          this.alertNotification('Order không thành công!', 'error');
+        });
+      }
+    } else if (typeSubmit == 'Store') {
+      let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
+      let orderNewListTmp = [];
+      data.productsBill = this.state.productsBill;
+      data.priceTotal = this.state.priceTotal;
+      data.discountPriceTotal = this.state.discountPriceTotal;
+      data.discountAfter = this.state.discountAfter;
+      data.dateOrder = this.state.dateOrder;
+      data.orderCode = this.state.codeOrder;
+      if (orderListTmp) {
+        orderNewListTmp = orderListTmp.concat(data);
+      } else {
+        orderNewListTmp.push(data);
+      }
+      localStorage.setItem('orderListTmp', JSON.stringify(orderNewListTmp.reverse()));
+      this.alertNotification('Bạn đã lưu thành công!', 'success');
+    }
   };
 
   copyProductsBill() {
@@ -445,7 +534,8 @@ class Bill_Order extends Component {
         dateCopy: getCopyProductsBill.dateCopy,
         dateOrder: getCopyProductsBill.dateOrder,
         statusCopyPreBill: true,
-        numberTable: getCopyProductsBill.numberTable
+        numberTable: getCopyProductsBill.numberTable,
+        outlay: getCopyProductsBill.outlay
       });
     }
   }
@@ -504,24 +594,6 @@ class Bill_Order extends Component {
   }
 
   chooseItemProduct(data) {
-    // console.log(data);
-    // promotionBill: 0,
-    // promotionGroup: 0,
-    // promotionGroupId: [],
-    // promotionItems: 0
-    // let cbDiscount = true;
-    // if (this.state.promotionGroup) {
-    //   let promotion = this.state.promotionGroup.find(item => item.loaiThucDonId == data.categoriesId);
-    // }multiSelect
-    // console.log(data.itemNote);
-    // if (data.itemNote && data.itemNote.length > 0) {
-    //   // let idSelected = filter(item => item);
-    //   data.itemNote.forEach((item, index) => {
-    //     if (item.ghiChuId) {
-
-    //     }
-    //   });
-    // }
     this.setState({
       statusPopup : true,
       noteEditing: data.id,
@@ -589,19 +661,24 @@ class Bill_Order extends Component {
   }
 
   removeNote(index) {
-    let itemNoteTmp = this.state.itemNoteTmp;
-    if (itemNoteTmp && itemNoteTmp.length > 0) {
-      itemNoteTmp.splice(index, 1);
-    }
+    // const itemNoteTmp = this.state.itemNoteTmp;
+    // console.log(itemNoteTmp);
+    // if (itemNoteTmp && itemNoteTmp.length > 0) {
+    //   itemNoteTmp.splice(index, 1);
+    // }
+    this.setState({
+      itemNoteTmp : this.state.itemNoteTmp && this.state.itemNoteTmp.filter(item => item.idIndex != index)
+    });
   }
 
-  handleChangeQuantum(event) {
-    let index_quantum = event.target.name;
-    let note = this.state.itemNote;
-    if (index_quantum && note && note.length > 0) {
+  handleChangeQuantum(key, event) {
+    let index_quantum = key;
+    let note = this.state.itemNoteTmp;
+
+    if (note && note.length > 0) {
       note.forEach((item, index) => {
         if (index_quantum == index) {
-          note[index].soLuong = parseInt(event.target.value, 10);
+          item.soLuong = event;
         }
       });
       this.setState({
@@ -609,6 +686,13 @@ class Bill_Order extends Component {
       });
     }
   }
+
+  // test () {
+  //   this.setState({
+  //     numberTable: ' '
+  //   });
+  //   console.log(this.state.numberTable);
+  // }
 
   saveUpdateNote(typeModel) {
     if (typeModel == 'addInfo') {
@@ -640,8 +724,7 @@ class Bill_Order extends Component {
         arrayTmp.push(item);
       });
 
-      let discountPriceTotal = (priceTotal * Number(this.state.discountInput)) / 100;
-      console.log(arrayTmp);
+      let discountPriceTotal = (priceTotal * Number(this.state.promotionBill)) / 100;
       this.setState({
         productsBill: arrayTmp,
         priceTotal: priceTotal,
@@ -650,11 +733,21 @@ class Bill_Order extends Component {
       });
     } else {
       if (this.state.inputPayment == 0 && this.state.customerPayment == this.state.discountAfter) {
-        this.props.changePayment(this.state.discountAfter);
+        // this.props.changePayment(this.state.discountAfter);
+        this.setState({
+          outlay: this.state.discountAfter.toString()
+        });
       } else if (this.state.inputPayment == 0 && this.state.customerPayment > this.state.discountAfter) { 
-        this.props.changePayment(this.state.customerPayment);
+        // this.props.changePayment(this.state.customerPayment);
+          this.setState({
+            outlay: this.state.customerPayment.toString(),
+            outlayBack: (Number(this.state.customerPayment) - Number(this.state.discountAfter)).toString()
+          });
       } else {
-        this.props.changePayment(this.state.inputPayment);
+        this.setState({
+          outlay: this.state.customerPayment.toString(),
+          outlayBack: (this.state.customerPayment - this.state.discountAfter).toString()
+        });
       }
       if (this.state.typePaymentTmp && this.state.typePaymentTmp.length > 0) {
         let arrayTmp = [];
@@ -746,7 +839,6 @@ class Bill_Order extends Component {
         }
         arrayTmp.push(item);
       });
-      console.log(arrayTmp);
       this.setState({
         itemNoteTmp: arrayTmp
       });
@@ -800,27 +892,27 @@ class Bill_Order extends Component {
     arrayChoose.forEach((item, index) => {
       priceTotal = priceTotal + item.price;
     });
-    if (!isChoose && this.state.inputPayment != 0) {
+    if (!isChoose && Number(this.state.inputPayment) != 0) {
       let inputPayment = 0;
       let customerPayment = 0;
-      if (this.state.discountAfter >= (price + priceTotal)) {
-        inputPayment = this.state.discountAfter - (price + priceTotal);
-        customerPayment = price + priceTotal;
+      if (this.state.discountAfter >= (Number(price) + priceTotal)) {
+        inputPayment = this.state.discountAfter - (Number(price) + priceTotal);
+        customerPayment = Number(price) + priceTotal;
       } else {
-        customerPayment = price + this.state.customerPayment;
+        customerPayment = Number(price) + this.state.customerPayment;
         price = this.state.discountAfter - priceTotal;
       }
       arrType.push({
         type: type,
         price: Number(price)
       });
+
       this.setState({
         typePaymentTmp : arrType,
         paymentTmp: this.state.discountAfter,
-        inputPayment: inputPayment,
+        inputPayment: inputPayment.toString(),
         customerPayment: customerPayment
       });
-      console.log(customerPayment);
     }
   }
 
@@ -828,7 +920,6 @@ class Bill_Order extends Component {
     this.setState({
       inputPayment: Number(e.target.value),
     });
-    // console.log(e.target.value);
   }
 
   removePayment(type) {
@@ -840,27 +931,58 @@ class Bill_Order extends Component {
     this.setState({
       typePaymentTmp: filterChoosed ? filterChoosed : [],
       paymentTmp: 0,
-      inputPayment: this.state.discountAfter - priceTotal,
+      inputPayment: (this.state.discountAfter - priceTotal).toString(),
+      customerPayment: priceTotal
     });
+  }
+
+  handleNumberTable(e) {
+    this.setState({
+      numberTable: Number(e)
+    });
+  }
+
+  handlePromotion(e) {
+    let discountPriceTotal = (Number(e) * this.state.priceTotal) / 100;
+    this.setState({
+      promotionBill: Number(e),
+      discountPriceTotal: discountPriceTotal,
+      discountAfter: this.state.priceTotal - discountPriceTotal
+    });
+  }
+
+  handleOutlay(e) {
+    // let discountPriceTotal = (Number(e) * this.state.priceTotal) / 100;
+    this.setState({
+      outlay: Number(e),
+      outlayBack: Number(e) - this.state.discountAfter
+    });
+  }
+
+  handlePayment(e) {
+    this.setState({
+      inputPayment: Number(e)
+    });
+  }
+
+   validatePromotion(e) {
+    if (Number(e) > 99 || Number(e) < 0) {
+      return false;
+    }
+    return true;
+  }
+
+  validateNumberTable(e) {
+    if (Number(e) > 99 || Number(e) < 0) {
+      return false;
+    }
+    return true;
   }
 
   render() {
     let cashPaymentData = this.state.typePaymentTmp.find(item => item.type  == 'cash');
     let cardPaymentData = this.state.typePaymentTmp.find(item => item.type  == 'card');
     let transferPaymentData = this.state.typePaymentTmp.find(item => item.type  == 'transfer'); 
-
-    
-    // let customerPayment = 0;
-    // if (cashPaymentData && cashPaymentData.price) {
-    //   customerPayment = customerPayment + cashPaymentData.price;
-    // }
-    // if (cardPaymentData && cardPaymentData.price) {
-    //   customerPayment = customerPayment + cardPaymentData.price;
-    // }
-    // if (transferPaymentData && transferPaymentData.price) {
-    //   customerPayment = customerPayment + transferPaymentData.price;
-    // }
-
     return(
       <div className="bill-order-block">
         <div className="bill-box">
@@ -870,7 +992,7 @@ class Bill_Order extends Component {
                 Hóa Đơn Bán Hàng
               </p>
               <p className="number-bill">
-                Số:<span className="number"> 0000123</span>
+                Số:<span className="number"> {this.state.codeOrder ? this.state.codeOrder : ''}</span>
               </p>
               <p className="date-bill">
                 Thời gian: {this.state.dateOrder}
@@ -890,13 +1012,14 @@ class Bill_Order extends Component {
                 <p className="number-table-text">
                   Bàn số:
                 </p>
-                <input className= {
-                  classnames('inp-number-table', {
-                    'position-input' : this.props.showNumberic && this.props.filedCurrent == 'numberTable',
-                  })}
-                  name="numberTable" type="text" placeholder=""
-                  value = {this.props.numberTable}
-                  onClick = {this.props.onClickFiledInput.bind(this)}
+                <NumPad.Number
+                  onChange={this.handleNumberTable.bind(this)}
+                  value={this.state.numberTable}
+                  negative={false}
+                  decimal={false}
+                  keyValidator={this.validateNumberTable.bind(this)}
+                  sync= {true}
+                  inline= {true}
                 />
               </div>
             </div>
@@ -947,20 +1070,19 @@ class Bill_Order extends Component {
             </div>
             <div className="discount">
               <p className="text">Chiết khấu</p>
-              <input className={classnames('inp-discount', {
-                  'position-input' : this.props.showNumberic && this.props.filedCurrent == 'discountInput',
-                })}
-                name="discountInput"
-                value = {this.state.discountInput} type="text"
-                onClick = {this.props.onClickFiledInput.bind(this)}
+              <NumPad.Number
+                onChange={this.handlePromotion.bind(this)}
+                value={this.state.promotionBill}
+                decimal={false}
+                keyValidator={this.validatePromotion.bind(this)}
+                sync= {true}
+                inline= {true}
               />
-              <div className={classnames('bg-discount', {
-                  'position-input' : this.props.showNumberic && this.props.filedCurrent == 'discountInput',
-                })}
-              >
+              <div className="bg-discount">
                 <p className="discount-text">
-                {this.state.discountInput &&
+                {this.state.discountPriceTotal && this.state.discountPriceTotal > 0 ?
                   <NumberFormat value={Number((this.state.discountPriceTotal).toFixed(3))} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+                  : ""
                 }
                 </p>
               </div>
@@ -988,25 +1110,23 @@ class Bill_Order extends Component {
                 )
                 </span>
               </p>
-              <NumberFormat
-                className={classnames('inp-outlay', {
-                    'position-input' : this.state.discountPriceTotal > 0
-                      && this.props.showNumberic
-                      && this.props.filedCurrent == 'outLay',
-                    'display-input' : !this.state.discountAfter || this.state.discountAfter <= 0
-                  })}
-                name="outLay"
-                onClick = {this.props.onClickFiledInput.bind(this)}
-                value= {this.props.outLay}
-                type="text"
-                thousandSeparator={true}
-                suffix={' đ'}
-              />
+              <div className={ 
+                classnames('outlay-box', {
+                  'display-outlay' : Number(this.state.discountAfter) == 0
+                })}
+              >
+                <NumPad.Number
+                  onChange={this.handleOutlay.bind(this)}
+                  value={this.state.outlay}
+                  sync = {false}
+                />
+              </div>
+
             </div>
             <div className="exchange">
               <p className="text">Tiền thối lại</p>
               <p className="text-results">
-              <NumberFormat value={this.props.outLay != 0 ? (this.props.outLay - this.state.discountAfter) : 0} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
+              <NumberFormat value={this.state.outlayBack != 0 ? this.state.outlayBack : 0} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
               </p>
             </div>
           </div>
@@ -1017,15 +1137,9 @@ class Bill_Order extends Component {
             <button id="check" className="save btn-active" onClick={this.submitOrders.bind(this, 'Store')}>
               Lưu
             </button>
-            <ReactToPrint onClick={this.submitOrders.bind(this, 'Order')} 
-              onBeforePrint = {this.submitOrders.bind(this, 'Order')}
-              trigger={() => 
-                <button className="pay btn-active" onClick={this.submitOrders.bind(this, 'Order')} >
-                  Thanh Toán
-                </button>
-              }
-              content={() => this.componentRef}/>
-              <ComponentToPrint ref={el => (this.componentRef = el)} data={this.state.orderDetail}/>
+            <button className="pay btn-active" onClick={this.submitOrders.bind(this, 'Order')} >
+              Thanh Toán
+            </button>
           </div>
         </div>
         <Modal
@@ -1114,8 +1228,16 @@ class Bill_Order extends Component {
                               <div className="title-item-right">Loại ghi chú</div>
                             </div>
                             <div className="item-info">
-                              <div className="checkbox-item">
-                                <input type="text" className="checkbox-inp-block" name={i} defaultValue={item.soLuong} onChange={this.handleChangeQuantum.bind(this)}/>
+                              <div className="checkbox-item">                               
+                                <NumPad.Number
+                                  onChange={this.handleChangeQuantum.bind(this, i)}
+                                  value={item.soLuong}
+                                  negative={false}
+                                  decimal={false}
+                                  keyValidator={this.validateNumberTable.bind(this)}
+                                  sync= {true}
+                                  inline= {true}
+                                />
                               </div>
                               <div className="input-item">
                                 <MultiSelectReact 
@@ -1144,8 +1266,11 @@ class Bill_Order extends Component {
               <div className="payment-content">
                 <div className="total-bill-block">
                   <p className="title-total-bill-block">Thanh toán</p>
-                  <p className="price-total-bill-block">
-                    <input type="text" className="price-total-bill-input" onChange={this.handleChangePayment.bind(this)} value={this.state.inputPayment}/>
+                  <p className="price-total-bill-block">  
+                    <NumPad.Number
+                      onChange={this.handlePayment.bind(this)}
+                      value={this.state.inputPayment}
+                    />
                   </p>
                 </div>
                 <div className="button-block">

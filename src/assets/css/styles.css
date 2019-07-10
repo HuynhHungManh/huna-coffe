@@ -37,7 +37,13 @@ main {
   height: auto;
   display: inline-block;
   text-align: center;
-  overflow: hidden;
+ /* overflow: hidden;*/
+}
+.login-box .icon-minus::before {
+  position: absolute;
+  color: #e8e8e8;
+  right: -290px;
+  top: -45px;
 }
 .filter-login-block {
   padding: 0 30px;
@@ -50,6 +56,7 @@ main {
   position: relative;
   font-size: 23px;
   color: #fff;
+  border-radius: 0px 0px 5px 5px;
 }
 .logo-huna {
   width: 100%;
@@ -270,15 +277,11 @@ main {
   background-image: linear-gradient(#fffefe0f, #ececec);
 }
 /* Bill Block */
-.inp-number-table {
+.table-box-block input {
   border-radius: 4px 4px;
   border: 1px solid #ccc;
   padding: 7px;
   text-align: center;
-}
-.position-input {
-  position: relative;
-  z-index: 6 !important;
 }
 .bill-order-block {
   width: 42%;
@@ -342,7 +345,7 @@ main {
   float: left;
   font-size: 15px;
 }
-.bill-header .right-header .table-box-block .inp-number-table {
+.bill-header .right-header .table-box-block input {
   width: 65px;
   float: right;
   height: 30px;
@@ -505,22 +508,35 @@ main {
   position: relative;
 }
 .discount .inp-discount {
-  width: 50%;
+  /*width: 50%;
   position: relative;
   line-height: 18px;
   font-size: 14px;
   border-radius: 4px 4px;
   text-align: center;
   padding-left: 10px;
-  padding-right: 95px;
+  padding-right: 95px;*/
 }
-.inp-outlay {
+/*.inp-outlay {
   display: inline-block;
   width: 50%;
   border: 1px solid #ccc;
   padding: 5px;
   border-radius: 4px 4px;
   line-height: 18px;
+  text-align: right;
+}*/
+.bill-results .outlay button {
+  display: none;
+}
+.bill-results .outlay input {
+  display: inline-block;
+  width: 100%;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 4px 4px;
+  line-height: 18px;
+  text-align: right;
 }
 .inp-discount, .bg-discount {
   display: inline-block;
@@ -542,9 +558,7 @@ main {
   line-height: 18px;
   text-align: right;
 }
-.inp-outlay {
-  text-align: right;
-}
+
 .bill-footer {
   width: 100%;
   padding: 8px 7px;
@@ -599,6 +613,14 @@ main {
   background-color: rgba(0, 0, 0, 0.58);
   width: 100%;
   height: 768px;
+}
+.tmp-bill .sk-fade-in.sk-spinner.sk-circle{
+  top: 50%;
+  position: absolute !important;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  width: 30px !important;
+  height: 30px !important;
 }
 .tmp-bill, .table-view-order {
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -751,6 +773,9 @@ main {
   margin-top: 7px;
   float: left;
 }
+.table-box-block button {
+  display: none;
+}
 .datepicker-box .datetime-picker.datetime-picker-popup {
   top: 35px !important;
   z-index: 2 !important;
@@ -901,6 +926,20 @@ main {
   float: left;
   text-align: left;
   padding-left: 15px;
+}
+.item-note-box .checkbox-item button {
+  display: none;
+}
+.item-note-box .checkbox-item input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
+  width: 53px;
+  height: 35px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
 }
 .input-item {
   width: 75%;
@@ -1249,10 +1288,11 @@ main {
   float: left;
 }
 .code-h {
-  width: 8%;
+  width: 15%;
 }
 .header-table-order .time-h {
-  width: 20%;
+  width: 13%;
+/*  text-align: center;*/
 }
 .header-table-order .table-h {
   width: 9%;
@@ -1369,9 +1409,6 @@ main {
   font-size: 17px;
   font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
   width: 240px;
-/*  position: absolute;
-  left: 0;
-  overflow-y: overlay;*/
 }
 .header-print {
   font-size: 20px;
@@ -1502,6 +1539,16 @@ main {
   width: 50%;
   display: inline-block;
 }
+.payment-content .total-bill-block .title-total-bill-block, .price-total-bill-block button {
+  display: none;
+}
+.payment-content .total-bill-block .title-total-bill-block, .price-total-bill-block input {
+  text-align: right;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  font-size: 18px;
+}
 .payment-content .total-bill-block {
   padding: 20px;
   float: left;
@@ -1509,17 +1556,18 @@ main {
 }
 .payment-content .total-bill-block .title-total-bill-block {
   text-align: left;
+  display: inline-block;
 }
 .payment-content .total-bill-block .price-total-bill-block {
   text-align: right;
 }
-.payment-content .total-bill-block .price-total-bill-block .price-total-bill-input {
+/*.payment-content .total-bill-block .price-total-bill-block .price-total-bill-input {
   text-align: right;
   border-top: 0;
   border-left: 0;
   border-right: 0;
   font-size: 18px;
-}
+}*/
 .payment-content .total-bill-block .price-total-bill-block .price-total-bill-input:focus {
   outline: none;
 }
@@ -1619,3 +1667,25 @@ main {
 /*.bill-item .item-block .note-item:last-child {
   border-bottom: unset;
 }*/
+.bill-results .discount input {
+  width: 50%;
+  position: relative;
+  line-height: 18px;
+  font-size: 14px;
+  border-radius: 4px 4px;
+  text-align: center;
+  padding-left: 10px;
+  padding-right: 95px;
+  height: 30px;
+  border: 1px solid #ccc;
+}
+.bill-results .discount button {
+  display: none;
+}
+.display-outlay {
+  pointer-events: none;
+}
+.outlay .outlay-box {
+  width: 50%;
+  display: inline-block;
+}

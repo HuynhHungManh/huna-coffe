@@ -144,7 +144,7 @@ class Footer extends Component {
 }
 
 Footer.contextTypes = {
-  router: React.PropTypes.object
+  router: React.PropTypes
 };
 
 const bindStateToProps = (state) => {

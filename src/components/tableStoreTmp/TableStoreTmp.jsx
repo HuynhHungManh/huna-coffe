@@ -46,7 +46,8 @@ class TableStoreTmp extends Component {
       tableCurrentOrder: '',
       cashier: 'No Name',
       outLay: 0,
-      outLayBack : 0
+      outLayBack : 0,
+      orderCode: ''
     }
   }
 
@@ -141,7 +142,8 @@ class TableStoreTmp extends Component {
       tableCurrentOrder: dataOrder[index].soBan,
       promotionBill: dataOrder[index].khuyenMai,
       outLay: dataOrder[index].tienKhachDua ? dataOrder[index].tienKhachDua : 0,
-      outLayBack: dataOrder[index].tienThoiLai && dataOrder[index].tienThoiLai > 0 ? dataOrder[index].tienThoiLai : 0
+      outLayBack: dataOrder[index].tienThoiLai && dataOrder[index].tienThoiLai > 0 ? dataOrder[index].tienThoiLai : 0,
+      orderCode: dataOrder[index].orderCode ? dataOrder[index].orderCode : ''
     });
   }
 
@@ -230,7 +232,7 @@ class TableStoreTmp extends Component {
                         'success-text' : item.statusSuccess
                       })}
                     >
-                      <td width="8%">1231221</td>
+                      <td width="8%">{this.state.orderCode}</td>
                       <td width="20%">{this.getDate(item.ngayOrder)}</td>
                       <td width="9%">
                         { item.soBan == ""
@@ -319,7 +321,7 @@ class TableStoreTmp extends Component {
           :
             <div className="view-order-block">
               <div className="header-view-order">
-                <p className="text-title">0000123</p>
+                <p className="text-title">{this.state.orderCode}</p>
                 <p className="close-model" onClick={this.closeCancelForm.bind(this)}>
                   <span className="close-model-icon icon-cross"></span>
                 </p>

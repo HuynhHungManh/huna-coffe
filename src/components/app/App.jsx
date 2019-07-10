@@ -1,4 +1,4 @@
-import React from 'react';
+import React ,{ Component } from 'react';
 import {RenderRoutes} from 'base/routes';
 import {connect} from 'react-redux';
 import Alert from 'react-s-alert';
@@ -6,7 +6,7 @@ import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
-class App extends React.Component {
+class App extends Component {
   constructor(props, context) {
     super(props, context);
   }
@@ -25,8 +25,8 @@ class App extends React.Component {
   }
 }
 
-App.contextTypes = {
-  router: React.PropTypes.object
-};
+// App.contextTypes = {
+//   router: React.PropTypes.object
+// };
 
 export default connect()(App);

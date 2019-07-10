@@ -1,9 +1,9 @@
-import React from 'react';
+import React ,{ Component } from 'react';
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {PropTypes} from 'prop-types';
 
-class Header extends React.Component {
+class Header extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -35,8 +35,8 @@ class Header extends React.Component {
   }
 
   minimazScreen() {
-    const mainProcess = window.require("electron").remote.require('./print.js');
-    mainProcess.print('hide');
+    const mainProcess = window.require("electron").remote.require('./minimum.js');
+    mainProcess.minimum();
   }
 
   render() {

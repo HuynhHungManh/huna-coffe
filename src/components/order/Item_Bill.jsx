@@ -87,11 +87,10 @@ class Item_Bill extends Component {
   }
 
   render() {
-    console.log(this.props.itemNote);
     return(
       <div className="bill-item">
         <div className={classnames('text-item', {
-            'add-note-item' : !this.props.itemNote && !this.props.data.itemPromotion
+            'add-note-item' : (!this.props.itemNote || (this.props.itemNote && this.props.itemNote.length == 0))  && !this.props.data.itemPromotion
           })}
         >
           <div className={classnames('info-block', {

@@ -249,7 +249,8 @@ class TableTemporaryBill extends Component {
     let hoursDiff = currentdate.getHours() - currentdate.getTimezoneOffset() / 60;
     let minutesDiff = (currentdate.getHours() - currentdate.getTimezoneOffset()) % 60;
 
-    return datetime + " " + hoursDiff + ":" + minutesDiff;
+    // return datetime + " " + hoursDiff + ":" + minutesDiff;
+    return hoursDiff + ":" + minutesDiff;
   }
 
   cancelItemBill(id) {
@@ -394,8 +395,8 @@ class TableTemporaryBill extends Component {
               <table className="tmp-bill">
                 <thead>
                   <tr>
-                    <th width="8%">Mã số</th>
-                    <th width="20%">Thòi gian</th>
+                    <th width="15%">Mã số</th>
+                    <th width="13%">Thòi gian</th>
                     <th width="9%">Bàn số</th>
                     <th width="10%">In lúc</th>
                     <th width="13%">Tổng tiền</th>
@@ -403,12 +404,15 @@ class TableTemporaryBill extends Component {
                   </tr>
                 </thead>
                 <tbody>
+                  { !this.state.isLoadingOrder &&
+                    <Spinner name="circle" />
+                  }
                   { this.state.isLoadingOrder &&
                     this.state.getOrders.map((item, i) => {
                       return (
                         <tr key = {i}>
-                          <td width="8%">0000123</td>
-                          <td width="20%">{this.getDate(item.ngayOrder)}</td>
+                          <td width="15%">{item.ma}</td>
+                          <td width="13%">{this.getDate(item.ngayOrder)}</td>
                           <td width="9%">5</td>
                           <td width="10%">-</td>
                           <td width="13%">
@@ -634,9 +638,6 @@ class TableTemporaryBill extends Component {
               <div className="view-order-footer">
                 <button className="btn close-add-info" onClick={this.closeCancelForm.bind(this)}>
                   Đóng
-                </button>
-                <button className="btn cancel-table" onClick={this.closeCancelForm.bind(this)}>
-                  Hủy Bàn
                 </button>
               </div>
             </div>

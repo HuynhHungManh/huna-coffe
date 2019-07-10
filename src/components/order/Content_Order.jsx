@@ -18,6 +18,7 @@ class Content_Order extends Component {
     this.onClickFiledInput = this.onClickFiledInput.bind(this);
     this.closeNumberic = this.closeNumberic.bind(this);
     this.changePayment = this.changePayment.bind(this);
+    this.countCodeAfterSubmit = this.countCodeAfterSubmit.bind(this);
     this.state = {
       products: [],
       statusClear: false,
@@ -26,7 +27,8 @@ class Content_Order extends Component {
       filedCurrent: '',
       discountInput: '',
       outLay: 0,
-      cardPayment: 0
+      cardPayment: 0,
+      countCode: 0
     }
   }
 
@@ -74,6 +76,9 @@ class Content_Order extends Component {
               localStorage.setItem('dataOrderDetail', JSON.stringify(arrayTmp));
             }
           });
+        });
+        this.setState({
+          countCode: res.data.content.length
         });
       }
     });
@@ -380,6 +385,12 @@ class Content_Order extends Component {
     });    
   }
 
+  countCodeAfterSubmit() {
+    this.setState({
+      countCode: this.state.countCode + 1
+    });
+  }
+
   render() {
     return(
       <div className="content-order">
@@ -415,6 +426,8 @@ class Content_Order extends Component {
           filedCurrent = {this.state.filedCurrent}
           outLay = {this.state.outLay}
           changePayment = {this.changePayment}
+          countCode = {this.state.countCode}
+          countCodeAfterSubmit = {this.countCodeAfterSubmit}
         />
       </div>
     );

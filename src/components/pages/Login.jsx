@@ -10,6 +10,7 @@ Modal.setAppElement('body');
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 import ComponentToPrint from '../tableTemporaryBill/ComponentToPrint.jsx';
+import jsxToString from 'jsx-to-string';
 
 class Login extends React.Component {
   constructor(props, context) {
@@ -53,7 +54,6 @@ class Login extends React.Component {
       this.props.dispatch(Auth.actions.login(null, header))
       .then((res) => {
         if (res.data && res.data.token) {
-          // console.log(res.data);
           localStorage.setItem('auth', JSON.stringify(res.data));
           this.props.history.push('/coffee');
         } else {
@@ -83,11 +83,10 @@ class Login extends React.Component {
     });
   }
 
-  // render() {
-  //   return (
-  //     <ComponentToPrint  />
-  //   );
-  // }
+  minimazScreen() {
+    const mainProcess = window.require("electron").remote.require('./minimum.js');
+    mainProcess.minimum();
+  }
 
   render() {
     return (
@@ -98,6 +97,7 @@ class Login extends React.Component {
           className="modal popup"
         >
           <form className="login-box">
+            <span className="icon-minus" onClick={this.minimazScreen.bind(this)}></span>
             <div className="logo-huna">
               <img className="img-logo" src={require('assets/images/logo/logo-huna.jpg')}></img>
             </div>
