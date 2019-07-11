@@ -3,7 +3,6 @@ import ReactToPrint from 'react-to-print';
 import NumberFormat from 'react-number-format';
 
 class ComponentToPrint extends Component {
-
   render() {
     // console.log(this.props.data);
     // console.log(this.props.orderData);

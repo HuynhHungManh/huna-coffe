@@ -1689,3 +1689,6 @@ main {
   width: 50%;
   display: inline-block;
 }
+.display-background {
+  background-color: unset !important;
+}

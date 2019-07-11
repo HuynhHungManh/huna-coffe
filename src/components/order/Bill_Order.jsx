@@ -535,7 +535,8 @@ class Bill_Order extends Component {
         dateOrder: getCopyProductsBill.dateOrder,
         statusCopyPreBill: true,
         numberTable: getCopyProductsBill.numberTable,
-        outlay: getCopyProductsBill.outlay
+        outlay: getCopyProductsBill.outlay,
+        orderCode: getCopyProductsBill.codeOrder
       });
     }
   }

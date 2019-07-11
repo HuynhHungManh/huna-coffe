@@ -232,7 +232,7 @@ class TableStoreTmp extends Component {
                         'success-text' : item.statusSuccess
                       })}
                     >
-                      <td width="8%">{this.state.orderCode}</td>
+                      <td width="8%">{item.orderCode ? item.orderCode : ''}</td>
                       <td width="20%">{this.getDate(item.ngayOrder)}</td>
                       <td width="9%">
                         { item.soBan == ""

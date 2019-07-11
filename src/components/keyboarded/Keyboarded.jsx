@@ -18,7 +18,6 @@ class Keyboarded extends Component {
     /**
      * If you want to handle the shift and caps lock buttons
      */
-     console.log(button);
     if (button == "{enter}") {
       this.props.submitLogin();
     }

@@ -2,7 +2,7 @@ import React ,{ Component } from 'react';
 import {RenderRoutes} from 'base/routes';
 import {connect} from 'react-redux';
 import Alert from 'react-s-alert';
-
+import {PropTypes} from 'prop-types';
 import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
@@ -25,8 +25,9 @@ class App extends Component {
   }
 }
 
-// App.contextTypes = {
-//   router: React.PropTypes.object
-// };
+App.contextTypes = {
+  router: PropTypes.object
+};
+
 
 export default connect()(App);

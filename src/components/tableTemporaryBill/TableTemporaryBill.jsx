@@ -95,7 +95,6 @@ class TableTemporaryBill extends Component {
     }
     this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
       if (res.data.content && res.data.content.length > 0) {
-
         let arrayTmpDetail = [];
         res.data.content.forEach((item, index) => {
           this.props.dispatch(Orders.actions.orderThucDons({orderId: item.id})).then((res) => {
@@ -109,6 +108,10 @@ class TableTemporaryBill extends Component {
                   isLoadingOrder: true
                 });
                 localStorage.setItem('dataOrderDetail', JSON.stringify(arrayTmpDetail));
+              } else {
+                this.setState({
+                  isLoadingOrder: true
+                });
               }
             }
           });
@@ -150,6 +153,10 @@ class TableTemporaryBill extends Component {
             }
           });
         }
+      } else {
+        this.setState({
+          isLoadingOrder: true
+        });
       }
     });
     // this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
@@ -405,7 +412,9 @@ class TableTemporaryBill extends Component {
                 </thead>
                 <tbody>
                   { !this.state.isLoadingOrder &&
-                    <Spinner name="circle" />
+                    <tr className ="display-background">
+                      <td><Spinner name="circle" /></td>
+                    </tr>
                   }
                   { this.state.isLoadingOrder &&
                     this.state.getOrders.map((item, i) => {

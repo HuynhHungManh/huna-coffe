@@ -6,6 +6,7 @@ import classnames from 'classnames';
 Modal.setAppElement('body');
 import {Auth} from 'api';
 import Alert from 'react-s-alert';
+import {PropTypes} from 'prop-types';
 
 class Footer extends Component {
   constructor(props, context) {
@@ -144,7 +145,7 @@ class Footer extends Component {
 }
 
 Footer.contextTypes = {
-  router: React.PropTypes
+  router: PropTypes.object
 };
 
 const bindStateToProps = (state) => {
