@@ -178,6 +178,7 @@ class Bill_Order extends Component {
       let productsBill = [];
       let productsBillTmp = [];
       let priceTotal = 0;
+      console.log(this.props.productsBill);
       let getChooses = this.props.productsBill.filter(item => item.selectStatus == true);
       if (getChooses && getChooses.length > 0) {
         if (this.state.productsBill.length > 0) {
@@ -192,21 +193,35 @@ class Bill_Order extends Component {
             }
           });
           let productsAfter = this.state.productsBill;
+          let dupProduct = [];
           if (updateQuantum && updateQuantum.length > 0) {
             productsAfter.forEach((item, index) => {
               let findUpdate = updateQuantum.find(value => value.id == item.id);
-              // console.log(findUpdate);
+           
               if (findUpdate) {
-                productsAfter[index].quantum = findUpdate.quantum;
+                if (!findUpdate.itemNote || findUpdate.itemNote.length == 0) {
+                  productsAfter[index].quantum = findUpdate.quantum;
+                } else {
+                  const newItem = {...findUpdate ? findUpdate : ''};
+                  newItem.itemNote = [];
+                  newItem.quantum = 1;
+                  newItem.priceAndQuantum = newItem.donGia;
+                  dupProduct.push(newItem);
+                }
                 if (item.itemPromotion && item.itemPromotion > 0) {
                   // productsAfter[index].priceAndQuantum = productsAfter[index].quantum * (productsAfter[index].donGia - item.itemPromotion);
                 } else {
                   productsAfter[index].priceAndQuantum = productsAfter[index].quantum * productsAfter[index].donGia;
                 }
+                console.log(productsAfter);
               }
             });
           }
+
           getChooses = productsAfter.concat(unique);
+          console.log(getChooses);
+          getChooses = getChooses.concat(dupProduct);
+          console.log(getChooses);
         }
         getChooses.forEach((item, index) => {
           if (this.state.promotionGroup) {

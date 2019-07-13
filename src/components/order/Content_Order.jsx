@@ -179,7 +179,7 @@ class Content_Order extends Component {
     let chooseProductsBill = [];
     this.state.products.forEach((item, index) => {
       if (item.id === idProduct) {
-        if (item.selectStatus == true) {
+        if (item.selectStatus == true && (!item.itemNote || item.itemNote.length ==0)) {
           item.quantum = item.quantum + 1;
           item.priceAndQuantum = item.quantum * item.donGia;
         }
