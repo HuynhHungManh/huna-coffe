@@ -4,53 +4,99 @@ import NumberFormat from 'react-number-format';
 
 class ComponentToPrint extends Component {
   render() {
-    // console.log(this.props.data);
-    // console.log(this.props.orderData);
+    let info = this.props.info;
+    let data = this.props.data;
+    let auth = this.props.auth;
+    let totalPrice = data && data.thanhTien ? data.thanhTien : 0;
+    let customerPrice = 0;
+    if (data.tienKhachDua) {
+      customerPrice = customerPrice + data.tienKhachDua;
+    };
+    if (data.tienCaThe) {
+      customerPrice = customerPrice + data.tienCaThe;
+    };
+    if (data.tienChuyenKhoan) {
+      customerPrice = customerPrice + data.tienChuyenKhoan;
+    };
     return (
-      <div className="template-print">
-        <div className="header-print">
-          <h1>HUNA COFFEE</h1>
-          <img className="" src={require('assets/images/logo/logo-huna.jpg')}></img>
-        </div>
-        <div className="info-print">
-          <p>Họ và tên: Huỳnh Bá Mạnh Hùng</p>
-          <p>Máy tính tiền </p>
-          <p>Địa chỉ: Lý triện</p>
-          <p>Thành Phố : Đà Nẵng</p>
-        </div>
-        <div className="content-print">
-          <div className="content-title">
-            <div className="content-name">Tên món</div>
-            <div className="content-quatum">SL</div>
-            <div className="content-promotion">CK</div>
-            <div className="content-price">Đơn giá</div>
-          </div>
-          { this.props.data && 
-            this.props.data.map((item, i) => {
-              return (
-                <div key ={i} className="content-info">
-                  <p className="content-info-name">{item.tenThucDon}</p>
-                  <p className="content-info-quatum">{item.soLuong}</p>
-                  <p className="content-info-promotion">{(item.khuyenMai / item.donGia) * 100}%</p>
-                  <p className="content-info-price">
-                    <NumberFormat value={item.donGia} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
-                  </p>
-                </div>
-              )
-            })
-          }
-        </div>
-        <div className="total-price-print">
-          <p className="text">Tổng tiền</p>
-          <p className="price">
-          { this.props.orderData && this.props.orderData.thanhTien &&
-            <NumberFormat value={this.props.orderData.thanhTien} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
-          }
-          </p>
-        </div>
-        <div className="footer-print">
-          Cám ơn quý khách đã ghé quán!
-        </div>
+      <div className="template-print" style={{textAlign: 'center'}}>
+        <p style={{textAlign: 'center'}} className="title-template">HUNA COFFEE</p>
+        <p style={{textAlign: 'center'}} className="address-template">ĐC: 28 Hoàng Văn Thụ, Hải Châu,<br /> Đà Nẵng</p>
+        <p style={{textAlign: 'center'}} className="phone-template">ĐT: {info.phone}</p>
+        <p style={{textAlign: 'center'}} className="title-bill"><strong>HÓA ĐƠN BÁN HÀNG</strong></p>
+        <p style={{textAlign: 'center'}} className="number-table">Bàn {data && data.soBan ? data.soBan : 0}</p>
+        <table style={{borderCollapse: 'collapse', width: '100%'}} border={1} className="content-info">
+          <tbody>
+            <tr>
+              <td style={{width: '50%', textAlign: 'left'}}>Ngày: {info.dateOrder}</td>
+              <td style={{width: '50%', textAlign: 'right'}}>Số: {info.codeOrder}</td>
+            </tr>
+            <tr>
+              <td style={{width: '50%', textAlign: 'left'}}>Thu ngân: {info.cashier}</td>
+              <td style={{width: '50%', textAlign: 'right'}}>In lúc: {info.timePrint}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table style={{borderCollapse: 'collapse', width: '100%'}} border={1}>
+          <tbody>
+            <tr className="title-table">
+              <td style={{width: '40%'}}>Mặt hàng</td>
+              <td style={{width: '20%'}}>Giá</td>
+              <td style={{width: '10%'}}>SL</td>
+              <td style={{width: '10%'}}>CK</td>
+              <td style={{width: '20%'}}>T tiền</td>
+            </tr>
+            { data && data.orderThucDons && data.orderThucDons.length > 0 &&
+              data.orderThucDons.map((item, i) => {
+                return (
+                  <tr className="content-table" key={i}>
+                    <td style={{width: '40%'}}>{item.ten}</td>
+                    <td style={{width: '20%'}}>
+                      <NumberFormat value={Number((item.donGia).toFixed(3))} displayType={'text'} thousandSeparator={true}/>
+                    </td>
+                    <td style={{width: '10%'}}>{item.soLuong}</td>
+                    <td style={{width: '10%'}}>{parseInt((item.khuyenMai / item.donGia) * 100)}</td>
+                    <td style={{width: '20%'}}>
+                      <NumberFormat value={Number((item.thanhTien).toFixed(3))} displayType={'text'} thousandSeparator={true}/>
+                    </td>
+                  </tr>
+                )
+              })
+            }            
+          </tbody>
+        </table>
+        <table style={{borderCollapse: 'collapse', width: '100%', height: '44px'}} border={1} className="content-price">
+          <tbody>
+            <tr style={{height: '24px'}}>
+              <td style={{width: '50%', textAlign: 'left', height: '24px'}}><span style={{fontSize: '16px', fontFamily: '"Roboto-Bold"'}}><strong>TỔNG:</strong></span></td>
+              <td style={{width: '50%', textAlign: 'right', height: '24px'}}>
+                <span style={{fontSize: '16px', fontFamily: '"Roboto-Bold"'}}>
+                  <strong>
+                    <NumberFormat value={Number((totalPrice).toFixed(3))} displayType={'text'} thousandSeparator={true}/>
+                  </strong>
+                </span>
+              </td>
+            </tr>
+            <tr style={{height: '20px'}}>
+              <td style={{width: '50%', textAlign: 'left', height: '20px'}}><span>Khách đưa:</span></td>
+              <td style={{width: '50%', textAlign: 'right', height: '20px'}}>
+                <span>
+                  <NumberFormat value={Number((customerPrice).toFixed(3))} displayType={'text'} thousandSeparator={true}/>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td style={{width: '50%', textAlign: 'left'}}><span>Trả lại:</span></td>
+              <td style={{width: '50%', textAlign: 'right'}}>
+                <span>
+                  <NumberFormat value={Number((data && data.tienThoiLai ? data.tienThoiLai : 0).toFixed(3))} displayType={'text'} thousandSeparator={true}/>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p style={{textAlign: 'center', fontSize: '12px'}}>Pass wifi: {info.passWifi}</p>
+        <p style={{textAlign: 'center', fontSize: '12px'}}><em>Cảm ơn Quý khách. Hẹn gặp lại!</em></p>
       </div>
     );
   }

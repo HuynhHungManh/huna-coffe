@@ -10,10 +10,12 @@ import NumberFormat from 'react-number-format';
 Modal.setAppElement('body');
 import  MultiSelectReact  from 'multi-select-react';
 import PrintProvider, { Print, NoPrint } from 'react-easy-print';
-// import ComponentToPrint from '../tableTemporaryBill/ComponentToPrint.jsx';
+import ComponentToPrint from '../tableTemporaryBill/ComponentToPrint.jsx';
 import ReactToPrint from 'react-to-print';
 import NumPad from 'react-numpad';
 import jsxToString from 'jsx-to-string';
+import ReactDOMServer from 'react-dom/server';
+import { render } from 'jsx-to-html';
 
 class Bill_Order extends Component {
   constructor(props, context) {
@@ -23,10 +25,9 @@ class Bill_Order extends Component {
     this.cancelItemBill = this.cancelItemBill.bind(this);
     this.updateQuantum = this.updateQuantum.bind(this);
     let currentdate = new Date();
-    let datetime = currentdate.getDate() + "/"
-    + (currentdate.getMonth()+1)  + "/"
-    + currentdate.getFullYear();
-
+    let datetime = ('0' + currentdate.getDate()).slice(-2) + '/'
+                 + ('0' + (currentdate.getMonth()+1)).slice(-2) + '/'
+                 + currentdate.getFullYear();
     this.state = {
       productsBill: [],
       priceTotal: 0,
@@ -149,53 +150,26 @@ class Bill_Order extends Component {
     return false;
   }
 
-  templatePrint(data) {
-    const totalPrice = data && data.thanhTien ? data.thanhTien : 0;
-    return jsxToString(
-      <div className="template-print">
-        <div className="header-print">
-          <h1>HUNA COFFEE</h1>
-          <img className="" src={require('assets/images/logo/logo-huna.jpg')}></img>
-        </div>
-        <div className="info-print">
-          <p>Họ và tên: Huỳnh Bá Mạnh Hùng</p>
-          <p>Máy tính tiền </p>
-          <p>Địa chỉ: Lý triện</p>
-          <p>Thành Phố : Đà Nẵng</p>
-        </div>
-        <div className="content-print">
-          <div className="content-title">
-            <div className="content-name">Tên món</div>
-            <div className="content-quatum">SL</div>
-            <div className="content-promotion">CK</div>
-            <div className="content-price">Đơn giá</div>
-          </div>
-          { data.orderThucDons && data.orderThucDons.length > 0 &&
-            data.orderThucDons.map((item, i) => {
-              return (
-                <div key ={i} className="content-info">
-                  <p className="content-info-name">{item.ten}</p>
-                  <p className="content-info-quatum">{item.soLuong}</p>
-                  <p className="content-info-promotion">{(item.khuyenMai / item.donGia) * 100}%</p>
-                  <p className="content-info-price">
-                    {item.donGia}
-                  </p>
-                </div>
-              )
-            })
-          }
-        </div>
-        <div className="total-price-print">
-          <p className="text">Tổng tiền</p>
-          <p className="price">
-            {totalPrice}
-          </p>
-        </div>
-        <div className="footer-print">
-          Cám ơn quý khách đã ghé quán!
-        </div>
-      </div>
+  templatePrint(data, auth) {
+    let info = {
+      phone : '0935080123',
+      cashier: auth.hoVaTen,
+      codeOrder: data.ma,
+      dateOrder: this.state.dateOrder,
+      timePrint: this.getDate(data.ngayOrder),
+      passWifi: 'hunacoffee.com'
+    };
+    return (
+      <ComponentToPrint data = {data} auth = {auth} info = {info}/>
     );
+  }
+
+  getDate(jsonDate) {
+    let currentdate = new Date(jsonDate);
+    let hours = currentdate.getHours();
+    let minutes = currentdate.getMinutes();
+
+    return hours + ":" + minutes;
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -473,7 +447,7 @@ class Bill_Order extends Component {
       orderDetail: [data]
     });
     this.props.countCodeAfterSubmit();
-
+   
     if (typeSubmit == "Order") {
       if (payBack < 0) {
         this.alertNotification('Khách chưa đưa tiền hoặc không đủ!', 'warning');
@@ -496,8 +470,9 @@ class Bill_Order extends Component {
           orderCode: this.state.codeOrder
         }
         localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
-        // const mainProcess = window.require("electron").remote.require('./print.js');
-        // mainProcess.print(this.templatePrint(data));
+        const mainProcess = window.require("electron").remote.require('./print.js');
+        let html = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth));
+        mainProcess.print(html);
         this.clearForm();
         }).catch((reason) => {
           this.alertNotification('Order không thành công!', 'error');

@@ -297,7 +297,12 @@ main {
   -webkit-box-shadow: 0 1px 5px #c7c7c78c;
 }
 
-.title-bill, .number-bill, .date-bill {
+.number-bill, .date-bill {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.title-bill {
   display: block;
   margin-bottom: 8px;
   font-size: 15px;

@@ -14,6 +14,7 @@ import ReactToPrint from 'react-to-print';
 import ComponentToPrint from './ComponentToPrint.jsx';
 import PrintProvider, { Print, NoPrint } from 'react-easy-print';
 import Spinner from 'react-spinkit';
+import ReactDOMServer from 'react-dom/server';
 
 class TableTemporaryBill extends Component {
   constructor(props, context) {
@@ -49,7 +50,8 @@ class TableTemporaryBill extends Component {
       priceCustomerBack: 0,
       formality: '',
       statusOrder: '',
-      codeOrder: ''
+      codeOrder: '',
+      auth: ''
     };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -84,6 +86,10 @@ class TableTemporaryBill extends Component {
   }
 
   componentWillMount() {
+    const auth = JSON.parse(localStorage.getItem('auth'));
+    this.setState({
+      auth: auth
+    });
     localStorage.removeItem('dataCacheOrder');
     let dataCacheOrder = JSON.parse(localStorage.getItem('dataCacheOrder'));
     if (dataCacheOrder) {
@@ -256,7 +262,6 @@ class TableTemporaryBill extends Component {
     let hoursDiff = currentdate.getHours() - currentdate.getTimezoneOffset() / 60;
     let minutesDiff = (currentdate.getHours() - currentdate.getTimezoneOffset()) % 60;
 
-    // return datetime + " " + hoursDiff + ":" + minutesDiff;
     return hoursDiff + ":" + minutesDiff;
   }
 
@@ -331,14 +336,49 @@ class TableTemporaryBill extends Component {
     });
   }
 
-  printOrder() {
-    const mainProcess = window.require("electron").remote.require('./print.js');
-    mainProcess.print('hide');
-    // mainProcess.getFocusedWindow().minimize();
+  printOrder(item) {
+    let data = {
+      tienKhachDua: item.tienKhachDua ? item.tienKhachDua : 0,
+      tienCaThe: item.tienCaThe ? item.tienCaThe : 0,
+      tienChuyenKhoan: item.tienChuyenKhoan ? item.tienChuyenKhoan : 0,
+      tienThoiLai: item.tienThoiLai ? item.tienThoiLai : 0,
+      thanhTien: item.thanhTien ? item.thanhTien : 0,
+      orderThucDons: []
+    };
+    let date = new Date(item.ngayOrder);
+    let dateOrder = ('0' + date.getDate()).slice(-2) + '/'
+                 + ('0' + (date.getMonth()+1)).slice(-2) + '/'
+                 + date.getFullYear();
+    let timePrint = date.getHours() + ':' + date.getMinutes();
+    if (item && item.orderDetail) {
+      item.orderDetail.forEach((item, index) => {
+        let orderThucDons = {
+          ten: item.tenThucDon,
+          soLuong: item.soLuong,
+          khuyenMai: item.khuyenMai,
+          donGia: item.donGia,
+          thanhTien: item.thanhTien
+        }
+        data.orderThucDons.push(orderThucDons);
+      });
+    }
 
+    const mainProcess = window.require("electron").remote.require('./print.js');
+    let info = {
+      phone : '0935080123',
+      cashier: this.state.auth.hoVaTen,
+      codeOrder: item.ma,
+      dateOrder: dateOrder,
+      timePrint: timePrint,
+      passWifi: 'hunacoffee.com'
+    };
+    let html = ReactDOMServer.renderToStaticMarkup(
+      <ComponentToPrint data = {data} auth = {this.state.auth} info = {info}/>
+    );
+    mainProcess.print(html);
   }
 
-  omponentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if(nextProps.orders !== this.props.orders){
       this.setState({
         isLoading : false
@@ -352,11 +392,11 @@ class TableTemporaryBill extends Component {
       'Yesterday': moment().subtract(1, 'days'),
       'Clear': ''
     };
-    const auth = JSON.parse(localStorage.getItem('auth'));
+    
     return(
       <div className="show-order-block">
         <div className="search-order-block">
-          <div className="search-box" onClick={this.printOrder.bind(this)}>
+          <div className="search-box">
             <input type="text" className="search-order" placeholder="Tìm kiếm ..." readOnly />
           </div>
           <div className="datepicker-box">
@@ -434,15 +474,9 @@ class TableTemporaryBill extends Component {
                             <button className="btn view-order-btn btn-active" onClick={this.viewOrder.bind(this, item.id)}>
                               Xem order
                             </button>
-        
-                            <ReactToPrint trigger={() => 
-                              <button className="btn print-btn btn-active">
-                                In
-                              </button>
-                            }
-                              content={() => this.componentRef[i]}/>
-                              
-                              <ComponentToPrint ref={el => (this.componentRef[i] = el)} data={item.orderDetail} orderData={item} />
+                            <button className="btn print-btn btn-active" onClick={this.printOrder.bind(this, item)}>
+                              In
+                            </button>
                           </td>
                         </tr>
                       )
@@ -548,7 +582,7 @@ class TableTemporaryBill extends Component {
                 <div className="view-order-discount">
                   <div className="title-left">
                     <p className="title-text">
-                      Thu ngân: <span className="bold">{auth.hoVaTen}</span>
+                      Thu ngân: <span className="bold">{this.state.auth.hoVaTen}</span>
                     </p>
                   </div>
                   <div className="title-right">
