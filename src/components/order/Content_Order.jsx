@@ -19,6 +19,7 @@ class Content_Order extends Component {
     this.closeNumberic = this.closeNumberic.bind(this);
     this.changePayment = this.changePayment.bind(this);
     this.countCodeAfterSubmit = this.countCodeAfterSubmit.bind(this);
+    this.resetItem = this.resetItem.bind(this);
     this.state = {
       products: [],
       statusClear: false,
@@ -179,16 +180,36 @@ class Content_Order extends Component {
     let chooseProductsBill = [];
     this.state.products.forEach((item, index) => {
       if (item.id === idProduct) {
-        if (item.selectStatus == true && (!item.itemNote || item.itemNote.length ==0)) {
+        if (item.selectStatus == true && (!item.itemNote || item.itemNote.length == 0)) {
           item.quantum = item.quantum + 1;
           item.priceAndQuantum = item.quantum * item.donGia;
+        } else if (item.selectStatus == true && item.itemNote && item.itemNote.length > 0) {
+          item.quantum = 1;
+          item.priceAndQuantum = item.donGia;
+          item.itemNote = [];
         }
         item.selectStatus = true;
       }
       preProduct.push(item);
     });
+    console.log(preProduct);
     this.setState({
       products : preProduct
+    });
+  }
+
+  resetItem(idProduct) {
+    let productsAfter = [];
+     this.state.products.forEach((item, index) => {
+      if (item.id == idProduct) {
+        item.quantum = 1;
+        item.priceAndQuantum = item.quantum * item.donGia;
+        item.itemNote = [];
+      }
+      productsAfter.push(item);
+    });
+    this.setState({
+      products : productsAfter
     });
   }
 
@@ -428,6 +449,7 @@ class Content_Order extends Component {
           changePayment = {this.changePayment}
           countCode = {this.state.countCode}
           countCodeAfterSubmit = {this.countCodeAfterSubmit}
+          resetItem = {this.resetItem}
         />
       </div>
     );

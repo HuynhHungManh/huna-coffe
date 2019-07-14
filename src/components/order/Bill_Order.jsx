@@ -174,12 +174,11 @@ class Bill_Order extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.productsBill !== this.props.productsBill) {
-      let products = this.props.productsBill;
       let productsBill = [];
       let productsBillTmp = [];
       let priceTotal = 0;
-      console.log(this.props.productsBill);
       let getChooses = this.props.productsBill.filter(item => item.selectStatus == true);
+      console.log(this.state.productsBill);
       if (getChooses && getChooses.length > 0) {
         if (this.state.productsBill.length > 0) {
           let unique = [];
@@ -192,37 +191,102 @@ class Bill_Order extends Component {
               updateQuantum.push(item);
             }
           });
-          let productsAfter = this.state.productsBill;
+          let productsAfter = this.state.productsBill ? this.state.productsBill : [];
+          // console.log(productsAfter);
           let dupProduct = [];
           if (updateQuantum && updateQuantum.length > 0) {
-            productsAfter.forEach((item, index) => {
-              let findUpdate = updateQuantum.find(value => value.id == item.id);
-           
-              if (findUpdate) {
-                if (!findUpdate.itemNote || findUpdate.itemNote.length == 0) {
-                  productsAfter[index].quantum = findUpdate.quantum;
-                } else {
-                  const newItem = {...findUpdate ? findUpdate : ''};
-                  newItem.itemNote = [];
-                  newItem.quantum = 1;
-                  newItem.priceAndQuantum = newItem.donGia;
-                  dupProduct.push(newItem);
-                }
-                if (item.itemPromotion && item.itemPromotion > 0) {
-                  // productsAfter[index].priceAndQuantum = productsAfter[index].quantum * (productsAfter[index].donGia - item.itemPromotion);
-                } else {
-                  productsAfter[index].priceAndQuantum = productsAfter[index].quantum * productsAfter[index].donGia;
-                }
-                console.log(productsAfter);
-              }
-            });
+
+            // console.log(updateQuantum);
+            let checkNoteItem = updateQuantum.find(itemAfter => (itemAfter.itemNote && itemAfter.itemNote.length > 0));
+            // console.log(checkNoteItem);
+            // if (!checkNoteItem) {
+            //   console.log('1');
+            //   console.log(updateQuantum);
+            //   console.log(productsAfter);
+            //   productsAfter.concat(updateQuantum);
+            //   console.log(productsAfter);
+            // }
+    
+            // let countItem = productsAfter.filter(value.id == itemUpdate.id);
+            // if (itemUpdate && (!itemUpdate.itemNote && itemUpdate.itemNote == 0)) {
+
+            // }
+
+            // if (!checkNoteEmpty) {
+            //   // add new
+            //   let countItem = productsAfter.filter(value.id == item.id);
+            //   updateQuantum[0].idSame = countItem.length;
+            //   productsAfter.concat(updateQuantum);
+            //   // console.log(productsAfter);
+            // } else {
+            //   // update quatum
+            // }
+
+            // productsAfter.forEach((item, index) => {
+            //   let findUpdate = updateQuantum.filter(value => value.id == item.id);
+            //   let sameTmp = productsAfter.find(itemAfter => itemAfter.id == item.id);
+            //   if (findUpdate) {
+            //     let checkNotNote = findUpdate.find(item => (!item.itemNote || item.itemNote.length == 0));
+            //     if (checkNotNote) {
+            //       // update quatum
+            //       if (!item.itemNote || item.itemNote.length == 0) {
+                  
+            //         // item.quantum = item.quantum + 1;
+            //         // console.log(item);
+            //       }
+            //     } else if (dupProduct.length == 0 && !item.idSame) {
+            //       // add new
+            //       // console.log(item);
+            //       // this.props.resetItem(item.id);
+            //       // let newItem = {...sameTmp ? sameTmp : ''};
+            //       // // console.log(newItem);
+            //       // newItem.itemNote = [];
+            //       // newItem.quantum = 1;
+            //       // newItem.priceAndQuantum = newItem.donGia;
+            //       // dupProduct.push(newItem);
+            //     }
+            //   }
+            //   // if (findUpdate) {
+            //   //   // console.log(findUpdate);
+            //   //   let checkNotNote = findUpdate.find(item => (!item.itemNote || item.itemNote.length == 0) && );
+            //   //   let checkNotNote = productsAfter.find(item => (!item.itemNote || item.itemNote.length == 0));
+            //   //   let checkNoted = productsAfter.find(item => (item.itemNote && item.itemNote.length > 0));
+            //   //   if (checkNotNote) {
+            //   //     // if (!item.idItemSame) {
+            //   //     //   item.idItemSame = index;
+            //   //     // }
+            //   //     if (!item.itemNote || item.itemNote.length == 0) {
+            //   //       // productsAfter[index].quantum = findUpdate.quantum;
+            //   //       item.quantum = 1;
+            //   //       // item.priceAndQuantum = item.quantum * item.donGia;
+            //   //     }
+            //   //     item.priceAndQuantum = item.quantum * item.donGia;
+            //   //     // console.log(item);
+            //   //   } else if (dupProduct.length == 0 && checkNoted) {
+            //   //     let newItem = {...checkNoted ? checkNoted : ''};
+            //   //     // console.log(newItem);
+            //   //     newItem.itemNote = [];
+            //   //     newItem.quantum = 1;
+            //   //     newItem.priceAndQuantum = newItem.donGia;
+            //   //     dupProduct.push(newItem);
+            //   //   }
+            //   //   if (item.itemPromotion && item.itemPromotion > 0) {
+            //   //     // productsAfter[index].priceAndQuantum = productsAfter[index].quantum * (productsAfter[index].donGia - item.itemPromotion);
+            //   //   } else {
+            //   //     productsAfter[index].priceAndQuantum = productsAfter[index].quantum * productsAfter[index].donGia;
+            //   //   }
+            //   //   // console.log(productsAfter);
+            //   // }
+            // });
           }
 
-          getChooses = productsAfter.concat(unique);
-          console.log(getChooses);
-          getChooses = getChooses.concat(dupProduct);
-          console.log(getChooses);
+          // getChooses = productsAfter.concat(unique);
+          // console.log(getChooses);
+          // console.log(getChooses);
+          // getChooses = getChooses.concat(dupProduct);
+          // console.log(getChooses);
         }
+        // console.log(getChooses);
         getChooses.forEach((item, index) => {
           if (this.state.promotionGroup) {
             let promotionGroup = this.state.promotionGroup.find(itemPromotion => itemPromotion.loaiThucDonId == item.loaiThucDonId);
