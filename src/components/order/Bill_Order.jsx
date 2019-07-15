@@ -313,6 +313,7 @@ class Bill_Order extends Component {
         });
       }
     }
+
     if (prevProps.noteOrders !== this.props.noteOrders) {
       let arrayTmp = [];
       this.props.noteOrders.map((item) => {
@@ -972,30 +973,30 @@ class Bill_Order extends Component {
     return true;
   }
 
-  handleDown() {
-    let Item = document.getElementById('scrollItem');
-    document.getElementById('scrollItem').classList.add("scrolling");
-    down = true;
-    scrollLeft = Item.scrollLeft;
-    x = $(this).clientX;
-  }
+  // handleDown() {
+  //   let Item = document.getElementById('scrollItem');
+  //   document.getElementById('scrollItem').classList.add("scrolling");
+  //   down = true;
+  //   scrollLeft = Item.scrollLeft;
+  //   x = $(this).clientX;
+  // }
 
-  handleMove() {
-    let Item = document.getElementById('scrollItem');
-    if (down == true) {
-      Item.scrollLeft = scrollLeft + x - $(this).clientX;
-    }
-  }
+  // handleMove() {
+  //   let Item = document.getElementById('scrollItem');
+  //   if (down == true) {
+  //     Item.scrollLeft = scrollLeft + x - $(this).clientX;
+  //   }
+  // }
 
-  handleUp() {
-    document.getElementById('scrollItem').classList.remove("scrolling");
-    down = false;
-  }
+  // handleUp() {
+  //   document.getElementById('scrollItem').classList.remove("scrolling");
+  //   down = false;
+  // }
 
-  handleLeave() {
-    document.getElementById('scrollItem').classList.remove("scrolling");
-    down = false;
-  }
+  // handleLeave() {
+  //   document.getElementById('scrollItem').classList.remove("scrolling");
+  //   down = false;
+  // };
 
   render() {
     let cashPaymentData = this.state.typePaymentTmp.find(item => item.type  == 'cash');
@@ -1061,11 +1062,7 @@ class Bill_Order extends Component {
               <p className="bill-quatium">Số lượng</p>
               <p className="bill-total">Tổng tiền</p>
             </div>
-            <div className="bill-calculate" id={scrollItem}
-              onMouseDown={this.handleDown.bind(this)}
-              onMouseMove={this.handleMove.bind(this)}
-              onMouseUp={this.handleUp.bind(this)}
-              onMouseLeave={this.handleLeave.bind(this)}
+            <div className="bill-calculate"
             >
               {
                 this.state.productsBill.map((item, i) => {
