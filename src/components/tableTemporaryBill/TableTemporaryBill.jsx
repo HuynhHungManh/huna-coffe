@@ -292,6 +292,7 @@ class TableTemporaryBill extends Component {
     .then((res) => {
       this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder}));
       this.alertNotification('Bạn đã hủy thành công!', 'success');
+      this.closeCancelForm();
     })
     .catch((e) => {
       this.alertNotification('Bạn không thể hủy order!', 'error');
@@ -551,7 +552,7 @@ class TableTemporaryBill extends Component {
                               <NumberFormat value={item.donGia} displayType={'text'} thousandSeparator={true} /> đ
                             </td>
                             <td>{item.soLuong}</td>
-                            <td>{item.promotion}%</td>
+                            <td>{item.khuyenMai}%</td>
                             <td>
                               <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
                             </td>

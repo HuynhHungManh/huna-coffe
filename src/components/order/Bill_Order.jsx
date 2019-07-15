@@ -28,6 +28,9 @@ class Bill_Order extends Component {
     let datetime = ('0' + currentdate.getDate()).slice(-2) + '/'
                  + ('0' + (currentdate.getMonth()+1)).slice(-2) + '/'
                  + currentdate.getFullYear();
+    var down = false;
+    var scrollLeft = 0;
+    var x = 0;
     this.state = {
       productsBill: [],
       priceTotal: 0,
@@ -414,7 +417,7 @@ class Bill_Order extends Component {
       let dataProducts = {
         'donGia': item.donGia,
         'ghiChuMonOrderThucDon': item.itemNote && item.itemNote != 'undefined' ? item.itemNote : [],
-        'khuyenMai': item.itemPromotion ? item.itemPromotion : 0,
+        'khuyenMai': item.discount ? item.discount : 0,
         'ngayOrder': dateFormat,
         'soLuong': Number(item.quantum),
         'thanhTien': item.priceAndQuantum,
@@ -446,7 +449,7 @@ class Bill_Order extends Component {
       'tienCaThe': payCard,
       'tienChuyenKhoan': payTransfer,
       'ma' : this.state.codeOrder,
-      'khuyenMai': this.state.discountInput && this.state.isPromotionTypeBill == true ? this.state.discountInput : 0,
+      'khuyenMai': this.state.promotionBill ? this.state.promotionBill : 0,
       'ngayOrder': dateFormat,
       'nguoiChietKhauId': this.state.peopleSelect[0].id ? this.state.peopleSelect[0].id : 1,
       'nhanVienOrderId': auth.userId ? auth.userId : 0,
@@ -454,7 +457,7 @@ class Bill_Order extends Component {
       'thanhTien': this.state.priceTotal,
       'tongGia': this.state.discountAfter,
       'trangThaiOrder': 'DA_THANH_TOAN',
-      'soBan': this.props.numberTable,
+      'soBan': this.state.numberTable,
       'tienKhachDua': payCash,
       'tienThoiLai': payBack ? payBack : 0
     };
@@ -462,7 +465,6 @@ class Bill_Order extends Component {
       orderDetail: [data]
     });
     this.props.countCodeAfterSubmit();
-   
     if (typeSubmit == "Order") {
       if (payBack < 0) {
         this.alertNotification('Khách chưa đưa tiền hoặc không đủ!', 'warning');
@@ -481,13 +483,13 @@ class Bill_Order extends Component {
           dateCopy: timeCopy,
           dateOrder: this.state.dateOrder,
           outlay: this.state.outlay,
-          numberTable: this.props.numberTable,
+          numberTable: this.state.numberTable,
           orderCode: this.state.codeOrder
         }
         localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
-        const mainProcess = window.require("electron").remote.require('./print.js');
-        let html = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth));
-        mainProcess.print(html);
+        // const mainProcess = window.require("electron").remote.require('./print.js');
+        // let html = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth));
+        // mainProcess.print(html);
         this.clearForm();
         }).catch((reason) => {
           this.alertNotification('Order không thành công!', 'error');
@@ -970,6 +972,31 @@ class Bill_Order extends Component {
     return true;
   }
 
+  handleDown() {
+    let Item = document.getElementById('scrollItem');
+    document.getElementById('scrollItem').classList.add("scrolling");
+    down = true;
+    scrollLeft = Item.scrollLeft;
+    x = $(this).clientX;
+  }
+
+  handleMove() {
+    let Item = document.getElementById('scrollItem');
+    if (down == true) {
+      Item.scrollLeft = scrollLeft + x - $(this).clientX;
+    }
+  }
+
+  handleUp() {
+    document.getElementById('scrollItem').classList.remove("scrolling");
+    down = false;
+  }
+
+  handleLeave() {
+    document.getElementById('scrollItem').classList.remove("scrolling");
+    down = false;
+  }
+
   render() {
     let cashPaymentData = this.state.typePaymentTmp.find(item => item.type  == 'cash');
     let cardPaymentData = this.state.typePaymentTmp.find(item => item.type  == 'card');
@@ -1034,7 +1061,12 @@ class Bill_Order extends Component {
               <p className="bill-quatium">Số lượng</p>
               <p className="bill-total">Tổng tiền</p>
             </div>
-            <div className="bill-calculate">
+            <div className="bill-calculate" id={scrollItem}
+              onMouseDown={this.handleDown.bind(this)}
+              onMouseMove={this.handleMove.bind(this)}
+              onMouseUp={this.handleUp.bind(this)}
+              onMouseLeave={this.handleLeave.bind(this)}
+            >
               {
                 this.state.productsBill.map((item, i) => {
                   return (

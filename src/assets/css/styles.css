@@ -111,6 +111,12 @@ main {
   box-shadow: -5px 7px 25px -15px rgb(110, 110, 110);
   position: relative;
 }
+.box-header .icon-users::before {
+  position: absolute;
+  left: -49px;
+  top: 24px;
+  font-size: 23px;
+}
 .title-page {
   font-family: 'Roboto-Bold';
   font-size: 25px;
@@ -122,6 +128,7 @@ main {
 .account-info-box {
   display: inline-block;
   float: right;
+  position: relative;
 }
 .account-info-box .account-text {
   line-height: 80px;
