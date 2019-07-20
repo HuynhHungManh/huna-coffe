@@ -905,6 +905,17 @@ main {
   float: left;
   padding-left: 15px;
 }
+.checkbox-item-discount input {
+  margin: 0;
+  width: 53px;
+  height: 35px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+.checkbox-item-discount button {
+  display: none;
+}
 .input-item-discount {
   width: 75%;
   display: inline-block;
@@ -915,7 +926,7 @@ main {
   padding: 8px 0px 15px 0px;
   border-bottom: 1px solid #ccc;
   float: left;
-  pointer-events: none;
+/*  pointer-events: none;*/
 }
 .content-item-info .item-block-info {
   width: 100%;
@@ -1355,7 +1366,7 @@ main {
   font-size: 11px;
   margin: 0 3px;
   position: relative;
- /* border-bottom: 1px solid #ccc;*/
+  border-bottom: 1px solid #ccc;
   padding: 4px 0;
 }
 
@@ -1696,4 +1707,11 @@ main {
 }
 .display-background {
   background-color: unset !important;
+}
+.percent {
+  position: absolute;
+  z-index: 1;
+  top: 16px;
+  right: 102px;
+  font-size: 15px;
 }

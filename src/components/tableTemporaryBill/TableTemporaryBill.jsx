@@ -247,6 +247,7 @@ class TableTemporaryBill extends Component {
       });
     }
     if (prevProps.totalPrice !== this.props.totalPrice) {
+      console.log(this.props.totalPrice);
       this.setState({
         priceTotal: this.props.totalPrice.tongTien
       });

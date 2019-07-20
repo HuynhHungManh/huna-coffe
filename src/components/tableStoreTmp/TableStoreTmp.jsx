@@ -46,7 +46,7 @@ class TableStoreTmp extends Component {
       tableCurrentOrder: '',
       cashier: 'No Name',
       outLay: 0,
-      outLayBack : 0,
+      outLayBack: 0,
       orderCode: ''
     }
   }
@@ -130,6 +130,7 @@ class TableStoreTmp extends Component {
     }
     
     afterDiscount = priceTotal - priceDiscount;
+    console.log(dataOrder);
     this.setState({
       orderThucDons: dataOrder[index].orderThucDons,
       statusPopup: true,
@@ -193,8 +194,8 @@ class TableStoreTmp extends Component {
     let datetime = currentdate.getDate() + "/"
       + (currentdate.getMonth()+1)  + "/"
       + currentdate.getFullYear();
-    let hoursDiff = currentdate.getHours() - currentdate.getTimezoneOffset() / 60;
-    let minutesDiff = (currentdate.getHours() - currentdate.getTimezoneOffset()) % 60;
+    let hoursDiff = currentdate.getHours();
+    let minutesDiff = currentdate.getMinutes();
 
     return datetime + " " + hoursDiff + ":" + minutesDiff;
   }
