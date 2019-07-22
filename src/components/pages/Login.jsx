@@ -27,10 +27,15 @@ class Login extends React.Component {
       input: '',
       inputName: ''
     }
+    localStorage.removeItem('auth');
   }
 
   gotoPage(page) {
     this.context.router.history.push(page);
+  }
+
+  componentWillMount() {
+    localStorage.removeItem('auth');
   }
 
   submitLogin() {
@@ -55,7 +60,7 @@ class Login extends React.Component {
       .then((res) => {
         if (res.data && res.data.token) {
           localStorage.setItem('auth', JSON.stringify(res.data));
-          this.props.history.push('/coffee');
+          this.gotoPage('/coffee');
         } else {
           this.setState({
             hasError: true,

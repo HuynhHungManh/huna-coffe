@@ -22,7 +22,7 @@ class Item_Bill extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.productsBill !== this.props.productsBill) {
-      let value = this.props.productsBill.find(item => item.id == this.props.data.id);
+      let value = this.props.productsBill.find(item => item.idUnique == this.props.data.idUnique);
       if (value && value.quantum) {
         this.setState({
           quantum: value.quantum
@@ -147,12 +147,12 @@ class Item_Bill extends Component {
           <div className='quantum-item'>
             <div className="calculate-box">
               <button className="minus-quantum"
-                onClick={this.minusQuantum.bind(this, this.props.data.id)}>
+                onClick={this.minusQuantum.bind(this, this.props.data.idUnique)}>
                 -
               </button>
               <p className="text-quantum">{this.state.quantum}</p>
               <button className="plus-quantum"
-                onClick={this.plusQuantum.bind(this, this.props.data.id)}>
+                onClick={this.plusQuantum.bind(this, this.props.data.idUnique)}>
                 +
               </button>
             </div>
@@ -162,7 +162,7 @@ class Item_Bill extends Component {
               <NumberFormat value={this.calculatePrice(this.props.data.donGia, this.props.data.quantum, this.props.data.itemPromotion)} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
             </p>
           </div>
-          <div className="btn-cancel-row" onClick={this.props.cancelItemBill.bind(this, this.props.data.id)}>
+          <div className="btn-cancel-row" onClick={this.props.cancelItemBill.bind(this, this.props.data.idUnique, this.props.data.id)}>
             <span className="icon-cancel-box icon-bin"></span>
           </div>
         </div>

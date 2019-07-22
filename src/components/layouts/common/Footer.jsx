@@ -86,14 +86,17 @@ class Footer extends Component {
       tabs : preTabs
     })
     if (url == '/' && idTab == 4) {
-      this.alertNotification('Bạn đã đăng xuất thành công!', 'success');
-      // this.props.dispatch(Auth.actions.logout())
-      // .then((res) => {
-      //   // localStorage.removeItem('auth');
-      //   this.alertNotification('Bạn đã đăng xuất thành công!', 'success');
-      // });
+      this.props.dispatch(Auth.actions.logout())
+      .then((res) => {
+        this.alertNotification('Bạn đã đăng xuất thành công!', 'success');
+        this.gotoPage(url);
+      })
+      .catch((err) => {
+        this.alertNotification('Đăng xuất bị lỗi!', 'error');
+      });
+    } else {
+      this.gotoPage(url);
     }
-    this.gotoPage(url);
   }
 
   gotoPage(page) {

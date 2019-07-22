@@ -6,13 +6,20 @@ import {Shift} from 'api';
 import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
 import ReactDOMServer from 'react-dom/server';
+import {Orders, TotalPromotion, TotalPrice} from 'api';
+import Modal from 'react-modal';
+Modal.setAppElement('body');
+import  MultiSelectReact  from 'multi-select-react';
 
 class Header extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
       hoVaTen: 'Anonymous',
-      page: ''
+      page: '',
+      statusPopup: false,
+      listPrinter: [],
+      listPrinterTmp: []
     }
   }
 
@@ -74,10 +81,16 @@ class Header extends Component {
           soldMoney: res.data.tongTienDaBan,
           casher: this.state.hoVaTen
         }
-        // const mainProcess = window.require("electron").remote.require('./print.js');
-        // let html = ReactDOMServer.renderToStaticMarkup(this.templateShift(data));
-        // console.log(html);
-        // mainProcess.print(html);
+
+        let date = new Date();
+        let dateTodayFormat = JSON.parse(JSON.stringify(date));
+        this.props.dispatch(Orders.actions.getOrders({ngayOrder: dateTodayFormat})).then((res) => {    
+        })
+        .catch((err) => {
+          this.alertNotification('Lỗi kích ca!', 'error');
+        });
+        this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: dateTodayFormat}));
+        this.props.dispatch(TotalPrice.actions.totalPrice({ngayOrder: dateTodayFormat}));  
         this.alertNotification('Bạn kích ca thành công!', 'success');
       } else {
         this.alertNotification('Kích ca không thành công!', 'error');
@@ -110,6 +123,57 @@ class Header extends Component {
     };
   }
 
+  optionClicked(optionsList) {
+    this.setState({ listPrinterTmp: optionsList });
+    localStorage.setItem('storePrinter', JSON.stringify(optionsList.filter(item => item.value && item.value == true)));
+  }
+  selectedBadgeClicked(optionsList) {
+    this.setState({ listPrinterTmp: optionsList });
+    localStorage.setItem('storePrinter', JSON.stringify(optionsList.filter(item => item.value && item.value == true)));
+  }
+
+  closeModel() {
+    this.setState({
+      statusPopup: false
+    });
+  }
+
+  getPrinter(list) {
+    let getStorePrinters = JSON.parse(localStorage.getItem('storePrinter'));
+    if (list && list.length > 0) {
+      let arrayTmp = [];
+      list.forEach((item, index) => {
+        let info = {
+          label: item.name,
+          id: index
+        };
+        if (getStorePrinters && getStorePrinters.length > 0 && getStorePrinters.find(value => value.label == item.name)) {
+          info.value = true;
+        }
+        arrayTmp.push(info);
+      });
+      this.setState({
+        listPrinter: arrayTmp
+      });
+    }
+  }
+
+  choosePrinter() {
+    this.setState({
+      statusPopup: true
+    });
+    const mainProcess = window.require("electron").remote.require('./getPrint.js');
+    mainProcess.getPrint(this.getPrinter.bind(this));
+  }
+
+  savePrinter() {
+    if (this.state.listPrinterTmp.length > 0) {
+      this.setState({
+        listPrinter: this.state.listPrinterTmp
+      });
+    }
+  }
+
   render() {
     return (
       <header className="box-header">
@@ -119,6 +183,7 @@ class Header extends Component {
             <span className="title">{this.state.page}</span>
           </p>
           <div className="account-info-box">
+            <span className="icon-printer" onClick={this.choosePrinter.bind(this)}></span>
             <span className="icon-users" onClick={this.handleShift.bind(this)}></span>
             <p className="account-text">
               Xin chào:
@@ -127,6 +192,34 @@ class Header extends Component {
             </p>
           </div>
         </div>
+        <Modal
+          isOpen={this.state.statusPopup}
+          contentLabel="Modal"
+          className="modal popup"
+        >
+          <div className="printer-block">
+            <div className="printer-header">
+              <p className="text-title">Chọn máy in</p>
+              <span className="icon-cross" onClick={this.closeModel.bind(this)}></span>
+            </div>
+            <div className="printer-content">
+              <MultiSelectReact 
+                className="dropdown-printer"
+                options={this.state.listPrinter}
+                optionClicked={this.optionClicked.bind(this)}
+                selectedBadgeClicked={this.selectedBadgeClicked.bind(this)}
+              />
+            </div>
+            <div className="printer-footer">
+              <button className="btn close-button" onClick={this.closeModel.bind(this)}>
+                Đóng
+              </button>
+              <button className="btn" onClick={this.closeModel.bind(this)}>
+                Lưu
+              </button>
+            </div>
+          </div>
+        </Modal>
       </header>
     );
   }

@@ -3,16 +3,15 @@ import customFetch from 'api/axios';
 import CONFIG from 'base/constants/config';
 
 // Example
-let auth = JSON.parse(localStorage.getItem('auth'));
-let token = '';
-if (auth && auth.token) {
-  token = auth.token;
-}
-
 const rest = reduxApi({
   promotion: {
     url: '/khuyenmais',
     options:(url, params, getState) => {
+      let auth = JSON.parse(localStorage.getItem('auth'));
+      let token = '';
+      if (auth && auth.token) {
+        token = auth.token;
+      }
       return {
         method: "GET",
         headers: {
@@ -35,6 +34,11 @@ const rest = reduxApi({
   totalPromotion: {
     url: '/orders/chietKhauTrongCa',
     options:(url, params, getState) => {
+      let auth = JSON.parse(localStorage.getItem('auth'));
+      let token = '';
+      if (auth && auth.token) {
+        token = auth.token;
+      }
       return {
         method: "GET",
         headers: {
@@ -57,6 +61,11 @@ const rest = reduxApi({
   peolePromotion: {
     url: '/orders/nguoiChietKhau',
     options:(url, params, getState) => {
+      let auth = JSON.parse(localStorage.getItem('auth'));
+      let token = '';
+      if (auth && auth.token) {
+        token = auth.token;
+      }
       return {
         method: "GET",
         headers: {

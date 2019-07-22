@@ -3,10 +3,6 @@ import customFetch from 'api/axios';
 import CONFIG from 'base/constants/config';
 
 let auth = JSON.parse(localStorage.getItem('auth'));
-let token = '';
-if (auth && auth.token) {
-  token = auth.token;
-}
 
 // Example
 const rest = reduxApi({
@@ -31,6 +27,11 @@ const rest = reduxApi({
   logout: {
     url: '/auth/logout',
     options:(url, params, getState) => {
+      let auth = JSON.parse(localStorage.getItem('auth'));
+      let token = '';
+      if (auth && auth.token) {
+        token = auth.token;
+      }
       return {
         method: "POST",
         headers: {

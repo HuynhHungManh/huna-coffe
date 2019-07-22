@@ -44,13 +44,13 @@ class ComponentToPrint extends Component {
               <td style={{width: '20%'}}>Giá</td>
               <td style={{width: '10%'}}>SL</td>
               <td style={{width: '10%'}}>CK</td>
-              <td style={{width: '20%'}}>T tiền</td>
+              <td style={{width: '20%'}}>T.tiền</td>
             </tr>
             { data && data.orderThucDons && data.orderThucDons.length > 0 &&
               data.orderThucDons.map((item, i) => {
                 return (
                   <tr className="content-table" key={i}>
-                    <td style={{width: '40%'}}>{item.ten}</td>
+                    <td style={{width: '40%', textAlign: 'left'}}>{item.ten}</td>
                     <td style={{width: '20%'}}>
                       <NumberFormat value={Number((item.donGia).toFixed(3))} displayType={'text'} thousandSeparator={true}/>
                     </td>

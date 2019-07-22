@@ -19,6 +19,8 @@ class Content_Order extends Component {
     this.closeNumberic = this.closeNumberic.bind(this);
     this.changePayment = this.changePayment.bind(this);
     this.countCodeAfterSubmit = this.countCodeAfterSubmit.bind(this);
+    this.addNote = this.addNote.bind(this);
+    this.changeTotal = this.changeTotal.bind(this);
     this.state = {
       products: [],
       statusClear: false,
@@ -28,7 +30,14 @@ class Content_Order extends Component {
       discountInput: '',
       outLay: 0,
       cardPayment: 0,
-      countCode: 0
+      countCode: 0,
+      chooseProductsBill: [],
+      priceTotal: 0,
+      intoMoney: 0,
+      promotionBill: 0,
+      promotionGroup: [],
+      promotionGroupId: [],
+      promotionItems: []
     }
   }
 
@@ -43,27 +52,26 @@ class Content_Order extends Component {
           getOrders :  data.content,
           billTotal: data.totalElements
         });
-        let priceTotal = 0;
-        let priceDiscount = 0;
-        data.content.forEach(function(item, index) {
-          priceTotal = priceTotal + item.thanhTien;
-          priceDiscount = priceDiscount + item.tongGia;
-        });
-        this.setState({
-          priceTotal :  priceTotal,
-          priceDiscount: priceTotal - priceDiscount
-        });
+        // let priceTotal = 0;
+        // let priceDiscount = 0;
+        // data.content.forEach(function(item, index) {
+        //   priceTotal = priceTotal + item.thanhTien;
+        //   priceDiscount = priceDiscount + item.tongGia;
+        // });
+        // this.setState({
+        //   priceTotal :  priceTotal,
+        //   priceDiscount: priceTotal - priceDiscount
+        // });
         let dataCache = {
-          getOrders: data.content,
-          billTotal: data.totalElements,
-          priceTotal: priceTotal,
-          priceDiscount: priceTotal - priceDiscount
+          getOrders: data.content
         };
-        localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
+        // localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
       }
     });
     this.props.dispatch(Promotion.actions.promotion());
     this.props.dispatch(NoteOrder.actions.noteOrders());
+    let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
+    let itemStore = orderListTmp ? orderListTmp.length : 0;
     this.props.dispatch(Orders.actions.getOrders({ngayOrder: dateTodayFormat})).then((res) => {
       if (res.data.content) {
         let arrayTmp = [];
@@ -78,7 +86,7 @@ class Content_Order extends Component {
           });
         });
         this.setState({
-          countCode: res.data.content.length
+          countCode: res.data.content.length + itemStore
         });
       }
     });
@@ -147,6 +155,38 @@ class Content_Order extends Component {
         products: this.state.products
       });
     }
+    if (prevProps.promotion !== this.props.promotion) {
+      let promotionBill = this.props.promotion.find(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_HOA_DON' 
+        && this.checkPromotionDate(item.tuNgay, item.denNgay));
+      if (promotionBill) {
+        this.setState({
+          promotionBill: promotionBill.chietKhau
+        });
+      } else {
+        let promotionGroup = this.props.promotion.filter(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_NHOM_MON' 
+          && this.checkPromotionDate(item.tuNgay, item.denNgay));
+        let promotionItems = this.props.promotion.filter(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_MON'
+          && this.checkPromotionDate(item.tuNgay, item.denNgay));
+        if (promotionGroup) {
+          let arrayId = [];
+          promotionGroup.forEach((item, index) => {
+            arrayId.push(item.loaiThucDonId);
+          });
+          this.setState({
+            promotionGroup: promotionGroup,
+            promotionGroupId: arrayId
+          });
+        }
+        if (promotionItems) {
+          if (this.state.promotionGroupId) {
+            promotionItems = promotionItems.filter(item => this.state.promotionGroupId.indexOf(item.loaiThucDonId) === -1);
+          }
+          this.setState({
+            promotionItems: promotionItems
+          });
+        }
+      }
+    }
   }
 
   storeProductsBill(productsBill) {
@@ -156,35 +196,120 @@ class Content_Order extends Component {
     }
   }
 
+  checkPromotionDate(startDateParams, endDateParams) {
+    let startDate = this.toTimestamp(startDateParams);
+    let endDate = this.toTimestamp(endDateParams);
+    let today = Math.round(+new Date()/1000);
+    if (startDate <= today && today <= endDate) {
+      return true;
+    }
+    return false;
+  }
+
+  toTimestamp(strDate){
+    var datum = Date.parse(strDate);
+    return datum/1000;
+  }
+
   clearFormOrder() {
     let products = this.state.products;
     let arrayProduct = [];
     products.forEach((item, index) => {
       if (item.selectStatus == true) {
         item.selectStatus = false;
-        item.quantum = 1;
       }
       arrayProduct.push(item);
     });
     this.setState({
       products : arrayProduct,
-      outLay: 0,
-      discountInput: ''
+      priceTotal: 0,
+      chooseProductsBill: []
     });
     localStorage.removeItem('products');
+  }
+
+  promotionCheck(products) {
+    let arrayTmp = [];
+    if (this.state.promotionBill == 0) {
+      products.forEach((item, index) => {
+        if (this.state.promotionGroup) {
+          let promotionGroup = this.state.promotionGroup.find(itemPromotion => itemPromotion.loaiThucDonId == item.loaiThucDonId);
+          if (promotionGroup) {
+            item.discount = promotionGroup.chietKhau;
+            item.itemPromotion = (promotionGroup.chietKhau * item.donGia) / 100;
+          } else {
+            let promotionItem = this.state.promotionItems.find(itemPromotion => itemPromotion.thucDonId == item.id);
+            if (promotionItem) {
+              item.discount = promotionItem.chietKhau;
+              item.itemPromotion = (promotionItem.chietKhau * item.donGia) / 100;
+            }
+          }
+        }
+        arrayTmp.push(item);
+      });
+    }
+    
+    return arrayTmp.length != 0 ? arrayTmp : products;
+  }
+
+  changeTotal(price) {
+    this.setState({
+      priceTotal: price
+    });
   }
 
   chooseProduct(idProduct) {
     let preProduct = [];
     let chooseProductsBill = [];
+    let newItemArray = [];
     this.state.products.forEach((item, index) => {
       if (item.id === idProduct) {
-        if (item.selectStatus == true && (!item.itemNote || item.itemNote.length ==0)) {
-          item.quantum = item.quantum + 1;
-          item.priceAndQuantum = item.quantum * item.donGia;
+        let chooseProductsBillState = this.state.chooseProductsBill;
+        let checkProductNonNote = chooseProductsBillState.find(
+          value => (value.id == idProduct && (!value.itemNote || value.itemNote.length == 0)));
+        if (checkProductNonNote) {
+          console.log('update quatum');
+          // update quatum
+          let priceTotal = 0;
+          let arrTmp = [];
+          chooseProductsBillState.forEach((itemState, index) => {
+            if (itemState.idUnique == checkProductNonNote.idUnique) {
+              itemState.quantum = itemState.quantum + 1;
+              itemState.priceAndQuantum = itemState.quantum * itemState.donGia;
+            }
+            priceTotal = priceTotal + (itemState.quantum * itemState.donGia);
+            arrTmp.push(itemState);
+          });
+
+          // priceDiscount = this.promotionCheck(arrTmp).reduce((total, item) => total + item.donGia, 0) + newItem.donGia;
+          // console.log(priceTotal);
+          this.setState({
+            chooseProductsBill : this.promotionCheck(arrTmp),
+            priceTotal: priceTotal
+          });
+        } else {
+          console.log('add new');
+          let newItem = {...item ? item : ''};
+          newItem.idUnique = chooseProductsBillState.length;
+          let priceTotal = 0;
+          if (this.state.chooseProductsBill.length == 0) {
+            priceTotal = newItem.donGia;
+          } else {
+            priceTotal = this.state.chooseProductsBill.reduce((total, item) => total + (item.donGia * item.quantum), 0) + newItem.donGia;
+          }
+          // chooseProductsBillState.forEach((itemState, index) => {
+
+          // });
+          // priceTotal: 0,
+          // intoMoney: 0
+          this.setState(prevState => ({
+            chooseProductsBill: this.promotionCheck([...prevState.chooseProductsBill, newItem]),
+            priceTotal: priceTotal
+          }));
         }
         item.selectStatus = true;
       }
+      // console.log(this.state.chooseProductsBill);
       preProduct.push(item);
     });
     this.setState({
@@ -192,109 +317,124 @@ class Content_Order extends Component {
     });
   }
 
-  cancelItemBill(id) {
+  addNote(arr) {
+    this.setState({
+      chooseProductsBill : arr
+    });
+  }
+
+  cancelItemBill(idUnique, id) {
     let arrayPreProduct = [];
     this.state.products.forEach((item, index) => {
+      this.state.chooseProductsBill
       if (item.id == id) {
-        item.selectStatus = false;
-        if (item.itemPromotion) {
-          delete item.itemPromotion;
+        let checkRemove =  this.state.chooseProductsBill.filter(value => value.id == id);
+        if (checkRemove && checkRemove.length == 1) {
+          item.selectStatus = false;
+          let getStoreProducts = JSON.parse(localStorage.getItem('products'));
+          if (getStoreProducts && getStoreProducts.find(x => x.id == id)) {
+            localStorage.setItem('products', JSON.stringify(getStoreProducts.filter(x => x.id != id)));
+          }
         }
-        if (item.itemNote) {
-          delete item.itemNote;
-        }
-        item.quantum = 1;
-        item.priceAndQuantum = item.quantum * item.donGia;
       }
       arrayPreProduct.push(item);
     });
     this.setState({
+      chooseProductsBill: this.state.chooseProductsBill.filter(item => item.idUnique != idUnique),
       products: arrayPreProduct
     });
-    let getStoreProducts = JSON.parse(localStorage.getItem('products'));
-    if (getStoreProducts && getStoreProducts.find(x => x.id == id)) {
-      localStorage.setItem('products', JSON.stringify(getStoreProducts.filter(x => x.id != id)));
-    }
   }
 
   updateQuantum(idBill, operator, promotion) {
     let productsBillPre = [];
     let priceTotal = 0;
-    this.state.products.forEach((item, index) => {
-      if (item.id == idBill) {
+
+    let promotionState = promotion > 0 ? promotion : 0;
+    this.state.chooseProductsBill.forEach((item, index) => {
+      if (item.idUnique == idBill) {
         if (operator == 'minus') {
           item.quantum = item.quantum - 1;
         } else {
           item.quantum = item.quantum + 1;
         }
-        if (promotion && promotion > 0) {
-          // item.priceAndQuantum = (item.donGia - promotion) * item.quantum;
-          item.itemPromotion = promotion;
-        } else {
-          item.priceAndQuantum = item.quantum * item.donGia;
-          item.itemPromotion = 0;
-        }
+        // if (promotion && promotion > 0) {
+        //   // item.priceAndQuantum = (item.donGia - promotion) * item.quantum;
+        //   item.itemPromotion = promotion;
+        // } else {
+        //   item.priceAndQuantum = item.quantum * item.donGia;
+        //   item.itemPromotion = 0;
+        // }
       }
-      priceTotal = priceTotal + item.priceAndQuantum;
+      if (item.itemPromotion && item.itemPromotion > 0) {
+        priceTotal = priceTotal + (item.quantum * (item.donGia - item.itemPromotion));
+      } else {
+        priceTotal = priceTotal + (item.quantum * item.donGia);
+      }
       productsBillPre.push(item);
     });
     this.setState({
-      products : productsBillPre
+      chooseProductsBill : productsBillPre,
+      priceTotal: priceTotal
     });
-    let getStoreProducts = JSON.parse(localStorage.getItem('products'));
-    let arrayTmp = [];
-    if (getStoreProducts && getStoreProducts.find(x => x.id == idBill)) {
-      getStoreProducts.forEach((item, index) => {
-        if (item.id == idBill) {
-          if (operator === 'minus') {
-            item.quantum = item.quantum && item.quantum > 1 ? item.quantum - 1 : 1;
-          } else {
-            item.quantum = item.quantum ? item.quantum + 1 : 1;
-          }
-          if (promotion && promotion > 0) {
-            item.priceAndQuantum = (item.donGia - promotion) * item.quantum;
-            item.itemPromotion = promotion;
-          } else {
-            item.priceAndQuantum = item.quantum * item.donGia;
-            item.itemPromotion = 0;
-          }
-        }
-        arrayTmp.push(item);
-      });
-      localStorage.setItem('products', JSON.stringify(getStoreProducts));
-    }
+    // let getStoreProducts = JSON.parse(localStorage.getItem('products'));
+    // let arrayTmp = [];
+    // if (getStoreProducts && getStoreProducts.find(x => x.id == idBill)) {
+    //   getStoreProducts.forEach((item, index) => {
+    //     if (item.idUnique == idBill) {
+    //       if (operator === 'minus') {
+    //         item.quantum = item.quantum && item.quantum > 1 ? item.quantum - 1 : 1;
+    //       } else {
+    //         item.quantum = item.quantum ? item.quantum + 1 : 1;
+    //       }
+    //       if (promotion && promotion > 0) {
+    //         item.priceAndQuantum = (item.donGia - promotion) * item.quantum;
+    //         item.itemPromotion = promotion;
+    //       } else {
+    //         item.priceAndQuantum = item.quantum * item.donGia;
+    //         item.itemPromotion = 0;
+    //       }
+    //     }
+    //     arrayTmp.push(item);
+    //   });
+    //   localStorage.setItem('products', JSON.stringify(getStoreProducts));
+    // }
   }
 
   copyProductsBill() {
     this.clearFormOrder();
     let getStoreProducts = JSON.parse(localStorage.getItem('products'));
-    let getCopyProducts = JSON.parse(localStorage.getItem('copyProductsBill')).productsBill;
+    let getCopyProducts = JSON.parse(localStorage.getItem('copyProductsBill'));
     let getCopyProductsBill = getCopyProducts.productsBill;
     let productsCurrent = this.state.products;
+    // console.log(productsCurrent);
+    // console.log(getCopyProductsBill);
+    // console.log(JSON.parse(localStorage.getItem('copyProductsBill')));
     if (getCopyProductsBill) {
       getCopyProductsBill.forEach((item, index) => {
         productsCurrent.forEach((item2, index2) => {
           if (item.id == item2.id) {
-            productsCurrent[index2] = getCopyProductsBill[index];
+            // productsCurrent[index2] = getCopyProductsBill[index];
+            productsCurrent[index2].selectStatus = true;
+            // productsCurrent[index2]
           }
         });
       });
       this.setState({
         products: productsCurrent,
-        numberTable: getCopyProducts.numberTable
+        chooseProductsBill: getCopyProductsBill
       });
 
-      if (getStoreProducts) {
-        getCopyProductsBill.forEach((item, index) => {
-          getStoreProducts.forEach((item2, index2) => {
-            if (item.id == item2.id) {
-              getStoreProducts[index2] = getCopyProductsBill[index];
-            }
-          });
-        });
+      // if (getStoreProducts) {
+      //   getCopyProductsBill.forEach((item, index) => {
+      //     getStoreProducts.forEach((item2, index2) => {
+      //       if (item.id == item2.id) {
+      //         getStoreProducts[index2] = getCopyProductsBill[index];
+      //       }
+      //     });
+      //   });
 
-        localStorage.setItem('products', JSON.stringify(getStoreProducts));
-      }
+      //   localStorage.setItem('products', JSON.stringify(getStoreProducts));
+      // }
 
     }
   }
@@ -304,73 +444,6 @@ class Content_Order extends Component {
       filedCurrent: e.target.name,
       showNumberic: true
     });
-  }
-
-  changeNumbericInput(number) {
-    if (this.state.filedCurrent == 'numberTable') {
-      if (number != 'clear') {
-        let numberTableStore = this.state.numberTable != '' ? Number(this.state.numberTable) : 0;
-        if (numberTableStore && numberTableStore < 100) {
-          let numbers = (this.state.numberTable * 10) + number;
-          if (numbers < 100 && numbers > 9) {
-            this.setState({
-              numberTable: numbers.toString()
-            });
-          } else {
-            this.setState({
-              numberTable: '0' + number.toString()
-            });
-          }
-        } else {
-          this.setState({
-            numberTable: '0' + number.toString()
-          });
-        }
-      } else {
-        this.setState({
-          numberTable: ''
-        });
-      }
-    } else if (this.state.filedCurrent == 'discountInput') {
-      if (number != 'clear') {
-        if (this.state.discountInput && this.state.discountInput < 100) {
-          let numbers = (this.state.discountInput * 10) + number;
-          if (numbers < 100) {
-            this.setState({
-              discountInput: numbers
-            });
-          } else {
-            this.setState({
-              discountInput: '0' + number
-            });
-          }
-        } else {
-          this.setState({
-            discountInput: '0' + number
-          });
-        }
-      } else {
-        this.setState({
-          discountInput: 'clear'
-        });
-      }
-    } else if (this.state.filedCurrent == 'outLay') {
-      let numberCurrent = 0;
-      if (number != 'clear') {
-        if (this.state.outLay == 0) {
-          numberCurrent = number * 1000;
-        } else {
-          numberCurrent = (this.state.outLay * 10) + (number * 1000);
-        }
-        this.setState({
-          outLay: numberCurrent
-        });
-      } else {
-        this.setState({
-          outLay: 0
-        });
-      }
-    }
   }
 
   closeNumberic() {
@@ -394,13 +467,6 @@ class Content_Order extends Component {
   render() {
     return(
       <div className="content-order">
-        { this.state.showNumberic
-          ? <Numberic changeNumbericInput = {this.changeNumbericInput.bind(this)} 
-            discountInput = {this.state.numberTable} 
-            filedCurrent = {this.state.filedCurrent} 
-            closeNumberic = {this.closeNumberic}/>
-          : ""
-        }
         <div className="item-order-block">
           <ul className="item-order-box">
             {
@@ -415,7 +481,7 @@ class Content_Order extends Component {
         <Bill_Order
           updateQuantum = {this.updateQuantum}
           cancelItemBill = {this.cancelItemBill}
-          productsBill = {this.state.products}
+          productsBill = {this.state.chooseProductsBill}
           categories = {this.props.categories}
           clearFormOrder = {this.clearFormOrder}
           copyProductsBill = {this.copyProductsBill}
@@ -428,6 +494,10 @@ class Content_Order extends Component {
           changePayment = {this.changePayment}
           countCode = {this.state.countCode}
           countCodeAfterSubmit = {this.countCodeAfterSubmit}
+          addNote = {this.addNote}
+          priceTotal = {this.state.priceTotal}
+          promotionBill = {this.state.promotionBill}
+          changeTotal = {this.changeTotal}
         />
       </div>
     );
@@ -441,7 +511,8 @@ Content_Order.contextTypes = {
 const bindStateToProps = (state) => {
   return {
     products: state.products || [],
-    categories: state.categories
+    categories: state.categories,
+    promotion: state.promotion
   }
 }
 

@@ -15,6 +15,7 @@ import ComponentToPrint from './ComponentToPrint.jsx';
 import PrintProvider, { Print, NoPrint } from 'react-easy-print';
 import Spinner from 'react-spinkit';
 import ReactDOMServer from 'react-dom/server';
+import DragScrollProvider from 'drag-scroll-provider';
 
 class TableTemporaryBill extends Component {
   constructor(props, context) {
@@ -86,85 +87,88 @@ class TableTemporaryBill extends Component {
   }
 
   componentWillMount() {
-    const auth = JSON.parse(localStorage.getItem('auth'));
     this.setState({
-      auth: auth
+      auth: JSON.parse(localStorage.getItem('auth'))
     });
-    localStorage.removeItem('dataCacheOrder');
-    let dataCacheOrder = JSON.parse(localStorage.getItem('dataCacheOrder'));
-    if (dataCacheOrder) {
-      this.setState({
-        getOrders: dataCacheOrder.getOrders,
-        billTotal: dataCacheOrder.billTotal,
-        priceDiscount: dataCacheOrder.priceDiscount
-      });
-    }
+    // localStorage.removeItem('dataCacheOrder');
+    // let dataCacheOrder = JSON.parse(localStorage.getItem('dataCacheOrder'));
+    // if (dataCacheOrder) {
+    //   this.setState({
+    //     getOrders: dataCacheOrder.getOrders,
+    //     billTotal: dataCacheOrder.billTotal,
+    //     priceDiscount: dataCacheOrder.priceDiscount
+    //   });
+    // }
     this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
       if (res.data.content && res.data.content.length > 0) {
         let arrayTmpDetail = [];
-        res.data.content.forEach((item, index) => {
-          this.props.dispatch(Orders.actions.orderThucDons({orderId: item.id})).then((res) => {
-            if (res.data) {
-              res.data.forEach((item, index) => {
-                arrayTmpDetail.push(item);
-              });
-              if (arrayTmpDetail && arrayTmpDetail.length > 0) {
-                this.setState({
-                  orderDetail : arrayTmpDetail,
-                  isLoadingOrder: true
-                });
-                localStorage.setItem('dataOrderDetail', JSON.stringify(arrayTmpDetail));
-              } else {
-                this.setState({
-                  isLoadingOrder: true
-                });
-              }
-            }
-          });
+        this.setState({
+          isLoadingOrder: true,
+          billTotal: res.data.content.length
         });
-        this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: this.state.dateOreder}));
-        this.props.dispatch(TotalPrice.actions.totalPrice({ngayOrder: this.state.dateOreder}));
+        // res.data.content.forEach((item, index) => {
+        //   this.props.dispatch(Orders.actions.orderThucDons({orderId: item.id})).then((res) => {
+        //     if (res.data) {
+        //       res.data.forEach((item, index) => {
+        //         arrayTmpDetail.push(item);
+        //       });
+        //       if (arrayTmpDetail && arrayTmpDetail.length > 0) {
+                // this.setState({
+                //   orderDetail : arrayTmpDetail,
+                //   isLoadingOrder: true
+                // });
+        //         localStorage.setItem('dataOrderDetail', JSON.stringify(arrayTmpDetail));
+        //       } else {
+        //         this.setState({
+        //           isLoadingOrder: true
+        //         });
+        //       }
+        //     }
+        //   });
+        // });
+
 
         let data = res.data;
         let arrayTmp = [];
 
-        let dataOrderDetail = JSON.parse(localStorage.getItem('dataOrderDetail'));
-        if (data.content[0].id) {
-          this.props.dispatch(Orders.actions.orderThucDons({orderId: data.content[0].id})).then((res) => {
-            if (res.data) {
-              let newData = res.data[0];
-              this.setState({
-                orderDetail: dataOrderDetail.concat(newData),
-                isLoadingOrder: true
-              });
-              localStorage.setItem('dataOrderDetail', JSON.stringify(dataOrderDetail.concat(newData)));
+        // let dataOrderDetail = JSON.parse(localStorage.getItem('dataOrderDetail'));
+        // if (data.content[0].id) {
+        //   this.props.dispatch(Orders.actions.orderThucDons({orderId: data.content[0].id})).then((res) => {
+        //     if (res.data) {
+        //       let newData = res.data[0];
+        //       this.setState({
+        //         orderDetail: dataOrderDetail.concat(newData)
+        //       });
+        //       localStorage.setItem('dataOrderDetail', JSON.stringify(dataOrderDetail.concat(newData)));
 
-              data.content.forEach(function(item, index) {
+        //       data.content.forEach(function(item, index) {
 
-                let dataDetail = dataOrderDetail.filter(itemChild => itemChild.orderId == item.id);
-                if (dataDetail) {
-                  item.orderDetail = dataDetail;
-                }
-                arrayTmp.push(item);
-              });
-              this.setState({
-                billTotal: data.totalElements,
-                getOrders :  arrayTmp
-              });
-              let dataCache = {
-                getOrders: data.content,
-                billTotal: data.totalElements,
-              };
-              localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
-            }
-          });
-        }
-      } else {
+        //         let dataDetail = dataOrderDetail.filter(itemChild => itemChild.orderId == item.id);
+        //         if (dataDetail) {
+        //           item.orderDetail = dataDetail;
+        //         }
+        //         arrayTmp.push(item);
+        //       });
+        //       this.setState({
+        //         billTotal: data.totalElements,
+        //         getOrders :  arrayTmp
+        //       });
+        //       let dataCache = {
+        //         getOrders: data.content,
+        //         billTotal: data.totalElements,
+        //       };
+        //       localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
+        //     }
+        //   });
+        // }
+      } else if (res.data.content && res.data.content.length == 0) {
         this.setState({
           isLoadingOrder: true
         });
       }
     });
+    this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: this.state.dateOreder}));
+    this.props.dispatch(TotalPrice.actions.totalPrice({ngayOrder: this.state.dateOreder}));
     // this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
     //   if (res.data) {
     //     let data = res.data.content;
@@ -195,7 +199,81 @@ class TableTemporaryBill extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.orders !== this.props.orders) {
-    //   let data = this.props.orders;
+      // this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
+      //   if (res.data.content && res.data.content.length > 0) {
+      //     let arrayTmpDetail = [];
+      //     res.data.content.forEach((item, index) => {
+      //       this.props.dispatch(Orders.actions.orderThucDons({orderId: item.id})).then((res) => {
+      //         if (res.data) {
+      //           res.data.forEach((item, index) => {
+      //             arrayTmpDetail.push(item);
+      //           });
+      //           if (arrayTmpDetail && arrayTmpDetail.length > 0) {
+      //             this.setState({
+      //               orderDetail : arrayTmpDetail,
+      //               isLoadingOrder: true
+      //             });
+      //             localStorage.setItem('dataOrderDetail', JSON.stringify(arrayTmpDetail));
+      //           } else {
+      //             this.setState({
+      //               isLoadingOrder: true
+      //             });
+      //           }
+      //         }
+      //       });
+      //     });
+      //     this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: this.state.dateOreder}));
+      //     this.props.dispatch(TotalPrice.actions.totalPrice({ngayOrder: this.state.dateOreder}));
+
+      //     let data = res.data;
+      //     let arrayTmp = [];
+
+      //     let dataOrderDetail = JSON.parse(localStorage.getItem('dataOrderDetail'));
+      //     if (data.content[0].id) {
+      //       this.props.dispatch(Orders.actions.orderThucDons({orderId: data.content[0].id})).then((res) => {
+      //         if (res.data) {
+      //           let newData = res.data[0];
+      //           this.setState({
+      //             orderDetail: dataOrderDetail.concat(newData)
+      //           });
+      //           localStorage.setItem('dataOrderDetail', JSON.stringify(dataOrderDetail.concat(newData)));
+
+      //           data.content.forEach(function(item, index) {
+
+      //             let dataDetail = dataOrderDetail.filter(itemChild => itemChild.orderId == item.id);
+      //             if (dataDetail) {
+      //               item.orderDetail = dataDetail;
+      //             }
+      //             arrayTmp.push(item);
+      //           });
+      //           this.setState({
+      //             billTotal: data.totalElements,
+      //             getOrders :  arrayTmp
+      //           });
+      //           let dataCache = {
+      //             getOrders: data.content,
+      //             billTotal: data.totalElements,
+      //           };
+      //           localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
+      //         }
+      //       });
+      //     }
+      //   } else if (res.data.content && res.data.content.length == 0) {
+      //     this.setState({
+      //       isLoadingOrder: true
+      //     });
+      //   }
+      // });
+      // console.log('1');
+
+      let data = this.props.orders;
+      if (data.content) {
+        this.setState({
+          getOrders: data.content,
+          billTotal: data.content.length
+        });
+      }
+      
     //   let priceTotal = 0;
     //   let priceDiscount = 0;
     //   let arrayTmp = [];
@@ -214,20 +292,14 @@ class TableTemporaryBill extends Component {
     //     });
     //   }
 
-    //   data.content.forEach(function(item, index) {
-    //     priceTotal = priceTotal + item.tongGia;
-    //     let dataDetail = dataOrderDetail.filter(itemChild => itemChild.orderId == item.id);
-    //     if (dataDetail) {
-    //       item.orderDetail = dataDetail;
-    //     }
-    //     arrayTmp.push(item);
-    //   });
-    //   this.setState({
-    //     billTotal: data.totalElements,
-    //     getOrders :  arrayTmp,
-    //     priceTotal :  priceTotal,
-    //     priceDiscount: priceTotal - priceDiscount
-    //   });
+      // data.content.forEach(function(item, index) {
+      //   // let dataDetail = dataOrderDetail.filter(itemChild => itemChild.orderId == item.id);
+      //   // if (dataDetail) {
+      //   //   item.orderDetail = dataDetail;
+      //   // }
+      //   arrayTmp.push(item);
+      // });
+  
     //   let dataCache = {
     //     getOrders: data.content,
     //     billTotal: data.totalElements,
@@ -259,8 +331,8 @@ class TableTemporaryBill extends Component {
       + (currentdate.getMonth()+1)  + "/"
       + currentdate.getFullYear();
 
-    let hoursDiff = currentdate.getHours() - currentdate.getTimezoneOffset() / 60;
-    let minutesDiff = (currentdate.getHours() - currentdate.getTimezoneOffset()) % 60;
+    let hoursDiff = (currentdate.getHours() < 10 ? '0' : '') + currentdate.getHours();
+    let minutesDiff = (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
 
     return hoursDiff + ":" + minutesDiff;
   }
@@ -307,21 +379,20 @@ class TableTemporaryBill extends Component {
         let promotionBill = 0;
         let data = res.data;
         let status = '';
+
         data.forEach(function(item, index) {
           item.promotion = Math.round((item.khuyenMai / item.donGia) * 100);
         });
         if (dataOrder) {
-          promotionBill = (dataOrder.khuyenMai / dataOrder.tongGia) * 100;
           status = dataOrder.textTrangThaiOrder ? dataOrder.textTrangThaiOrder : '';
         }
-
         this.setState({
           orderThucDons: data,
           statusPopup: true,
           idItemCurrent: id,
           modelCurrent: 'viewOrder',
           viewOrderPriceTotal: dataOrder.tongGia,
-          viewOrderPriceDiscount: dataOrder.khuyenMai ? dataOrder.khuyenMai : 0,
+          viewOrderPriceDiscount: dataOrder.tienKhuyenMai ? dataOrder.tienKhuyenMai : 0,
           viewOrderAfterDiscount: dataOrder.thanhTien ? dataOrder.thanhTien : 0,
           viewDateOrder: dataOrder ? dataOrder.ngayOrder : '',
           priceCustomerCash: dataOrder.tienKhachDua ? dataOrder.tienKhachDua : 0,
@@ -329,7 +400,7 @@ class TableTemporaryBill extends Component {
           priceCustomerTransfer: dataOrder.tienChuyenKhoan ? dataOrder.tienChuyenKhoan : 0,
           priceCustomerBack: dataOrder.tienThoiLai ? dataOrder.tienThoiLai : 0,
           numberTable: dataOrder && dataOrder.soBan != 0 ? dataOrder.soBan : 'Mang về',
-          promotionBill: promotionBill,
+          promotionBill: dataOrder.khuyenMai ? dataOrder.khuyenMai : 0,
           statusOrder: status,
           codeOrder: dataOrder.ma ? dataOrder.ma : ''
         });
@@ -439,53 +510,60 @@ class TableTemporaryBill extends Component {
               <div className="header-tb price-h">Tổng tiền</div>
               <div className="header-tb button-h">Thao tác</div>
             </div>
-            <div className="table-scroll">
-              <table className="tmp-bill">
-                <thead>
-                  <tr>
-                    <th width="15%">Mã số</th>
-                    <th width="13%">Thòi gian</th>
-                    <th width="9%">Bàn số</th>
-                    <th width="10%">In lúc</th>
-                    <th width="13%">Tổng tiền</th>
-                    <th width="40%">Thao tác</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  { !this.state.isLoadingOrder &&
-                    <tr className ="display-background">
-                      <td><Spinner name="circle" /></td>
-                    </tr>
-                  }
-                  { this.state.isLoadingOrder &&
-                    this.state.getOrders.map((item, i) => {
-                      return (
-                        <tr key = {i}>
-                          <td width="15%">{item.ma}</td>
-                          <td width="13%">{this.getDate(item.ngayOrder)}</td>
-                          <td width="9%">5</td>
-                          <td width="10%">-</td>
-                          <td width="13%">
-                            <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
-                          </td>
-                          <td width="40%">
-                            <button className="btn cancel-table btn-active" onClick={this.cancelItemBill.bind(this, item.id)}>
-                              Hủy HĐ
-                            </button>
-                            <button className="btn view-order-btn btn-active" onClick={this.viewOrder.bind(this, item.id)}>
-                              Xem order
-                            </button>
-                            <button className="btn print-btn btn-active" onClick={this.printOrder.bind(this, item)}>
-                              In
-                            </button>
-                          </td>
+            <DragScrollProvider>
+              {({ onMouseDown, ref }) => (
+                <div
+                  className="table-scroll scrollable"
+                  ref={ref}
+                  onMouseDown={onMouseDown}>
+                    <table className="tmp-bill">
+                    <thead>
+                      <tr>
+                        <th width="15%">Mã số</th>
+                        <th width="13%">Thòi gian</th>
+                        <th width="9%">Bàn số</th>
+                        <th width="10%">In lúc</th>
+                        <th width="13%">Tổng tiền</th>
+                        <th width="40%">Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      { !this.state.isLoadingOrder &&
+                        <tr className ="display-background">
+                          <td><Spinner name="circle" /></td>
                         </tr>
-                      )
-                    })
-                  }
-                </tbody>
-              </table>
-            </div>
+                      }
+                      { this.state.isLoadingOrder &&
+                        this.state.getOrders.map((item, i) => {
+                          return (
+                            <tr key = {i}>
+                              <td width="15%">{item.ma}</td>
+                              <td width="13%">{this.getDate(item.ngayOrder)}</td>
+                              <td width="9%">{item.soBan}</td>
+                              <td width="10%">-</td>
+                              <td width="13%">
+                                <NumberFormat value={item.thanhTien} displayType={'text'} thousandSeparator={true} /> đ
+                              </td>
+                              <td width="40%">
+                                <button className="btn cancel-table btn-active" onClick={this.cancelItemBill.bind(this, item.id)}>
+                                  Hủy HĐ
+                                </button>
+                                <button className="btn view-order-btn btn-active" onClick={this.viewOrder.bind(this, item.id)}>
+                                  Xem order
+                                </button>
+                                <button className="btn print-btn btn-active" onClick={this.printOrder.bind(this, item)}>
+                                  In
+                                </button>
+                              </td>
+                            </tr>
+                          )
+                        })
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </DragScrollProvider>
           </div>
         </div>
         <Modal

@@ -3,16 +3,15 @@ import customFetch from 'api/axios';
 import CONFIG from 'base/constants/config';
 
 // Example
-let auth = JSON.parse(localStorage.getItem('auth'));
-let token = '';
-if (auth && auth.token) {
-  token = auth.token;
-}
-
 const rest = reduxApi({
   categories: {
     url: '/loaithucdons',
     options:(url, params, getState) => {
+      var auth = JSON.parse(localStorage.getItem('auth'));
+      var token = '';
+      if (auth && auth.token) {
+        token = auth.token;
+      }
       return {
         method: "GET",
         headers: {
@@ -35,6 +34,11 @@ const rest = reduxApi({
   products: {
     url: '/thucdons?loaiThucDonId=:idProduct',
     options:(url, params, getState) => {
+      var auth = JSON.parse(localStorage.getItem('auth'));
+      var token = '';
+      if (auth && auth.token) {
+        token = auth.token;
+      }
       return {
         method: "GET",
         headers: {
@@ -57,6 +61,11 @@ const rest = reduxApi({
   productsMost: {
     url: '/thucdons/banChay',
     options:(url, params, getState) => {
+      var auth = JSON.parse(localStorage.getItem('auth'));
+      var token = '';
+      if (auth && auth.token) {
+        token = auth.token;
+      }
       return {
         method: "GET",
         headers: {

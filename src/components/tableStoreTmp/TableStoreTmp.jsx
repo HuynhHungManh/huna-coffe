@@ -10,6 +10,9 @@ import Modal from 'react-modal';
 Modal.setAppElement('body');
 import NumberFormat from 'react-number-format';
 import Alert from 'react-s-alert';
+import ReactDOMServer from 'react-dom/server';
+import ComponentToPrint from '../tableTemporaryBill/ComponentToPrint.jsx';
+import DragScrollProvider from 'drag-scroll-provider';
 
 class TableStoreTmp extends Component {
   constructor(props, context) {
@@ -46,8 +49,9 @@ class TableStoreTmp extends Component {
       tableCurrentOrder: '',
       cashier: 'No Name',
       outLay: 0,
-      outLayBack : 0,
-      orderCode: ''
+      outLayBack: 0,
+      orderCode: '',
+      auth: ''
     }
   }
 
@@ -55,7 +59,8 @@ class TableStoreTmp extends Component {
     let auth = JSON.parse(localStorage.getItem('auth'));
     if (auth.hoVaTen) {
       this.setState({
-        cashier : auth.hoVaTen
+        cashier : auth.hoVaTen,
+        auth: auth
       });
     }
 
@@ -71,17 +76,27 @@ class TableStoreTmp extends Component {
       });
     }
     this.setState({
-      orderListData: orderListTmp ? orderListTmp : []
+      orderListData: orderListTmp ? orderListTmp.sort().reverse() : []
     });
   }
 
-  // cancelTable(index) {
-  //   this.setState({
-  //     statusPopup: true,
-  //     indexItemCurrent: index,
-  //     modelCurrent: 'cancelForm',
-  //   });
-  // }
+  numberDes(a,b) {
+   return b-a;
+  }
+
+  templatePrint(data, auth) {
+    let info = {
+      phone : '0935080123',
+      cashier: auth.hoVaTen,
+      codeOrder: data.ma,
+      dateOrder: data.dateOrder,
+      timePrint: this.getDate(data.ngayOrder),
+      passWifi: 'hunacoffee.com'
+    };
+    return (
+      <ComponentToPrint data = {data} auth = {auth} info = {info}/>
+    );
+  }
 
   cancelItemTable(index) {
     let listData = this.state.orderListData;
@@ -171,18 +186,31 @@ class TableStoreTmp extends Component {
         statusPopup: false
       });
       let date = new Date();
-      let timeCopy = date.getHours() + ":" + date.getMinutes();
+      let timeCopy = (date.getHours() < 10 ? '0' : '') + date.getHours() + ":" + 
+      (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
       let copyProductsBill = {
         productsBill: data.productsBill,
         priceTotal: data.priceTotal,
         discountPriceTotal: data.discountPriceTotal,
         discountAfter: data.discountAfter,
         dateCopy: timeCopy,
-        dateOrder: data.dateOrder
+        dateOrder: data.dateOrder,
+        outlay: data.tienKhachDua,
+        numberTable: data.soBan,
+        orderCode: data.ma,
+        promotionBill: data.khuyenMai,
+        outlayBack: data.tienThoiLai,
+        typePaymentTmp: data.typePaymentTmp,
+        paymentTmp: data.paymentTmp,
+        inputPayment: data.inputPayment,
+        customerPayment: data.customerPayment
       }
       this.alertNotification('Bạn đã order thành công!', 'success');
       localStorage.setItem('orderListTmp', JSON.stringify(orderListData));
       localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
+      const mainProcess = window.require("electron").remote.require('./print.js');
+      let html = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, this.state.auth));
+      mainProcess.print(html);
     }).catch((reason) => {
       this.alertNotification('Order không thành công!', 'error');
     });
@@ -193,10 +221,10 @@ class TableStoreTmp extends Component {
     let datetime = currentdate.getDate() + "/"
       + (currentdate.getMonth()+1)  + "/"
       + currentdate.getFullYear();
-    let hoursDiff = currentdate.getHours() - currentdate.getTimezoneOffset() / 60;
-    let minutesDiff = (currentdate.getHours() - currentdate.getTimezoneOffset()) % 60;
+    let hour = (currentdate.getHours() < 10 ? '0' : '') + currentdate.getHours();
+    let minutes = (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
 
-    return datetime + " " + hoursDiff + ":" + minutesDiff;
+    return datetime + " " + hour + ":" + minutes;
   }
 
   render() {
@@ -210,73 +238,82 @@ class TableStoreTmp extends Component {
           <div className="header-tb price-h">Tổng tiền</div>
           <div className="header-tb button-h">Thao tác</div>
         </div>
-        <div className="table-scroll">
-          <table className="tmp-bill">
-            <thead>
-              <tr>
-                <th width="8%">Mã số</th>
-                <th width="20%">Thòi gian</th>
-                <th width="9%">Bàn số</th>
-                <th width="10%">In lúc</th>
-                <th width="13%">Tổng tiền</th>
-                <th width="40%">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                this.state.orderListData.map((item, i) => {
-                  return (
-                    <tr key ={i} className={
-                      classnames('row-table', {
-                        'cancel-text' : item.statusCancel,
-                        'success-text' : item.statusSuccess
-                      })}
-                    >
-                      <td width="8%">{item.orderCode ? item.orderCode : ''}</td>
-                      <td width="20%">{this.getDate(item.ngayOrder)}</td>
-                      <td width="9%">
-                        { item.soBan == ""
-                          ? ' Mang về'
-                          : item.soBan
-                        }
-                      </td>
-                      <td width="10%">-</td>
-                      <td width="13%">
-                        <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
-                      </td>
-                      <td width="40%">
-                        <button className={
-                          classnames('btn cancel-table btn-active', {
-                            'hidden' : item.statusCancel || item.statusSuccess
+        <DragScrollProvider>
+          {({ onMouseDown, ref }) => (
+            <div
+              className="scrollable table-scroll"
+              ref={ref}
+              onMouseDown={onMouseDown}
+              >
+              <table className="tmp-bill">
+                <thead>
+                  <tr>
+                    <th width="8%">Mã số</th>
+                    <th width="15%">Thòi gian</th>
+                    <th width="9%">Bàn số</th>
+                    <th width="10%">In lúc</th>
+                    <th width="13%">Tổng tiền</th>
+                    <th width="40%">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    this.state.orderListData.map((item, i) => {
+                      return (
+                        <tr key ={i} className={
+                          classnames('row-table', {
+                            'cancel-text' : item.statusCancel,
+                            'success-text' : item.statusSuccess
                           })}
-                          onClick = {this.cancelItemTable.bind(this, i)}
                         >
-                          Hủy Bàn
-                        </button>
-                        <button className={
-                          classnames('btn view-order-btn btn-active', {
-                            'hidden' : item.statusCancel || item.statusSuccess
-                          })}
-                          onClick={this.viewOrder.bind(this, i)}
-                        >
-                          Xem order
-                        </button>
-                        <button className={
-                          classnames('btn print-btn btn-active', {
-                            'hidden' : item.statusCancel || item.statusSuccess
-                          })}
-                          onClick ={this.orderStore.bind(this, i)}
-                        >
-                          Thanh Toán
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                })
-              }
-            </tbody>
-          </table>
-        </div>
+                          <td width="8%">{item.orderCode ? item.orderCode : ''}</td>
+                          <td width="15%">{this.getDate(item.ngayOrder)}</td>
+                          <td width="9%">
+                            { item.soBan == ""
+                              ? ' Mang về'
+                              : item.soBan
+                            }
+                          </td>
+                          <td width="10%">-</td>
+                          <td width="13%">
+                            <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
+                          </td>
+                          <td width="40%">
+                            <button className={
+                              classnames('btn cancel-table btn-active', {
+                                'hidden' : item.statusCancel || item.statusSuccess
+                              })}
+                              onClick = {this.cancelItemTable.bind(this, i)}
+                            >
+                              Hủy Bàn
+                            </button>
+                            <button className={
+                              classnames('btn view-order-btn btn-active', {
+                                'hidden' : item.statusCancel || item.statusSuccess
+                              })}
+                              onClick={this.viewOrder.bind(this, i)}
+                            >
+                              Xem order
+                            </button>
+                            <button className={
+                              classnames('btn print-btn btn-active', {
+                                'hidden' : item.statusCancel || item.statusSuccess
+                              })}
+                              onClick ={this.orderStore.bind(this, i)}
+                            >
+                              Thanh Toán
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  }
+                </tbody>
+              </table>
+            </div>
+          )}
+        </DragScrollProvider>
+          
         <Modal
           isOpen={this.state.statusPopup}
           contentLabel="Modal"
