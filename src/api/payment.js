@@ -93,7 +93,6 @@ const rest = reduxApi({
       if (auth && auth.token) {
         token = auth.token;
       }
-      console.log(params);
       return {
         method: "PUT",
         headers: {

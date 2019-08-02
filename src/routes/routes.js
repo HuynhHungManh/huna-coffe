@@ -16,7 +16,12 @@ const routes = [
       {
         component: Coffee,
         exact: true,
-        path: '/coffee'
+        path: '/order'
+      },
+      {
+        component: Coffee,
+        exact: true,
+        path: '/order/:code',
       },
       {
         component: TemporaryBill,

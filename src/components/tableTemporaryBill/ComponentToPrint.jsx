@@ -18,10 +18,11 @@ class ComponentToPrint extends Component {
     if (data.tienChuyenKhoan) {
       customerPrice = customerPrice + data.tienChuyenKhoan;
     };
+    
     return (
       <div className="template-print" style={{textAlign: 'center'}}>
         <p style={{textAlign: 'center'}} className="title-template">HUNA COFFEE</p>
-        <p style={{textAlign: 'center'}} className="address-template">ĐC: 28 Hoàng Văn Thụ, Hải Châu,<br /> Đà Nẵng</p>
+        <p style={{textAlign: 'center'}} className="address-template">ĐC: 26 Hoàng Văn Thụ, Hải Châu,<br /> Đà Nẵng</p>
         <p style={{textAlign: 'center'}} className="phone-template">ĐT: {info.phone}</p>
         <p style={{textAlign: 'center'}} className="title-bill"><strong>HÓA ĐƠN BÁN HÀNG</strong></p>
         <p style={{textAlign: 'center'}} className="number-table">Bàn {data && data.soBan ? data.soBan : 0}</p>
@@ -52,12 +53,12 @@ class ComponentToPrint extends Component {
                   <tr className="content-table" key={i}>
                     <td style={{width: '40%', textAlign: 'left'}}>{item.ten}</td>
                     <td style={{width: '20%'}}>
-                      <NumberFormat value={Number((item.donGia).toFixed(3))} displayType={'text'} thousandSeparator={true}/>
+                      <NumberFormat value={Number(item.donGia)} displayType={'text'} thousandSeparator={true}/>
                     </td>
                     <td style={{width: '10%'}}>{item.soLuong}</td>
                     <td style={{width: '10%'}}>{parseInt((item.khuyenMai / item.donGia) * 100)}</td>
                     <td style={{width: '20%'}}>
-                      <NumberFormat value={Number((item.thanhTien).toFixed(3))} displayType={'text'} thousandSeparator={true}/>
+                      <NumberFormat value={Number(item.thanhTien)} displayType={'text'} thousandSeparator={true}/>
                     </td>
                   </tr>
                 )
@@ -67,12 +68,20 @@ class ComponentToPrint extends Component {
         </table>
         <table style={{borderCollapse: 'collapse', width: '100%', height: '44px'}} border={1} className="content-price">
           <tbody>
+            <tr style={{height: '20px'}}>
+              <td style={{width: '50%', textAlign: 'left', height: '20px'}}><span>Chiết khấu:</span></td>
+              <td style={{width: '50%', textAlign: 'right', height: '20px'}}>
+                <span>
+                  <NumberFormat value={Number(data.khuyenMai)} displayType={'text'} thousandSeparator={true}/>%
+                </span>
+              </td>
+            </tr>
             <tr style={{height: '24px'}}>
               <td style={{width: '50%', textAlign: 'left', height: '24px'}}><span style={{fontSize: '16px', fontFamily: '"Roboto-Bold"'}}><strong>TỔNG:</strong></span></td>
               <td style={{width: '50%', textAlign: 'right', height: '24px'}}>
                 <span style={{fontSize: '16px', fontFamily: '"Roboto-Bold"'}}>
                   <strong>
-                    <NumberFormat value={Number((totalPrice).toFixed(3))} displayType={'text'} thousandSeparator={true}/>
+                    <NumberFormat value={Number(totalPrice)} displayType={'text'} thousandSeparator={true}/>
                   </strong>
                 </span>
               </td>
@@ -81,7 +90,7 @@ class ComponentToPrint extends Component {
               <td style={{width: '50%', textAlign: 'left', height: '20px'}}><span>Khách đưa:</span></td>
               <td style={{width: '50%', textAlign: 'right', height: '20px'}}>
                 <span>
-                  <NumberFormat value={Number((customerPrice).toFixed(3))} displayType={'text'} thousandSeparator={true}/>
+                  <NumberFormat value={Number(customerPrice)} displayType={'text'} thousandSeparator={true}/>
                 </span>
               </td>
             </tr>
@@ -89,7 +98,7 @@ class ComponentToPrint extends Component {
               <td style={{width: '50%', textAlign: 'left'}}><span>Trả lại:</span></td>
               <td style={{width: '50%', textAlign: 'right'}}>
                 <span>
-                  <NumberFormat value={Number((data && data.tienThoiLai ? data.tienThoiLai : 0).toFixed(3))} displayType={'text'} thousandSeparator={true}/>
+                  <NumberFormat value={Number(data && data.tienThoiLai ? data.tienThoiLai : 0)} displayType={'text'} thousandSeparator={true}/>
                 </span>
               </td>
             </tr>
@@ -100,17 +109,6 @@ class ComponentToPrint extends Component {
       </div>
     );
   }
-
-
-  // render() {
-  //   console.log(this.props.orderData);
-  //   console.log(this.props.data);
-  //   return (
-  //     <div className="template-print">
-
-  //     </div>
-  //   );
-  // }
 }
 
 export default ComponentToPrint;

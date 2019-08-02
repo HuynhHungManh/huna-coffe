@@ -6,5 +6,6 @@ import NoteOrder from 'api/noteOrder.js';
 import TotalPromotion from 'api/totalPromotion.js';
 import TotalPrice from 'api/totalPrice.js';
 import Shift from 'api/shift.js';
+import GetCode from 'api/getCode.js';
 
-export {Categories, Auth, Orders, Promotion, NoteOrder, TotalPromotion, TotalPrice, Shift};
+export {Categories, Auth, Orders, Promotion, NoteOrder, TotalPromotion, TotalPrice, Shift, GetCode};

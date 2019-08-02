@@ -178,42 +178,50 @@ class TableStoreTmp extends Component {
 
   orderStore(index) {
     let data = this.state.orderListData[index];
-    this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
-      let orderListData = this.state.orderListData;
-      orderListData.splice(index, 1);
-      this.setState({
-        orderListData: orderListData,
-        statusPopup: false
-      });
-      let date = new Date();
-      let timeCopy = (date.getHours() < 10 ? '0' : '') + date.getHours() + ":" + 
-      (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
-      let copyProductsBill = {
-        productsBill: data.productsBill,
-        priceTotal: data.priceTotal,
-        discountPriceTotal: data.discountPriceTotal,
-        discountAfter: data.discountAfter,
-        dateCopy: timeCopy,
-        dateOrder: data.dateOrder,
-        outlay: data.tienKhachDua,
-        numberTable: data.soBan,
-        orderCode: data.ma,
-        promotionBill: data.khuyenMai,
-        outlayBack: data.tienThoiLai,
-        typePaymentTmp: data.typePaymentTmp,
-        paymentTmp: data.paymentTmp,
-        inputPayment: data.inputPayment,
-        customerPayment: data.customerPayment
-      }
-      this.alertNotification('Bạn đã order thành công!', 'success');
-      localStorage.setItem('orderListTmp', JSON.stringify(orderListData));
-      localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
-      const mainProcess = window.require("electron").remote.require('./print.js');
-      let html = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, this.state.auth));
-      mainProcess.print(html);
-    }).catch((reason) => {
-      this.alertNotification('Order không thành công!', 'error');
-    });
+    localStorage.setItem('orderProcessTmp', JSON.stringify(data));
+    let orderListData = this.state.orderListData;
+    orderListData.splice(index, 1);
+    localStorage.setItem('orderListTmp', JSON.stringify(orderListData));
+    this.setState({
+      orderListData: orderListData,
+      statusPopup: false
+    }, () => this.gotoPage('/order'));
+    // this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
+    //   let orderListData = this.state.orderListData;
+    //   orderListData.splice(index, 1);
+    //   this.setState({
+    //     orderListData: orderListData,
+    //     statusPopup: false
+    //   });
+    //   let date = new Date();
+    //   let timeCopy = (date.getHours() < 10 ? '0' : '') + date.getHours() + ":" + 
+    //   (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+    //   let copyProductsBill = {
+    //     productsBill: data.productsBill,
+    //     priceTotal: data.priceTotal,
+    //     discountPriceTotal: data.discountPriceTotal,
+    //     discountAfter: data.discountAfter,
+    //     dateCopy: timeCopy,
+    //     dateOrder: data.dateOrder,
+    //     outlay: data.tienKhachDua,
+    //     numberTable: data.soBan,
+    //     orderCode: data.ma,
+    //     promotionBill: data.khuyenMai,
+    //     outlayBack: data.tienThoiLai,
+    //     typePaymentTmp: data.typePaymentTmp,
+    //     paymentTmp: data.paymentTmp,
+    //     inputPayment: data.inputPayment,
+    //     customerPayment: data.customerPayment
+    //   }
+    //   this.alertNotification('Bạn đã order thành công!', 'success');
+    //   localStorage.setItem('orderListTmp', JSON.stringify(orderListData));
+    //   localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
+    //   // const mainProcess = window.require("electron").remote.require('./print.js');
+    //   let html = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, this.state.auth));
+    //   // mainProcess.print(html, 'none', 'none');
+    // }).catch((reason) => {
+    //   this.alertNotification('Order không thành công!', 'error');
+    // });
   }
 
   getDate(jsonDate) {
@@ -225,6 +233,10 @@ class TableStoreTmp extends Component {
     let minutes = (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
 
     return datetime + " " + hour + ":" + minutes;
+  }
+
+  gotoPage(page) {
+    this.context.router.history.push(page);
   }
 
   render() {
@@ -298,8 +310,8 @@ class TableStoreTmp extends Component {
                             <button className={
                               classnames('btn print-btn btn-active', {
                                 'hidden' : item.statusCancel || item.statusSuccess
-                              })}
-                              onClick ={this.orderStore.bind(this, i)}
+                              })}                           
+                              onClick={this.orderStore.bind(this, i)}
                             >
                               Thanh Toán
                             </button>
@@ -380,39 +392,46 @@ class TableStoreTmp extends Component {
                   TỔNG TIỀN
                 </div>
               </div>
-              <div className="table-view-order-content">
-                <table className="table-view-order">
-                  <thead>
-                    <tr>
-                      <th width="35%">MẶT HÀNG</th>
-                      <th width="20%">ĐƠN GIÁ</th>
-                      <th width="10%">SL</th>
-                      <th width="10%">CK</th>
-                      <th width="25%">TỔNG TIỀN</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {
-                      this.state.orderThucDons.map((item, i) => {
-                        return (
-                          <tr key={i}>
-                            <td>{item.ten}</td>
-                            <td>
-                              <NumberFormat value={item.donGia} displayType={'text'} thousandSeparator={true} /> đ
-                            </td>
-                            <td>{item.soLuong}</td>
-                            <td>{item.chietKhau} %</td>
-                            <td>
-                              <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
-                            </td>
-                          </tr>
-                        )
-                      })
-                    }
+              <DragScrollProvider>
+                {({ onMouseDown, ref }) => (
+                  <div
+                    className="table-view-order-content scrollable"
+                    ref={ref}
+                    onMouseDown={onMouseDown}>
+                    <table className="table-view-order">
+                      <thead>
+                        <tr>
+                          <th width="35%">MẶT HÀNG</th>
+                          <th width="20%">ĐƠN GIÁ</th>
+                          <th width="10%">SL</th>
+                          <th width="10%">CK</th>
+                          <th width="25%">TỔNG TIỀN</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          this.state.orderThucDons.map((item, i) => {
+                            return (
+                              <tr key={i}>
+                                <td>{item.ten}</td>
+                                <td>
+                                  <NumberFormat value={item.donGia} displayType={'text'} thousandSeparator={true} /> đ
+                                </td>
+                                <td>{item.soLuong}</td>
+                                <td>{item.chietKhau} %</td>
+                                <td>
+                                  <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
+                                </td>
+                              </tr>
+                            )
+                          })
+                        }
 
-                  </tbody>
-                </table>
-              </div>
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </DragScrollProvider>
               <div className="footer-view-order">
                 <div className="view-order-price-tmp">
                   <div className="title-left">

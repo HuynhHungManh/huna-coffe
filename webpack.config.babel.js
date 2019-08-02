@@ -10,7 +10,7 @@ const ENV = process.env.NODE_ENV || 'development';
 const sourcePath = path.join(__dirname, './');
 const {
   PORT,
-  API_URL
+  API_URL_HUNA
 } = config;
 
 var _module = {
@@ -103,7 +103,7 @@ module.exports = function (env) {
 
   const envars = {
     NODE_ENV: JSON.stringify(ENV),
-    API_URL: JSON.stringify(API_URL),
+    API_URL_HUNA: JSON.stringify(API_URL_HUNA),
     PORT: JSON.stringify(PORT)
   };
 

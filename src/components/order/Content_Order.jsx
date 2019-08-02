@@ -6,6 +6,7 @@ import Bill_Order from './Bill_Order.jsx';
 import {PropTypes} from 'prop-types';
 import {Numberic} from 'components/keyboarded';
 import {Orders, Promotion, NoteOrder, TotalPromotion} from 'api';
+import DragScrollProvider from 'drag-scroll-provider';
 
 class Content_Order extends Component {
   constructor(props, context) {
@@ -21,6 +22,7 @@ class Content_Order extends Component {
     this.countCodeAfterSubmit = this.countCodeAfterSubmit.bind(this);
     this.addNote = this.addNote.bind(this);
     this.changeTotal = this.changeTotal.bind(this);
+    this.processOrderTmp = this.processOrderTmp.bind(this);
     this.state = {
       products: [],
       statusClear: false,
@@ -52,20 +54,9 @@ class Content_Order extends Component {
           getOrders :  data.content,
           billTotal: data.totalElements
         });
-        // let priceTotal = 0;
-        // let priceDiscount = 0;
-        // data.content.forEach(function(item, index) {
-        //   priceTotal = priceTotal + item.thanhTien;
-        //   priceDiscount = priceDiscount + item.tongGia;
-        // });
-        // this.setState({
-        //   priceTotal :  priceTotal,
-        //   priceDiscount: priceTotal - priceDiscount
-        // });
         let dataCache = {
           getOrders: data.content
         };
-        // localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
       }
     });
     this.props.dispatch(Promotion.actions.promotion());
@@ -151,9 +142,13 @@ class Content_Order extends Component {
       }
     }
     if (prevState.products !== this.state.products) {
-      this.setState({
-        products: this.state.products
-      });
+      // this.setState({
+      //   products: this.state.products
+      // });
+      let getOrderProcessTmp = JSON.parse(localStorage.getItem('orderProcessTmp'));
+      if (getOrderProcessTmp) {
+        this.processOrderTmp(getOrderProcessTmp);
+      }
     }
     if (prevProps.promotion !== this.props.promotion) {
       let promotionBill = this.props.promotion.find(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_HOA_DON' 
@@ -248,7 +243,7 @@ class Content_Order extends Component {
         arrayTmp.push(item);
       });
     }
-    
+
     return arrayTmp.length != 0 ? arrayTmp : products;
   }
 
@@ -256,6 +251,17 @@ class Content_Order extends Component {
     this.setState({
       priceTotal: price
     });
+  }
+
+  getMax(array) {
+    let value = 0;
+    array.forEach((item, index) => {
+      if (item.idUnique > value) {
+        value = item.idUnique;
+      }
+    });
+
+    return value;
   }
 
   chooseProduct(idProduct) {
@@ -268,53 +274,63 @@ class Content_Order extends Component {
         let checkProductNonNote = chooseProductsBillState.find(
           value => (value.id == idProduct && (!value.itemNote || value.itemNote.length == 0)));
         if (checkProductNonNote) {
-          console.log('update quatum');
           // update quatum
           let priceTotal = 0;
           let arrTmp = [];
+
           chooseProductsBillState.forEach((itemState, index) => {
             if (itemState.idUnique == checkProductNonNote.idUnique) {
               itemState.quantum = itemState.quantum + 1;
               itemState.priceAndQuantum = itemState.quantum * itemState.donGia;
             }
-            priceTotal = priceTotal + (itemState.quantum * itemState.donGia);
+
+            if (itemState.itemPromotion && itemState.itemPromotion > 0) {
+
+              priceTotal = priceTotal + ((itemState.donGia - itemState.itemPromotion) * itemState.quantum);
+            } else {
+              priceTotal = priceTotal + (itemState.quantum * itemState.donGia);
+            }
             arrTmp.push(itemState);
           });
 
-          // priceDiscount = this.promotionCheck(arrTmp).reduce((total, item) => total + item.donGia, 0) + newItem.donGia;
-          // console.log(priceTotal);
           this.setState({
             chooseProductsBill : this.promotionCheck(arrTmp),
             priceTotal: priceTotal
           });
         } else {
-          console.log('add new');
           let newItem = {...item ? item : ''};
-          newItem.idUnique = chooseProductsBillState.length;
+          newItem.idUnique = this.getMax(chooseProductsBillState) + 1;
           let priceTotal = 0;
           if (this.state.chooseProductsBill.length == 0) {
             priceTotal = newItem.donGia;
           } else {
-            priceTotal = this.state.chooseProductsBill.reduce((total, item) => total + (item.donGia * item.quantum), 0) + newItem.donGia;
+            chooseProductsBillState.forEach((item, index) => {
+              if (item.itemPromotion && item.itemPromotion > 0) {
+                priceTotal = priceTotal + (item.donGia * item.quantum) - item.itemPromotion;
+              } else {
+                priceTotal = priceTotal + (item.donGia * item.quantum);
+              }
+            });
+            priceTotal = priceTotal + newItem.donGia;
           }
-          // chooseProductsBillState.forEach((itemState, index) => {
-
-          // });
-          // priceTotal: 0,
-          // intoMoney: 0
           this.setState(prevState => ({
             chooseProductsBill: this.promotionCheck([...prevState.chooseProductsBill, newItem]),
             priceTotal: priceTotal
           }));
         }
         item.selectStatus = true;
+        this.state.products[index].selectStatus = true;
+        // this.setState({
+        //   products : preProduct
+        // });
+        // console.log(item);
       }
-      // console.log(this.state.chooseProductsBill);
-      preProduct.push(item);
+      // preProduct.push(item);
     });
-    this.setState({
-      products : preProduct
-    });
+
+    // this.setState({
+    //   products : preProduct
+    // });
   }
 
   addNote(arr) {
@@ -323,25 +339,48 @@ class Content_Order extends Component {
     });
   }
 
-  cancelItemBill(idUnique, id) {
+  cancelItemBill(data) {
     let arrayPreProduct = [];
-    this.state.products.forEach((item, index) => {
-      this.state.chooseProductsBill
-      if (item.id == id) {
-        let checkRemove =  this.state.chooseProductsBill.filter(value => value.id == id);
-        if (checkRemove && checkRemove.length == 1) {
-          item.selectStatus = false;
-          let getStoreProducts = JSON.parse(localStorage.getItem('products'));
-          if (getStoreProducts && getStoreProducts.find(x => x.id == id)) {
-            localStorage.setItem('products', JSON.stringify(getStoreProducts.filter(x => x.id != id)));
+    let priceTotal = 0;
+    const p3 = new Promise((resolve, reject) => {
+      this.state.products.forEach((item, index) => {
+        if (item.id == data.id) {
+          let checkRemove =  this.state.chooseProductsBill.filter(value => value.id == data.id);
+          if (checkRemove && checkRemove.length == 1) {
+            item.selectStatus = false;
+            let getStoreProducts = JSON.parse(localStorage.getItem('products'));
+            if (getStoreProducts && getStoreProducts.find(x => x.id == data.id)) {
+              localStorage.setItem('products', JSON.stringify(getStoreProducts.filter(x => x.id != data.id)));
+            }
           }
         }
+        arrayPreProduct.push(item);
+      });
+      let chooseProductsBill = this.state.chooseProductsBill.filter(item => item.idUnique != data.idUnique);
+      chooseProductsBill.forEach((item, index) => {
+        if (item.itemPromotion && item.itemPromotion > 0) {
+          priceTotal = priceTotal + (item.donGia - item.itemPromotion) * item.quantum;
+        } else {
+          priceTotal = priceTotal + (item.donGia * item.quantum);
+        }
+      });
+      let obj = {
+        arrayPreProduct: arrayPreProduct,
+        chooseProductsBill: chooseProductsBill,
+        priceTotal : priceTotal
       }
-      arrayPreProduct.push(item);
+      resolve(obj);
     });
-    this.setState({
-      chooseProductsBill: this.state.chooseProductsBill.filter(item => item.idUnique != idUnique),
-      products: arrayPreProduct
+
+    Promise.all([p3]).then(values => {
+      let data = values[0];
+      if (data) {
+        this.setState({
+          chooseProductsBill: data.chooseProductsBill,
+          products: data.arrayPreProduct,
+          priceTotal: data.priceTotal
+        });
+      }
     });
   }
 
@@ -357,13 +396,6 @@ class Content_Order extends Component {
         } else {
           item.quantum = item.quantum + 1;
         }
-        // if (promotion && promotion > 0) {
-        //   // item.priceAndQuantum = (item.donGia - promotion) * item.quantum;
-        //   item.itemPromotion = promotion;
-        // } else {
-        //   item.priceAndQuantum = item.quantum * item.donGia;
-        //   item.itemPromotion = 0;
-        // }
       }
       if (item.itemPromotion && item.itemPromotion > 0) {
         priceTotal = priceTotal + (item.quantum * (item.donGia - item.itemPromotion));
@@ -376,66 +408,60 @@ class Content_Order extends Component {
       chooseProductsBill : productsBillPre,
       priceTotal: priceTotal
     });
-    // let getStoreProducts = JSON.parse(localStorage.getItem('products'));
-    // let arrayTmp = [];
-    // if (getStoreProducts && getStoreProducts.find(x => x.id == idBill)) {
-    //   getStoreProducts.forEach((item, index) => {
-    //     if (item.idUnique == idBill) {
-    //       if (operator === 'minus') {
-    //         item.quantum = item.quantum && item.quantum > 1 ? item.quantum - 1 : 1;
-    //       } else {
-    //         item.quantum = item.quantum ? item.quantum + 1 : 1;
-    //       }
-    //       if (promotion && promotion > 0) {
-    //         item.priceAndQuantum = (item.donGia - promotion) * item.quantum;
-    //         item.itemPromotion = promotion;
-    //       } else {
-    //         item.priceAndQuantum = item.quantum * item.donGia;
-    //         item.itemPromotion = 0;
-    //       }
-    //     }
-    //     arrayTmp.push(item);
-    //   });
-    //   localStorage.setItem('products', JSON.stringify(getStoreProducts));
-    // }
   }
 
   copyProductsBill() {
     this.clearFormOrder();
-    let getStoreProducts = JSON.parse(localStorage.getItem('products'));
     let getCopyProducts = JSON.parse(localStorage.getItem('copyProductsBill'));
     let getCopyProductsBill = getCopyProducts.productsBill;
     let productsCurrent = this.state.products;
-    // console.log(productsCurrent);
-    // console.log(getCopyProductsBill);
-    // console.log(JSON.parse(localStorage.getItem('copyProductsBill')));
     if (getCopyProductsBill) {
       getCopyProductsBill.forEach((item, index) => {
         productsCurrent.forEach((item2, index2) => {
           if (item.id == item2.id) {
-            // productsCurrent[index2] = getCopyProductsBill[index];
             productsCurrent[index2].selectStatus = true;
-            // productsCurrent[index2]
+
           }
         });
       });
       this.setState({
         products: productsCurrent,
-        chooseProductsBill: getCopyProductsBill
+        chooseProductsBill: getCopyProductsBill,
+        priceTotal: getCopyProducts.priceTotal ? getCopyProducts.priceTotal : 0
+      });
+    }
+  }
+
+  processOrderTmp(getOrderProcessTmp) {
+    this.clearFormOrder();
+    let priceTotal = getOrderProcessTmp.priceTotal;
+    let productsCurrent = this.state.products;
+    if (getOrderProcessTmp) {
+      let getCopyProductsBill = getOrderProcessTmp.productsBill ? getOrderProcessTmp.productsBill : [];
+      let arrayTmp = [];
+      getCopyProductsBill.forEach((item, index) => {
+        this.state.products.forEach((item2, index2) => {
+          if (item.id == item2.id) {
+            productsCurrent[index2].selectStatus = true;
+          }
+        });
       });
 
-      // if (getStoreProducts) {
-      //   getCopyProductsBill.forEach((item, index) => {
-      //     getStoreProducts.forEach((item2, index2) => {
-      //       if (item.id == item2.id) {
-      //         getStoreProducts[index2] = getCopyProductsBill[index];
-      //       }
-      //     });
-      //   });
-
-      //   localStorage.setItem('products', JSON.stringify(getStoreProducts));
+      // if (item.itemPromotion && item.itemPromotion > 0) {
+      //   priceTotal = priceTotal + (item.donGia * item.quantum) - item.itemPromotion;
+      // } else {
+      //   priceTotal = priceTotal + (item.donGia * item.quantum);
       // }
+      // console.log(priceTotal);
+      // console.log(productsCurrent);
 
+      this.setState({
+        products: productsCurrent,
+        chooseProductsBill: getCopyProductsBill,
+        priceTotal: priceTotal
+      }, () => {
+        localStorage.removeItem('orderProcessTmp');
+      });
     }
   }
 
@@ -467,17 +493,24 @@ class Content_Order extends Component {
   render() {
     return(
       <div className="content-order">
-        <div className="item-order-block">
-          <ul className="item-order-box">
-            {
-              this.state.products.map((item, i) => {
-                return (
-                  <Item_Order key = {i} data = {item} chooseProduct = {this.chooseProduct}/>
-                )
-              })
-            }
-          </ul>
-        </div>
+        <DragScrollProvider>
+          {({ onMouseDown, ref }) => (
+          <div
+            className="item-order-block scrollable"
+            ref={ref}
+            onMouseDown={onMouseDown}>
+              <ul className="item-order-box">
+                { this.state.products &&
+                  this.state.products.map((item, i) => {
+                    return (
+                      <Item_Order key = {i} data = {item} chooseProduct = {this.chooseProduct}/>
+                    )
+                  })
+                }
+              </ul>
+            </div>
+          )}
+        </DragScrollProvider>
         <Bill_Order
           updateQuantum = {this.updateQuantum}
           cancelItemBill = {this.cancelItemBill}
@@ -498,6 +531,7 @@ class Content_Order extends Component {
           priceTotal = {this.state.priceTotal}
           promotionBill = {this.state.promotionBill}
           changeTotal = {this.changeTotal}
+          processOrderTmp = {this.processOrderTmp}
         />
       </div>
     );

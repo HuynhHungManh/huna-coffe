@@ -60,7 +60,7 @@ class Login extends React.Component {
       .then((res) => {
         if (res.data && res.data.token) {
           localStorage.setItem('auth', JSON.stringify(res.data));
-          this.gotoPage('/coffee');
+          this.gotoPage('/order');
         } else {
           this.setState({
             hasError: true,

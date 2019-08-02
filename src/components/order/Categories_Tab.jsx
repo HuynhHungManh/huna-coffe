@@ -3,6 +3,7 @@ import classnames from 'classnames';
 import {connect} from 'react-redux';
 import {Categories} from 'api';
 import {CSVLink, CSVDownload} from 'react-csv';
+import DragScrollProvider from 'drag-scroll-provider';
 
 class Categories_Tab extends Component {
   constructor(props, context) {
@@ -92,22 +93,29 @@ class Categories_Tab extends Component {
 
   render() {
     return(
-      <div className="categories-block">
-        <ul className="categories-tab">
-          { this.state.categories &&
-            this.state.categories.map((item, i) => {
-              return (
-                <li key={i} className={
-                  classnames('tab', {
-                    'tab-active' : item.selectStatus,
-                  })} onClick={this.chooseCategory.bind(this, item.id)}>
-                  <a>{item.ten}</a>
-                </li>
-              )
-            })
-          }
-        </ul>
-      </div>
+      <DragScrollProvider>
+        {({ onMouseDown, ref }) => (
+        <div
+          className="categories-block scrollable"
+          ref={ref}
+          onMouseDown={onMouseDown}>
+            <ul className="categories-tab">
+              { this.state.categories &&
+                this.state.categories.map((item, i) => {
+                  return (
+                    <li key={i} className={
+                      classnames('tab', {
+                        'tab-active' : item.selectStatus,
+                      })} onClick={this.chooseCategory.bind(this, item.id)}>
+                      <a>{item.ten}</a>
+                    </li>
+                  )
+                })
+              }
+            </ul>
+        </div>
+        )}
+      </DragScrollProvider>
     );
   }
 }

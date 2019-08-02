@@ -200,11 +200,9 @@ main {
   padding: 0 12px;
 }
 .categories-block {
-  width: 11%;
+  width: 11% !important;
   display: inline-block;
   box-shadow: 2px 0px 27px -7px rgba(82, 82, 82, 0.47);
-}
-.categories-block {
   height: 603px;
   overflow-y: scroll;
   overflow: hidden;
@@ -213,6 +211,9 @@ main {
   height: 86px;
   border-bottom: 1px solid #cacaca;
   color: #000;
+  line-height: 25px;
+  padding: 0 8px;
+  text-align: center;
 }
 .categories-block .categories-tab .tab.tab-active {
   background-color: #ffae21;
@@ -244,7 +245,7 @@ main {
   height: auto;
 }
 .item-order-block {
-  width: 58%;
+  width: 58% !important;
   display: inline-block;
   height: 600px;
   overflow-y: auto;
@@ -295,6 +296,14 @@ main {
   border: 1px solid #ccc;
   padding: 7px;
   text-align: center;
+}
+.table-box-block .check-takeaway {
+  width: 15px !important;
+  height: 15px !important;
+  float: left !important;
+  position: relative;
+  top: 4px;
+  left: 7px;
 }
 .bill-order-block {
   width: 42%;
@@ -674,7 +683,8 @@ main {
 }
 
 .table-view-order tbody tr td {
-  line-height: 40px;
+  line-height: 20px;
+  padding: 10px 4px;
   font-size: 12px;
   font-family: Arial, Helvetica, sans-serif;
 }

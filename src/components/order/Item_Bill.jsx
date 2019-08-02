@@ -162,7 +162,7 @@ class Item_Bill extends Component {
               <NumberFormat value={this.calculatePrice(this.props.data.donGia, this.props.data.quantum, this.props.data.itemPromotion)} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
             </p>
           </div>
-          <div className="btn-cancel-row" onClick={this.props.cancelItemBill.bind(this, this.props.data.idUnique, this.props.data.id)}>
+          <div className="btn-cancel-row" onClick={this.props.cancelItemBill.bind(this, this.props.data)}>
             <span className="icon-cancel-box icon-bin"></span>
           </div>
         </div>

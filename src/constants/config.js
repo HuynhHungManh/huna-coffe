@@ -1,12 +1,5 @@
 module.exports = {
-  API_URL: 'http://kiosk.thanhkhe.danang.gov.vn/wp-json/wp/v2',
-  API_URL_HUNA: 'http://adm.hunacoffee.com:8080/hunacoffee-api/api',
-  PHP_URL: 'http://kiosk.thanhkhe.danang.gov.vn/wp-search-detail',
+  // API_URL_HUNA: 'http://adm.hunacoffee.com:8080/hunacoffee-api/api',
+  API_URL_HUNA: 'http://66.42.53.97:8080/hunacoffee-api/api',
   PORT: 9000
-  // API_URL: 'http://kiosktk.greenglobal.vn:9977/wp-json/wp/v2',
-  // PHP_URL: 'http://kiosktk.greenglobal.vn:9977/wp-search-detail',
-  // PORT: 9977
-  // API_URL: 'http://localhost:9977/wp-json/wp/v2',
-  // PHP_URL: 'http://localhost:9977/wp-search-detail',
-  // PORT: 9977
 }

@@ -106,61 +106,8 @@ class TableTemporaryBill extends Component {
           isLoadingOrder: true,
           billTotal: res.data.content.length
         });
-        // res.data.content.forEach((item, index) => {
-        //   this.props.dispatch(Orders.actions.orderThucDons({orderId: item.id})).then((res) => {
-        //     if (res.data) {
-        //       res.data.forEach((item, index) => {
-        //         arrayTmpDetail.push(item);
-        //       });
-        //       if (arrayTmpDetail && arrayTmpDetail.length > 0) {
-                // this.setState({
-                //   orderDetail : arrayTmpDetail,
-                //   isLoadingOrder: true
-                // });
-        //         localStorage.setItem('dataOrderDetail', JSON.stringify(arrayTmpDetail));
-        //       } else {
-        //         this.setState({
-        //           isLoadingOrder: true
-        //         });
-        //       }
-        //     }
-        //   });
-        // });
-
-
         let data = res.data;
         let arrayTmp = [];
-
-        // let dataOrderDetail = JSON.parse(localStorage.getItem('dataOrderDetail'));
-        // if (data.content[0].id) {
-        //   this.props.dispatch(Orders.actions.orderThucDons({orderId: data.content[0].id})).then((res) => {
-        //     if (res.data) {
-        //       let newData = res.data[0];
-        //       this.setState({
-        //         orderDetail: dataOrderDetail.concat(newData)
-        //       });
-        //       localStorage.setItem('dataOrderDetail', JSON.stringify(dataOrderDetail.concat(newData)));
-
-        //       data.content.forEach(function(item, index) {
-
-        //         let dataDetail = dataOrderDetail.filter(itemChild => itemChild.orderId == item.id);
-        //         if (dataDetail) {
-        //           item.orderDetail = dataDetail;
-        //         }
-        //         arrayTmp.push(item);
-        //       });
-        //       this.setState({
-        //         billTotal: data.totalElements,
-        //         getOrders :  arrayTmp
-        //       });
-        //       let dataCache = {
-        //         getOrders: data.content,
-        //         billTotal: data.totalElements,
-        //       };
-        //       localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
-        //     }
-        //   });
-        // }
       } else if (res.data.content && res.data.content.length == 0) {
         this.setState({
           isLoadingOrder: true
@@ -169,25 +116,6 @@ class TableTemporaryBill extends Component {
     });
     this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: this.state.dateOreder}));
     this.props.dispatch(TotalPrice.actions.totalPrice({ngayOrder: this.state.dateOreder}));
-    // this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
-    //   if (res.data) {
-    //     let data = res.data.content;
-    //     this.setState({
-    //       getOrders :  data,
-    //       billTotal: res.data.totalElements
-    //     });
-    //     let priceTotal = 0;
-    //     let priceDiscount = 0;
-    //     data.forEach(function(item, index) {
-    //       priceTotal = priceTotal + item.thanhTien;
-    //       priceDiscount = priceDiscount + item.tongGia;
-    //     });
-    //     this.setState({
-    //       priceTotal :  priceTotal,
-    //       priceDiscount: priceTotal - priceDiscount
-    //     });
-    //   }
-    // });
     this.props.dispatch(Orders.actions.ressonCancelOrders({ngayOrder: this.state.dateOreder})).then((res) => {
       if (res.data) {
         this.setState({
@@ -199,73 +127,6 @@ class TableTemporaryBill extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.orders !== this.props.orders) {
-      // this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
-      //   if (res.data.content && res.data.content.length > 0) {
-      //     let arrayTmpDetail = [];
-      //     res.data.content.forEach((item, index) => {
-      //       this.props.dispatch(Orders.actions.orderThucDons({orderId: item.id})).then((res) => {
-      //         if (res.data) {
-      //           res.data.forEach((item, index) => {
-      //             arrayTmpDetail.push(item);
-      //           });
-      //           if (arrayTmpDetail && arrayTmpDetail.length > 0) {
-      //             this.setState({
-      //               orderDetail : arrayTmpDetail,
-      //               isLoadingOrder: true
-      //             });
-      //             localStorage.setItem('dataOrderDetail', JSON.stringify(arrayTmpDetail));
-      //           } else {
-      //             this.setState({
-      //               isLoadingOrder: true
-      //             });
-      //           }
-      //         }
-      //       });
-      //     });
-      //     this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: this.state.dateOreder}));
-      //     this.props.dispatch(TotalPrice.actions.totalPrice({ngayOrder: this.state.dateOreder}));
-
-      //     let data = res.data;
-      //     let arrayTmp = [];
-
-      //     let dataOrderDetail = JSON.parse(localStorage.getItem('dataOrderDetail'));
-      //     if (data.content[0].id) {
-      //       this.props.dispatch(Orders.actions.orderThucDons({orderId: data.content[0].id})).then((res) => {
-      //         if (res.data) {
-      //           let newData = res.data[0];
-      //           this.setState({
-      //             orderDetail: dataOrderDetail.concat(newData)
-      //           });
-      //           localStorage.setItem('dataOrderDetail', JSON.stringify(dataOrderDetail.concat(newData)));
-
-      //           data.content.forEach(function(item, index) {
-
-      //             let dataDetail = dataOrderDetail.filter(itemChild => itemChild.orderId == item.id);
-      //             if (dataDetail) {
-      //               item.orderDetail = dataDetail;
-      //             }
-      //             arrayTmp.push(item);
-      //           });
-      //           this.setState({
-      //             billTotal: data.totalElements,
-      //             getOrders :  arrayTmp
-      //           });
-      //           let dataCache = {
-      //             getOrders: data.content,
-      //             billTotal: data.totalElements,
-      //           };
-      //           localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
-      //         }
-      //       });
-      //     }
-      //   } else if (res.data.content && res.data.content.length == 0) {
-      //     this.setState({
-      //       isLoadingOrder: true
-      //     });
-      //   }
-      // });
-      // console.log('1');
-
       let data = this.props.orders;
       if (data.content) {
         this.setState({
@@ -273,45 +134,6 @@ class TableTemporaryBill extends Component {
           billTotal: data.content.length
         });
       }
-      
-    //   let priceTotal = 0;
-    //   let priceDiscount = 0;
-    //   let arrayTmp = [];
-    //   let arrayTmpDetail = [];
-
-    //   let dataOrderDetail = JSON.parse(localStorage.getItem('dataOrderDetail'));
-    //   if (data.content && data.content[0] && data.content[0].id) {
-    //     this.props.dispatch(Orders.actions.orderThucDons({orderId: data.content[0].id})).then((res) => {
-    //       if (res.data) {
-    //         let newData = res.data[0];
-    //         this.setState({
-    //           orderDetail: dataOrderDetail.concat(newData)
-    //         });
-    //         localStorage.setItem('dataOrderDetail', JSON.stringify(dataOrderDetail.concat(newData)));
-    //       }
-    //     });
-    //   }
-
-      // data.content.forEach(function(item, index) {
-      //   // let dataDetail = dataOrderDetail.filter(itemChild => itemChild.orderId == item.id);
-      //   // if (dataDetail) {
-      //   //   item.orderDetail = dataDetail;
-      //   // }
-      //   arrayTmp.push(item);
-      // });
-  
-    //   let dataCache = {
-    //     getOrders: data.content,
-    //     billTotal: data.totalElements,
-    //     priceTotal: priceTotal,
-    //   };
-    //   localStorage.setItem('dataCacheOrder', JSON.stringify(dataCache));
-    // }
-    // if (prevProps.numberTable !== this.props.numberTable) {
-    //   numberTable
-    //   this.setState({
-    //     numberTable: this.props.numberTable
-    //   });
     }
     if (prevProps.totalPromotion !== this.props.totalPromotion) {
       this.setState({
@@ -331,10 +153,9 @@ class TableTemporaryBill extends Component {
       + (currentdate.getMonth()+1)  + "/"
       + currentdate.getFullYear();
 
-    let hoursDiff = (currentdate.getHours() < 10 ? '0' : '') + currentdate.getHours();
-    let minutesDiff = (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
-
-    return hoursDiff + ":" + minutesDiff;
+    let hours = (currentdate.getHours() < 10 ? '0' : '') + currentdate.getHours();
+    let minutes = (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
+    return hours + ":" + minutes;
   }
 
   cancelItemBill(id) {
@@ -415,39 +236,46 @@ class TableTemporaryBill extends Component {
       tienChuyenKhoan: item.tienChuyenKhoan ? item.tienChuyenKhoan : 0,
       tienThoiLai: item.tienThoiLai ? item.tienThoiLai : 0,
       thanhTien: item.thanhTien ? item.thanhTien : 0,
-      orderThucDons: []
+      orderThucDons: [],
+      khuyenMai: item.khuyenMai ? item.khuyenMai : 0,
+      soBan: item.soBan
     };
     let date = new Date(item.ngayOrder);
     let dateOrder = ('0' + date.getDate()).slice(-2) + '/'
                  + ('0' + (date.getMonth()+1)).slice(-2) + '/'
                  + date.getFullYear();
     let timePrint = date.getHours() + ':' + date.getMinutes();
-    if (item && item.orderDetail) {
-      item.orderDetail.forEach((item, index) => {
-        let orderThucDons = {
-          ten: item.tenThucDon,
-          soLuong: item.soLuong,
-          khuyenMai: item.khuyenMai,
-          donGia: item.donGia,
-          thanhTien: item.thanhTien
-        }
-        data.orderThucDons.push(orderThucDons);
-      });
-    }
-
-    const mainProcess = window.require("electron").remote.require('./print.js');
-    let info = {
-      phone : '0935080123',
-      cashier: this.state.auth.hoVaTen,
-      codeOrder: item.ma,
-      dateOrder: dateOrder,
-      timePrint: timePrint,
-      passWifi: 'hunacoffee.com'
-    };
-    let html = ReactDOMServer.renderToStaticMarkup(
-      <ComponentToPrint data = {data} auth = {this.state.auth} info = {info}/>
-    );
-    mainProcess.print(html);
+    this.props.dispatch(Orders.actions.orderThucDons({orderId: item.id})).then((res) => {
+      if (res.data) {
+        let dataDetail = res.data;
+        let orderThucDonsArray = [];
+        dataDetail.forEach((item, index) => {
+          let orderThucDons = {
+            ten: item.tenThucDon,
+            soLuong: item.soLuong,
+            khuyenMai: item.khuyenMai,
+            donGia: item.donGia,
+            thanhTien: item.thanhTien
+          }
+          orderThucDonsArray.push(orderThucDons);
+        });
+        data.orderThucDons = orderThucDonsArray;
+        const mainProcess = window.require("electron").remote.require('./print.js');
+        let info = {
+          phone : '0935080123',
+          cashier: this.state.auth.hoVaTen,
+          codeOrder: item.ma,
+          dateOrder: dateOrder,
+          timePrint: timePrint,
+          passWifi: 'hunacoffee.com'
+        };
+        let html = ReactDOMServer.renderToStaticMarkup(
+          <ComponentToPrint data = {data} auth = {this.state.auth} info = {info}/>
+        );
+        console.log(html);
+        mainProcess.print(html, 'none', 'none');
+      }
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -504,7 +332,7 @@ class TableTemporaryBill extends Component {
           <div className="table-box">
             <div className="header-table-order">
               <div className="header-tb code-h">Mã số</div>
-              <div className="header-tb time-h">Thòi gian</div>
+              <div className="header-tb time-h">Thời gian</div>
               <div className="header-tb table-h">Bàn số</div>
               <div className="header-tb print-h">In lúc</div>
               <div className="header-tb price-h">Tổng tiền</div>
@@ -609,39 +437,44 @@ class TableTemporaryBill extends Component {
                 <p className="close-model" onClick={this.closeCancelForm.bind(this)}><span className="icon-cross"></span>
                 </p>
               </div>
-              <div className="table-view-order-content">
-                <table className="table-view-order display-header">
-                  <thead>
-                    <tr>
-                      <th>MẶT HÀNG</th>
-                      <th>ĐƠN GIÁ</th>
-                      <th>SL</th>
-                      <th>CK</th>
-                      <th>TỔNG TIỀN</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {
-                      this.state.orderThucDons.map((item, i) => {
-                        return (
-                          <tr key={i}>
-                            <td>{item.tenThucDon}</td>
-                            <td>
-                              <NumberFormat value={item.donGia} displayType={'text'} thousandSeparator={true} /> đ
-                            </td>
-                            <td>{item.soLuong}</td>
-                            <td>{item.khuyenMai}%</td>
-                            <td>
-                              <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
-                            </td>
-                          </tr>
-                        )
-                      })
-                    }
-
-                  </tbody>
-                </table>
-              </div>
+              <DragScrollProvider>
+                {({ onMouseDown, ref }) => (
+                  <div className="table-view-order-content scrollable"
+                    ref={ref}
+                    onMouseDown={onMouseDown}>
+                    <table className="table-view-order display-header">
+                      <thead>
+                        <tr>
+                          <th>MẶT HÀNG</th>
+                          <th>ĐƠN GIÁ</th>
+                          <th>SL</th>
+                          <th>CK</th>
+                          <th>TỔNG TIỀN</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          this.state.orderThucDons.map((item, i) => {
+                            return (
+                              <tr key={i}>
+                                <td>{item.tenThucDon}</td>
+                                <td>
+                                  <NumberFormat value={item.donGia} displayType={'text'} thousandSeparator={true} /> đ
+                                </td>
+                                <td>{item.soLuong}</td>
+                                <td>{item.khuyenMai}%</td>
+                                <td>
+                                  <NumberFormat value={item.tongGia} displayType={'text'} thousandSeparator={true} /> đ
+                                </td>
+                              </tr>
+                            )
+                          })
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </DragScrollProvider>
               <div className="footer-view-order">
                 <div className="view-order-price-tmp">
                   <div className="title-left">
