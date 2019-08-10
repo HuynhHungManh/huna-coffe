@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import {connect} from 'react-redux';
 import Item_Bill from './Item_Bill.jsx';
-import {Orders, Promotion, GetCode} from 'api';
+import {Orders, Promotion, GetCode, TotalPromotion} from 'api';
 import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
 import Modal from 'react-modal';
@@ -23,7 +23,6 @@ import {PropTypes} from 'prop-types';
 class Bill_Order extends Component {
   constructor(props, context) {
     super(props, context);
-
     this.handleChangePromotion = this.handleChangePromotion.bind(this);
     this.openModel = this.openModel.bind(this);
     this.chooseItemProduct = this.chooseItemProduct.bind(this);
@@ -97,34 +96,27 @@ class Bill_Order extends Component {
       () => this.tick(),
       1000
     );
-    this.props.dispatch(Promotion.actions.peolePromotion()).then((res) => {
-      if (res.data && res.data.content) {
-        let data = [];
-        res.data.content.forEach((item, index) => {
-          data.push({
-            id: item.id,
-            label : item.hoVaTen
-          });
-        });
-        this.setState({
-          peopleSelect: data
-        });
-      }
-    });
-    this.getCode();
-    // let getOrderProcessTmp = JSON.parse(localStorage.getItem('orderProcessTmp'));
-    // if (getOrderProcessTmp) {
-    //   console.log(getOrderProcessTmp);
-    //   this.setState({
-    //     productsBill: getOrderProcessTmp.orderThucDons ? getOrderProcessTmp.orderThucDons : []
-    //   });
-    // }
-   
-    // this.getCode(this.props.countCode);
-
     let getOrderProcessTmp = JSON.parse(localStorage.getItem('orderProcessTmp'));
+    this.getCode();
+  
     if (getOrderProcessTmp) {
       this.processOrderTmp(getOrderProcessTmp);
+    } else {
+      this.props.dispatch(Promotion.actions.peolePromotion()).then((res) => {
+        if (res.data && res.data.content) {
+          let data = [];
+          res.data.content.forEach((item, index) => {
+            data.push({
+              id: item.id,
+              label : item.hoVaTen
+            });
+          });
+
+          this.setState({
+            peopleSelect: data
+          });
+        }
+      })
     }
   }
 
@@ -150,19 +142,21 @@ class Bill_Order extends Component {
         numberTable: getOrderProcessTmp.soBan ? getOrderProcessTmp.soBan : ' ',
         outlay: card + cash + transfer,
         isCheckedTakeAWay: getOrderProcessTmp.isCheckedTakeAWay ? getOrderProcessTmp.isCheckedTakeAWay : false,
-        outlayBack: getOrderProcessTmp.tienThoiLai ? getOrderProcessTmp.tienThoiLai : 0 
+        outlayBack: getOrderProcessTmp.tienThoiLai ? getOrderProcessTmp.tienThoiLai : 0,
+        peopleSelect: getOrderProcessTmp.peopleSelect ? getOrderProcessTmp.peopleSelect : []
       });
     }
   }
 
   templatePrint(data, auth, type) {
+    let infoApp = JSON.parse(localStorage.getItem('infoApp'));
     let info = {
-      phone : '0935080123',
+      phone : (infoApp && infoApp.soDienThoai) ? infoApp.soDienThoai : '',
       cashier: auth.hoVaTen,
       codeOrder: data.ma,
       dateOrder: this.state.dateOrder,
       timePrint: this.getDate(data.ngayOrder),
-      passWifi: 'hunacoffee.com'
+      passWifi: (infoApp && infoApp.passWifi) ? infoApp.passWifi : ''
     };
 
     if (type == 'bill') {
@@ -193,63 +187,44 @@ class Bill_Order extends Component {
         promotionBill: this.props.promotionBill
       });
     }
+
     if (prevState.promotionBill !== this.state.promotionBill) {
-      let pricePromotion = 0;
-      let priceAfterPromotion = (this.state.promotionBill == 0)
-          ? (this.props.priceTotal - pricePromotion) 
-          : (this.props.priceTotal - ((this.state.promotionBill * this.props.priceTotal) / 100))
-      this.setState({
-        priceAfterPromotion: Math.ceil(priceAfterPromotion/1000)*1000,
-        outlayBack: this.state.outlay -  Math.ceil(priceAfterPromotion/1000)*1000,
-        inputPayment: Math.ceil(priceAfterPromotion/1000)*1000
-      })
+
     }
-    if (prevProps.priceTotal !== this.props.priceTotal) {
+
+    if (prevProps.productsBill !== this.props.productsBill) {
       let pricePromotion = 0;
-      if (this.state.promotionBill == 0) {
+      let priceTotal = 0;
+      const promise = new Promise((resolve, reject) => {
         this.props.productsBill.forEach((item, index) => {
           if (item.itemPromotion && item.itemPromotion != 0) {
             pricePromotion = pricePromotion + item.itemPromotion;
+            priceTotal = priceTotal + (item.quantum * (item.donGia - item.itemPromotion));
+          } else {
+            priceTotal = priceTotal + (item.quantum * item.donGia);
           }
         });
-      } 
-      let priceAfterPromotion = (this.state.promotionBill == 0)
-          ? (this.props.priceTotal - pricePromotion) 
-          : (this.props.priceTotal - ((this.state.promotionBill * this.props.priceTotal) / 100));
+        let priceAfterPromotion = (this.state.promotionBill == 0)
+          ? priceTotal
+          : (priceTotal - ((this.state.promotionBill * priceTotal) / 100));
 
-      this.setState({
-        priceTotal: (this.props.priceTotal - pricePromotion),
-        priceAfterPromotion: Math.ceil(priceAfterPromotion/1000)*1000,
-        outlayBack: this.state.outlay - Math.ceil(priceAfterPromotion/1000)*1000,
-        inputPayment: Math.ceil(priceAfterPromotion/1000)*1000
+        let obj = {
+          priceTotal: priceTotal,
+          priceAfterPromotion: priceAfterPromotion,
+          productsBill: this.props.productsBill
+        }
+        resolve(obj);
       });
-    }
 
-    // if (prevState.priceTotal !== this.state.priceTotal) {
-    //   let pricePromotion = 0;
-    //   if (this.state.promotionBill == 0) {
-    //     this.props.productsBill.forEach((item, index) => {
-    //       if (item.itemPromotion && item.itemPromotion != 0) {
-    //         pricePromotion = pricePromotion + item.itemPromotion;
-    //       }
-    //     });
-    //   } 
-    //   let priceAfterPromotion = (this.state.promotionBill == 0)
-    //       ? (this.state.priceTotal - pricePromotion) 
-    //       : (this.state.priceTotal - ((this.state.promotionBill * this.state.priceTotal) / 100))
-    //   this.setState({
-    //     priceTotal: this.state.priceTotal - pricePromotion,
-    //     priceAfterPromotion: priceAfterPromotion,
-    //     outlayBack: this.state.outlay - priceAfterPromotion,
-    //     inputPayment: priceAfterPromotion
-    //   });
-    // }
-
-    if (prevProps.productsBill !== this.props.productsBill) {
-      console.log(this.props.productsBill);
-      this.setState({
-        productsBill: this.props.productsBill
-
+      Promise.all([promise]).then(values => {
+        let data = values[0];
+        this.setState({
+          productsBill: data.productsBill,
+          priceTotal: data.priceTotal,
+          priceAfterPromotion: Math.ceil(data.priceAfterPromotion/1000)*1000,
+          outlayBack: this.state.outlay - Math.ceil(data.priceAfterPromotion/1000)*1000,
+          inputPayment: Math.ceil(data.priceAfterPromotion/1000)*1000
+        });
       });
     }
 
@@ -302,7 +277,9 @@ class Bill_Order extends Component {
       outlayBack: ' ',
       peopleSelect: peopleSelect,
       isCheckedTakeAWay: false,
-      statusCopyPreBill: false
+      statusCopyPreBill: false,
+      promotionBill: this.props.promotionBill,
+      codeOrder: this.props.getCode.maHoaDon
     });
     localStorage.removeItem('productsBill');
     localStorage.removeItem('products');
@@ -314,30 +291,39 @@ class Bill_Order extends Component {
     let dateFormat = JSON.parse(JSON.stringify(date));
     let auth = JSON.parse(localStorage.getItem('auth'));
     let orderProducts = [];
+    const outlay = Number(this.state.outlay);
     this.state.productsBill.forEach((item, index) => {
+      let priceAfterPromotionItem = item.donGia * item.quantum;
+      if (item.itemPromotion && item.itemPromotion > 0) {
+        priceAfterPromotionItem = (item.donGia - item.itemPromotion) * item.quantum;
+      }
       let dataProducts = {
         'donGia': item.donGia,
         'ghiChuMonOrderThucDon': item.itemNote && item.itemNote != 'undefined' ? item.itemNote : [],
         'khuyenMai': item.discount ? item.discount : 0,
         'ngayOrder': dateFormat,
-        'soLuong': Number(item.quantum),
-        'thanhTien': item.priceAndQuantum,
+        'soLuong': item.quantum,
+        'thanhTien': priceAfterPromotionItem,
         'thucDonId': item.id,
-        'tongGia': this.state.discountInput && this.state.discountInput.length > 0 ? ((item.priceAndQuantum * this.state.discountInput) / 100) : item.priceAndQuantum,
+        'tongGia': (item.donGia * item.quantum),
         'ten': item.ten,
         'chietKhau' : item.discount ? item.discount : 0,
         'isPrinter': item.viTriIn ? item.viTriIn : 'BAR'
       }
       orderProducts.push(dataProducts);
     });
-    let payBack = Number(this.state.outlay) - Number(this.state.priceAfterPromotion);
+    let payBack = outlay - Number(this.state.priceAfterPromotion);
     let payCash = 0;
     let payCard = 0;
     let payTransfer = 0;
     if (this.state.typePaymentTmp && this.state.typePaymentTmp.length > 0) {
       this.state.typePaymentTmp.forEach((item, index) => {
         if (item.type == 'cash') {
-          payCash = item.price;
+          if (outlay > this.state.priceAfterPromotion) {
+            payCash = outlay;
+          } else {
+            payCash = item.price;
+          }
         } else if (item.type == 'card') {
           payCard = item.price;
         } else if (item.type == 'transfer') {
@@ -345,7 +331,7 @@ class Bill_Order extends Component {
         } 
       });
     } else {
-      payCash = Number(this.state.outlay);
+      payCash = outlay;
     }
     let peopleSelect = this.state.peopleSelect.find(item => item.value == true);
     const data = {
@@ -367,6 +353,7 @@ class Bill_Order extends Component {
     this.setState({
       orderDetail: [data]
     });
+
     if (typeSubmit == "Order") {
       if (this.state.statusCopyPreBill == true) {
         this.alertNotification('Hóa đơn này đã thanh toán, vui lòng chọn nhập lại!', 'warning');
@@ -391,7 +378,7 @@ class Bill_Order extends Component {
           discountAfter: this.state.priceAfterPromotion,
           dateCopy: timeCopy,
           dateOrder: this.state.dateOrder,
-          outlay: this.state.outlay,
+          outlay: outlay,
           numberTable: this.state.numberTable,
           orderCode: data.ma,
           promotionBill: this.state.promotionBill,
@@ -400,23 +387,29 @@ class Bill_Order extends Component {
           paymentTmp: this.state.paymentTmp,
           inputPayment: this.state.inputPayment,
           customerPayment: this.state.customerPayment,
-          peopleSelect: peopleSelect ? peopleSelect.id : 0
+          peopleSelect: this.state.peopleSelect ? this.state.peopleSelect : []
         }
           localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
-          const mainProcess = window.require("electron").remote.require('./print.js');
-          let getStorePrinters = JSON.parse(localStorage.getItem('storePrinter'));
-          const htmlBill = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'bill'));
-          let htmlBar = 'none';
-          if (data.orderThucDons && data.orderThucDons.find(item => item.isPrinter == 'BAR')) {
-            htmlBar = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'bar'));
-          } 
-          let htmlCooker = 'none';
-          if (data.orderThucDons && data.orderThucDons.find(item => item.isPrinter == 'BEP')) {
-            htmlCooker = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'cooker'));
+          try {
+            const mainProcess = window.require("electron").remote.require('./print.js');
+            let getStorePrinters = JSON.parse(localStorage.getItem('storePrinter'));
+            const htmlBill = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'bill'));
+            let htmlBar = 'none';
+            if (data.orderThucDons && data.orderThucDons.find(item => item.isPrinter == 'BAR')) {
+              htmlBar = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'bar'));
+            } 
+            let htmlCooker = 'none';
+            if (data.orderThucDons && data.orderThucDons.find(item => item.isPrinter == 'BEP')) {
+              htmlCooker = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'cooker'));
+            }
+            mainProcess.print(htmlBill, htmlBar, htmlCooker, getStorePrinters);
           }
-          mainProcess.print(htmlBill, htmlBar, htmlCooker, getStorePrinters);
+          catch(err) {
+            this.alertNotification('Kiểm tra máy in!', 'error');
+          }
           this.clearForm();
           this.getCode();
+          this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: dateFormat}));
         }).catch((reason) => {
           this.alertNotification('Order không thành công!', 'error');
         });
@@ -424,6 +417,8 @@ class Bill_Order extends Component {
     } else if (typeSubmit == 'Store') {
       if (this.state.statusCopyPreBill == true) {
         this.alertNotification('Hóa đơn này đã thanh toán, vui lòng chọn nhập lại!', 'warning');
+      } else if (this.state.productsBill && this.state.productsBill.length == 0) {
+        this.alertNotification('Vui lòng chọn món!', 'warning');
       } else {
         let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
         let orderNewListTmp = [];
@@ -434,7 +429,7 @@ class Bill_Order extends Component {
         data.dateOrder = this.state.dateOrder;
         data.orderCode = this.state.codeOrder;
         data.isCheckedTakeAWay = this.state.isCheckedTakeAWay;
-        data.peopleSelect= peopleSelect ? peopleSelect.id : 0;
+        data.peopleSelect= this.state.peopleSelect ? this.state.peopleSelect : [];
         if (orderListTmp) {
           orderNewListTmp = orderListTmp.concat(data);
         } else {
@@ -453,7 +448,6 @@ class Bill_Order extends Component {
   copyProductsBill() {
     this.props.copyProductsBill();
     let getCopyProductsBill = JSON.parse(localStorage.getItem('copyProductsBill'));
-    // console.log(getCopyProductsBill);
     if (getCopyProductsBill) {
       this.setState({
         dateCopy: getCopyProductsBill.dateCopy ? getCopyProductsBill.dateCopy : new Date(),
@@ -462,7 +456,13 @@ class Bill_Order extends Component {
         numberTable: getCopyProductsBill.numberTable ? getCopyProductsBill.numberTable : ' ',
         outlay: getCopyProductsBill.outlay ? getCopyProductsBill.outlay : 0,
         codeOrder: getCopyProductsBill.orderCode ? getCopyProductsBill.orderCode : '',
-        promotionBill: getCopyProductsBill.promotionBill ? getCopyProductsBill.promotionBill : 0
+        promotionBill: getCopyProductsBill.promotionBill ? getCopyProductsBill.promotionBill : 0,
+        peopleSelect: getCopyProductsBill.peopleSelect ? getCopyProductsBill.peopleSelect : [],
+        codeOrder: getCopyProductsBill.orderCode ? getCopyProductsBill.orderCode : this.state.codeOrder,
+        typePaymentTmp: getCopyProductsBill.typePaymentTmp ? getCopyProductsBill.typePaymentTmp : [],
+        paymentTmp: getCopyProductsBill.paymentTmp ? getCopyProductsBill.paymentTmp : [],
+        inputPayment: getCopyProductsBill.inputPayment ? getCopyProductsBill.inputPayment : 0,
+        customerPayment: getCopyProductsBill.customerPayment ? getCopyProductsBill.customerPayment: 0
       });
     }
   }
@@ -616,15 +616,15 @@ class Bill_Order extends Component {
           item.itemNote = itemNote;
         }
 
-        if (item.itemPromotion && item.itemPromotion > 0) {
-          priceTotal = priceTotal + (item.quantum * (item.donGia - item.itemPromotion));
-        } else {
-          priceTotal = priceTotal + (item.quantum * item.donGia);
-        }
+        // if (item.itemPromotion && item.itemPromotion > 0) {
+        //   priceTotal = priceTotal + (item.quantum * (item.donGia - item.itemPromotion));
+        // } else {
+        //   priceTotal = priceTotal + (item.quantum * item.donGia);
+        // }
         arrayTmp.push(item);
       });
       this.props.addNote(arrayTmp);
-      this.props.changeTotal(priceTotal);
+      // this.props.changeTotal(priceTotal);
     } else {
       if (Number(this.state.inputPayment) == 0 && this.state.customerPayment == this.state.priceAfterPromotion) {
         this.setState({
@@ -743,13 +743,6 @@ class Bill_Order extends Component {
     }
   }
 
-  handlePayment(type) {
-    this.state.typePayment()
-    this.setState({
-      typePayment: []
-    });
-  }
-
   changePayment(type, price) {
     let arrType = this.state.typePaymentTmp ? this.state.typePaymentTmp : [];
     let isChoose = arrType.find(item => item.type == type);
@@ -758,6 +751,9 @@ class Bill_Order extends Component {
     arrayChoose.forEach((item, index) => {
       priceTotal = priceTotal + item.price;
     });
+    console.log(arrType);
+    console.log(isChoose);
+
     if (!isChoose && Number(this.state.inputPayment) != 0) {
       let inputPayment = 0;
       let customerPayment = 0;
@@ -772,7 +768,6 @@ class Bill_Order extends Component {
         type: type,
         price: Number(price)
       });
-
       this.setState({
         typePaymentTmp : arrType,
         paymentTmp: this.state.priceAfterPromotion,
@@ -813,10 +808,13 @@ class Bill_Order extends Component {
       e = 0;
     }
     let discountPriceTotal = (Number(e) * this.state.priceTotal) / 100;
+    let priceAfterPromotion = this.state.priceTotal - discountPriceTotal;
     this.setState({
       promotionBill: Number(e),
       discountPriceTotal: discountPriceTotal,
-      discountAfter: this.state.priceTotal - discountPriceTotal
+      priceAfterPromotion: Math.ceil(priceAfterPromotion/1000)*1000,
+      outlayBack: this.state.outlay -  Math.ceil(priceAfterPromotion/1000)*1000,
+      inputPayment: Math.ceil(priceAfterPromotion/1000)*1000
     });
   }
 
@@ -829,8 +827,10 @@ class Bill_Order extends Component {
   }
 
   handlePayment(e) {
+    console.log(e);
+    let value = Number(e.toString().replace(/,/g,''));
     this.setState({
-      inputPayment: Number(e)
+      inputPayment: Number(value)
     });
   }
 
@@ -893,7 +893,9 @@ class Bill_Order extends Component {
   }
 
   getCode() {
-    this.props.dispatch(GetCode.actions.getCode({maMay: 'M01'}));
+    let infoApp = JSON.parse(localStorage.getItem('infoApp'));
+    let codeDevice = (infoApp && infoApp.maMay) ? infoApp.maMay : 'M01';
+    this.props.dispatch(GetCode.actions.getCode({maMay: codeDevice}));
   }
 
   render() {
@@ -1006,7 +1008,6 @@ class Bill_Order extends Component {
                 value={this.state.promotionBill.toString()}
                 decimal={false}
                 keyValidator={this.validatePromotion.bind(this)}
-                sync= {true}
                 inline= {true}
                 position={'center'}
               />
@@ -1216,7 +1217,8 @@ class Bill_Order extends Component {
                   <p className="price-total-bill-block">  
                     <NumPad.Number
                       onChange={this.handlePayment.bind(this)}
-                      value={this.state.inputPayment}
+                      value={this.getPrice(this.state.inputPayment)}
+                      displayRule = {this.displayOutput.bind(this)}
                     />
                   </p>
                 </div>

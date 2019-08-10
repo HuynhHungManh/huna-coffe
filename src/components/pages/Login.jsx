@@ -11,6 +11,7 @@ import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 import ComponentToPrint from '../tableTemporaryBill/ComponentToPrint.jsx';
 import jsxToString from 'jsx-to-string';
+import Alert from 'react-s-alert';
 
 class Login extends React.Component {
   constructor(props, context) {
@@ -38,6 +39,17 @@ class Login extends React.Component {
     localStorage.removeItem('auth');
   }
 
+  getInfoApp(data) {
+    let info = {};
+    if (data) {
+      info.diaChi = data.diaChi ? data.diaChi : '',
+      info.soDienThoai = data.soDienThoai ? data.soDienThoai : '',
+      info.maMay = data.maMay ? data.maMay : '',
+      info.passWifi = data.passWifi ? data.passWifi : ''
+    }
+    localStorage.setItem('infoApp', JSON.stringify(info)); 
+  }
+
   submitLogin() {
     if(this.state.input['username'] == '') {
       this.setState({
@@ -56,9 +68,17 @@ class Login extends React.Component {
         'Email': this.state.input['username'],
         'Password': this.state.input['password']
       }
+
       this.props.dispatch(Auth.actions.login(null, header))
       .then((res) => {
         if (res.data && res.data.token) {
+          try {
+            const mainProcess = window.require("electron").remote.require('./getInfo.js');
+            mainProcess.getInfo(this.getInfoApp.bind(this));
+          }
+          catch(err) {
+            this.alertNotification('Kiểm tra file /print/config.json', 'error');
+          }
           localStorage.setItem('auth', JSON.stringify(res.data));
           this.gotoPage('/order');
         } else {
@@ -74,6 +94,28 @@ class Login extends React.Component {
         })
       });
     }
+  }
+
+  alertNotification(message, type) {
+    let option = {
+      position: 'top-right',
+      timeout: 5000
+    };
+    switch (type) {
+      case 'info':
+        Alert.info(message, option);
+        break;
+      case 'success':
+        Alert.success(message, option);
+        break;
+      case 'warning':
+        Alert.warning(message, option);
+        break;
+      case 'error':
+        Alert.error(message, option);
+      default:
+        break;
+    };
   }
 
   setActiveInput(event) {
@@ -104,7 +146,7 @@ class Login extends React.Component {
           <form className="login-box">
             <span className="icon-minus" onClick={this.minimazScreen.bind(this)}></span>
             <div className="logo-huna">
-              <img className="img-logo" src={require('assets/images/logo/logo-huna.jpg')}></img>
+              <img className="img-logo" src={require('assets/images/logo/logo-huna.png')}></img>
             </div>
             <div className="filter-login-block">
               <input id="username" className="inp-username" name="username" type="text" placeholder="Tài khoản"
@@ -121,7 +163,7 @@ class Login extends React.Component {
                 <span className="validation-text">{this.state.message}</span>
               </div>) : null
             }
-            <div className="btn-login" onClick={this.submitLogin.bind(this)}>
+            <div className="btn-login btn-active" onClick={this.submitLogin.bind(this)}>
               <span className="text-login">Đăng Nhập</span>
             </div>
           </form>

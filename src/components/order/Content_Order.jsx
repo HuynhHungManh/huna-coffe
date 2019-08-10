@@ -243,11 +243,12 @@ class Content_Order extends Component {
         arrayTmp.push(item);
       });
     }
-
+    
     return arrayTmp.length != 0 ? arrayTmp : products;
   }
 
   changeTotal(price) {
+    // console.log(price);
     this.setState({
       priceTotal: price
     });
@@ -284,18 +285,17 @@ class Content_Order extends Component {
               itemState.priceAndQuantum = itemState.quantum * itemState.donGia;
             }
 
-            if (itemState.itemPromotion && itemState.itemPromotion > 0) {
+            // if (itemState.itemPromotion && itemState.itemPromotion > 0) {
 
-              priceTotal = priceTotal + ((itemState.donGia - itemState.itemPromotion) * itemState.quantum);
-            } else {
-              priceTotal = priceTotal + (itemState.quantum * itemState.donGia);
-            }
+            //   priceTotal = priceTotal + ((itemState.donGia - itemState.itemPromotion) * itemState.quantum);
+            // } else {
+            //   priceTotal = priceTotal + (itemState.quantum * itemState.donGia);
+            // }
             arrTmp.push(itemState);
           });
 
           this.setState({
-            chooseProductsBill : this.promotionCheck(arrTmp),
-            priceTotal: priceTotal
+            chooseProductsBill : this.promotionCheck(arrTmp)
           });
         } else {
           let newItem = {...item ? item : ''};
@@ -304,18 +304,17 @@ class Content_Order extends Component {
           if (this.state.chooseProductsBill.length == 0) {
             priceTotal = newItem.donGia;
           } else {
-            chooseProductsBillState.forEach((item, index) => {
-              if (item.itemPromotion && item.itemPromotion > 0) {
-                priceTotal = priceTotal + (item.donGia * item.quantum) - item.itemPromotion;
-              } else {
-                priceTotal = priceTotal + (item.donGia * item.quantum);
-              }
-            });
-            priceTotal = priceTotal + newItem.donGia;
+            // chooseProductsBillState.forEach((item, index) => {
+            //   if (item.itemPromotion && item.itemPromotion > 0) {
+            //     priceTotal = priceTotal + (item.donGia * item.quantum) - item.itemPromotion;
+            //   } else {
+            //     priceTotal = priceTotal + (item.donGia * item.quantum);
+            //   }
+            // });
+            // priceTotal = priceTotal + newItem.donGia;
           }
           this.setState(prevState => ({
-            chooseProductsBill: this.promotionCheck([...prevState.chooseProductsBill, newItem]),
-            priceTotal: priceTotal
+            chooseProductsBill: this.promotionCheck([...prevState.chooseProductsBill, newItem])
           }));
         }
         item.selectStatus = true;
@@ -397,16 +396,15 @@ class Content_Order extends Component {
           item.quantum = item.quantum + 1;
         }
       }
-      if (item.itemPromotion && item.itemPromotion > 0) {
-        priceTotal = priceTotal + (item.quantum * (item.donGia - item.itemPromotion));
-      } else {
-        priceTotal = priceTotal + (item.quantum * item.donGia);
-      }
+      // if (item.itemPromotion && item.itemPromotion > 0) {
+      //   priceTotal = priceTotal + (item.quantum * (item.donGia - item.itemPromotion));
+      // } else {
+      //   priceTotal = priceTotal + (item.quantum * item.donGia);
+      // }
       productsBillPre.push(item);
     });
     this.setState({
-      chooseProductsBill : productsBillPre,
-      priceTotal: priceTotal
+      chooseProductsBill : productsBillPre
     });
   }
 
@@ -426,8 +424,7 @@ class Content_Order extends Component {
       });
       this.setState({
         products: productsCurrent,
-        chooseProductsBill: getCopyProductsBill,
-        priceTotal: getCopyProducts.priceTotal ? getCopyProducts.priceTotal : 0
+        chooseProductsBill: getCopyProductsBill
       });
     }
   }
@@ -457,8 +454,7 @@ class Content_Order extends Component {
 
       this.setState({
         products: productsCurrent,
-        chooseProductsBill: getCopyProductsBill,
-        priceTotal: priceTotal
+        chooseProductsBill: getCopyProductsBill
       }, () => {
         localStorage.removeItem('orderProcessTmp');
       });

@@ -9,16 +9,16 @@ class ComponentToPrint extends Component {
     let auth = this.props.auth;
     let totalPrice = data && data.thanhTien ? data.thanhTien : 0;
     let customerPrice = 0;
-    if (data.tienKhachDua) {
-      customerPrice = customerPrice + data.tienKhachDua;
-    };
-    if (data.tienCaThe) {
-      customerPrice = customerPrice + data.tienCaThe;
-    };
-    if (data.tienChuyenKhoan) {
-      customerPrice = customerPrice + data.tienChuyenKhoan;
-    };
-    
+    // if (data.tienKhachDua) {
+    //   customerPrice = customerPrice + data.tienKhachDua;
+    // };
+    // if (data.tienCaThe) {
+    //   customerPrice = customerPrice + data.tienCaThe;
+    // };
+    // if (data.tienChuyenKhoan) {
+    //   customerPrice = customerPrice + data.tienChuyenKhoan;
+    // };
+
     return (
       <div className="template-print" style={{textAlign: 'center'}}>
         <p style={{textAlign: 'center'}} className="title-template">HUNA COFFEE</p>
@@ -56,7 +56,7 @@ class ComponentToPrint extends Component {
                       <NumberFormat value={Number(item.donGia)} displayType={'text'} thousandSeparator={true}/>
                     </td>
                     <td style={{width: '10%'}}>{item.soLuong}</td>
-                    <td style={{width: '10%'}}>{parseInt((item.khuyenMai / item.donGia) * 100)}</td>
+                    <td style={{width: '10%'}}>{item.khuyenMai ? item.khuyenMai : 0}</td>
                     <td style={{width: '20%'}}>
                       <NumberFormat value={Number(item.thanhTien)} displayType={'text'} thousandSeparator={true}/>
                     </td>
@@ -86,14 +86,43 @@ class ComponentToPrint extends Component {
                 </span>
               </td>
             </tr>
-            <tr style={{height: '20px'}}>
-              <td style={{width: '50%', textAlign: 'left', height: '20px'}}><span>Khách đưa:</span></td>
-              <td style={{width: '50%', textAlign: 'right', height: '20px'}}>
-                <span>
-                  <NumberFormat value={Number(customerPrice)} displayType={'text'} thousandSeparator={true}/>
-                </span>
-              </td>
-            </tr>
+
+            { data && data.tienCaThe ?
+              <tr style={{height: '20px'}}>
+                <td style={{width: '50%', textAlign: 'left', height: '20px'}}><span>Tiền cà thẻ:</span></td>
+                <td style={{width: '50%', textAlign: 'right', height: '20px'}}>
+                  <span>
+                    <NumberFormat value={Number(data.tienCaThe)} displayType={'text'} thousandSeparator={true}/>
+                  </span>
+                </td>
+              </tr>
+              : ""
+            }
+
+            { data && data.tienChuyenKhoan ?
+              <tr style={{height: '20px'}}>
+                <td style={{width: '50%', textAlign: 'left', height: '20px'}}><span>Tiền chuyển khoản:</span></td>
+                <td style={{width: '50%', textAlign: 'right', height: '20px'}}>
+                  <span>
+                    <NumberFormat value={Number(data.tienChuyenKhoan)} displayType={'text'} thousandSeparator={true}/>
+                  </span>
+                </td>
+              </tr>
+              : ""
+            }
+            
+            { data && data.tienKhachDua ?
+              <tr style={{height: '20px'}}>
+                <td style={{width: '50%', textAlign: 'left', height: '20px'}}><span>Khách đưa:</span></td>
+                <td style={{width: '50%', textAlign: 'right', height: '20px'}}>
+                  <span>
+                    <NumberFormat value={Number(data.tienKhachDua)} displayType={'text'} thousandSeparator={true}/>
+                  </span>
+                </td>
+              </tr>
+              : ""
+            }
+            
             <tr>
               <td style={{width: '50%', textAlign: 'left'}}><span>Trả lại:</span></td>
               <td style={{width: '50%', textAlign: 'right'}}>

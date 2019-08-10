@@ -65,8 +65,8 @@ main {
 }
 .logo {
   position: relative;
-  width: 72px;
-  margin: 6px 14px 0px 8px;
+  width: 68px;
+  margin: 9px 20px 0px 14px;
 }
 .react-simple-keyboard {
   position: absolute;
@@ -83,7 +83,7 @@ main {
   left: 50%;
   transform: translate(-50%,-50%);
   font-size: 45px;
-  width: 118px;
+  width: 114px;
   margin-top: 10px;
 }
 .inp-username, .inp-password {
@@ -819,7 +819,7 @@ main {
   display: inline-block;
   float: right;
 }
-.info-plus-block, .view-order-block, .printer-block {
+.info-plus-block, .view-order-block, .printer-block, .shift-block {
   font-family: 'Roboto-Bold';
   position: absolute;
   top: 40%;
@@ -871,6 +871,36 @@ main {
 .printer-block .printer-content .options {
   height: auto !important;
 }
+
+.shift-block .shift-header {
+  color: #fff;
+  background-color: #840101;
+  float: left;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+}
+.shift-header .icon-cross {
+  float: right;
+}
+
+.shift-block .shift-content {
+  float: left;
+  width: 100%;
+  padding: 18px;
+}
+
+.shift-block .shift-footer {
+  float: left;
+  width: 100%;
+}
+.shift-block .shift-footer .close-button {
+  width: 100px;
+  margin: 10px;
+  color: #444 !important;
+}
+
+
 .info-plus-block .header-info-plus, .header-view-order{
   color: #fff;
   background-color: #840101;
@@ -1777,6 +1807,7 @@ main {
 }
 .display-background {
   background-color: unset !important;
+  padding: 0 !important;
 }
 .percent {
   position: absolute;
@@ -1792,3 +1823,9 @@ main {
 .scrollable::-webkit-scrollbar {
   display: none;
 } 
+.handle-shift {
+  color: #fff;
+  background-color:  #20c100;
+  margin-left: 10px;
+  padding: 12px 16px;
+}

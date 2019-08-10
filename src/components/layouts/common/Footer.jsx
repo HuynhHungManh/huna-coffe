@@ -38,6 +38,7 @@ class Footer extends Component {
           url: '/'
         },
       ],
+      statusPopup: false
     }
   }
 
@@ -84,17 +85,27 @@ class Footer extends Component {
       tabs : preTabs
     })
     if (url == '/' && idTab == 4) {
-      this.props.dispatch(Auth.actions.logout())
-      .then((res) => {
-        this.alertNotification('Bạn đã đăng xuất thành công!', 'success');
-        this.gotoPage(url);
-      })
-      .catch((err) => {
-        this.alertNotification('Đăng xuất bị lỗi!', 'error');
+      this.setState({
+        statusPopup: true
       });
     } else {
       this.gotoPage(url);
     }
+  }
+
+  confirmLogout() {
+    this.props.dispatch(Auth.actions.logout())
+    .then((res) => {
+      this.alertNotification('Bạn đã đăng xuất thành công!', 'success');
+      this.setState({
+        statusPopup: false
+      }, () => {
+        this.gotoPage('/');
+      });
+    })
+    .catch((err) => {
+      this.alertNotification('Đăng xuất bị lỗi!', 'error');
+    });
   }
 
   gotoPage(page) {
@@ -123,6 +134,13 @@ class Footer extends Component {
     };
   }
 
+  closeModel() {
+    this.setState({
+      statusPopup: false
+    });
+    this.chooseTab(1, '/order');
+  }
+
   render() {
     return (
       <footer className="footer">
@@ -140,6 +158,29 @@ class Footer extends Component {
             })
           }
         </div>
+        <Modal
+          isOpen={this.state.statusPopup}
+          contentLabel="Modal"
+          className="modal popup"
+        >
+          <div className="shift-block">
+            <div className="shift-header">
+              <p className="text-title">Đăng xuất</p>
+              <span className="icon-cross" onClick={this.closeModel.bind(this)}></span>
+            </div>
+            <div className="shift-content">
+              <p>Bạn có muốn đăng xuất ?</p>
+            </div>
+            <div className="shift-footer">
+              <button className="btn close-button" onClick={this.closeModel.bind(this)}>
+                Đóng
+              </button>
+              <button className="btn handle-shift" onClick={this.confirmLogout.bind(this)}>
+                Xác nhận
+              </button>
+            </div>
+          </div>
+        </Modal>
       </footer>
     );
   }

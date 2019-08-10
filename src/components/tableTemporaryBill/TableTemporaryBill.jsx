@@ -90,15 +90,6 @@ class TableTemporaryBill extends Component {
     this.setState({
       auth: JSON.parse(localStorage.getItem('auth'))
     });
-    // localStorage.removeItem('dataCacheOrder');
-    // let dataCacheOrder = JSON.parse(localStorage.getItem('dataCacheOrder'));
-    // if (dataCacheOrder) {
-    //   this.setState({
-    //     getOrders: dataCacheOrder.getOrders,
-    //     billTotal: dataCacheOrder.billTotal,
-    //     priceDiscount: dataCacheOrder.priceDiscount
-    //   });
-    // }
     this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
       if (res.data.content && res.data.content.length > 0) {
         let arrayTmpDetail = [];
@@ -260,20 +251,26 @@ class TableTemporaryBill extends Component {
           orderThucDonsArray.push(orderThucDons);
         });
         data.orderThucDons = orderThucDonsArray;
-        const mainProcess = window.require("electron").remote.require('./print.js');
+        let infoApp = JSON.parse(localStorage.getItem('infoApp'));
         let info = {
-          phone : '0935080123',
+          phone : (infoApp && infoApp.soDienThoai) ? infoApp.soDienThoai : '',
           cashier: this.state.auth.hoVaTen,
           codeOrder: item.ma,
           dateOrder: dateOrder,
           timePrint: timePrint,
-          passWifi: 'hunacoffee.com'
+          passWifi: (infoApp && infoApp.passWifi) ? infoApp.passWifi : ''
         };
         let html = ReactDOMServer.renderToStaticMarkup(
           <ComponentToPrint data = {data} auth = {this.state.auth} info = {info}/>
         );
-        console.log(html);
-        mainProcess.print(html, 'none', 'none');
+        try {
+          const mainProcess = window.require("electron").remote.require('./print.js');
+          mainProcess.print(html, 'none', 'none');
+          this.alertNotification('In thành công!', 'success');
+        }
+        catch(err) {
+          this.alertNotification('Kiểm tra máy in!', 'error');
+        }
       }
     });
   }
@@ -313,7 +310,7 @@ class TableTemporaryBill extends Component {
         <div className="content-block">
           <div className="price-box">
             <div className="price-total">
-              <p className="text">Tổng tiền thu đươc trong ca</p>
+              <p className="text">Tổng tiền thu được trong ca</p>
               <p className="price-text"><span className="price-text-color">
                 <NumberFormat value={this.state.priceTotal ? this.state.priceTotal : 0} displayType={'text'} thousandSeparator={true} /> đ
               </span></p>
@@ -358,7 +355,7 @@ class TableTemporaryBill extends Component {
                     <tbody>
                       { !this.state.isLoadingOrder &&
                         <tr className ="display-background">
-                          <td><Spinner name="circle" /></td>
+                          <td className ="display-background"><Spinner name="circle" /></td>
                         </tr>
                       }
                       { this.state.isLoadingOrder &&
