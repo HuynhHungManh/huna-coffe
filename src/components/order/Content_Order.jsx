@@ -151,8 +151,11 @@ class Content_Order extends Component {
       }
     }
     if (prevProps.promotion !== this.props.promotion) {
+
       let promotionBill = this.props.promotion.find(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_HOA_DON' 
         && this.checkPromotionDate(item.tuNgay, item.denNgay));
+      console.log(this.props.promotion);
+
       if (promotionBill) {
         this.setState({
           promotionBill: promotionBill.chietKhau

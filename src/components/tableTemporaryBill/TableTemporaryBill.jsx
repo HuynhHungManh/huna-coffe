@@ -309,12 +309,15 @@ class TableTemporaryBill extends Component {
         </div>
         <div className="content-block">
           <div className="price-box">
-            <div className="price-total">
-              <p className="text">Tổng tiền thu được trong ca</p>
-              <p className="price-text"><span className="price-text-color">
-                <NumberFormat value={this.state.priceTotal ? this.state.priceTotal : 0} displayType={'text'} thousandSeparator={true} /> đ
-              </span></p>
-            </div>
+            { this.state.auth.hoVaTen == 'admin' ? 
+              <div className="price-total">
+                <p className="text">Tổng tiền thu được trong ca</p>
+                <p className="price-text"><span className="price-text-color">
+                  <NumberFormat value={this.state.priceTotal ? this.state.priceTotal : 0} displayType={'text'} thousandSeparator={true} /> đ
+                </span></p>
+              </div>
+              : ""
+            }
             <div className="discount-total">
               <p className="text">Tổng tiền chiết khấu trong ca</p>
               <p className="price-text"><span className="price-discount-color">

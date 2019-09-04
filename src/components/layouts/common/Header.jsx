@@ -69,15 +69,17 @@ class Header extends Component {
         <p style={{textAlign: 'center'}}>Thời gian kết ca: {data.timeShift}</p>
         <p style={{textAlign: 'center'}}>------------------</p>
         <ul>
-          <li>Số hóa đơn đã bán : chưa cập nhập</li>
-          <li>Số hóa đơn chiết khấu: chưa cập nhập</li>
-          <li>Số hóa đơn đã hủy: chưa cập nhập</li>
+          <li>Số hóa đơn đã bán : {data.invoices}</li>
+          <li>Số hóa đơn chiết khấu: {data.invoicesPromotion}</li>
+          <li>Số hóa đơn đã hủy: {data.invoicesCancel}</li>
           <li>Tổng tiền trong ca: <NumberFormat value={data.soldMoney} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
           </li>
-          <li>Tiền được thanh toán: chưa cập nhập</li>
+          <li>Tiền mặt: <NumberFormat value={data.cashMoney} displayType={'text'} thousandSeparator={true} suffix={' đ'}/></li>
+          <li>Tiền quẹt thẻ: <NumberFormat value={data.cardMoney} displayType={'text'} thousandSeparator={true} suffix={' đ'}/></li>
+          <li>Tiền chuyển khoản: <NumberFormat value={data.transferMoney} displayType={'text'} thousandSeparator={true} suffix={' đ'}/></li>
           <li>Tiền chiết khấu: <NumberFormat value={this.state.totalPromotion} displayType={'text'} thousandSeparator={true} suffix={' đ'}/>
           </li>
-          <li>Tiền quản lý bàn giao: chưa cập nhập</li>
+          <li>Tiền quản lý bàn giao: <NumberFormat value={data.managementMoney} displayType={'text'} thousandSeparator={true} suffix={' đ'}/></li>
         </ul>
       </div>
     )
@@ -91,23 +93,29 @@ class Header extends Component {
   }
 
   handleShift() {
-    let date = new Date();
+    const date = new Date();
     let dateTodayFormat = JSON.parse(JSON.stringify(date));
     this.props.dispatch(Shift.actions.shift()).then((res) => {
       if (res.data) {
-        var date = new Date(res.data.thoiGianKichCa);
-        var day = date.getDate();
-        var month = date.getMonth();
-        var year = date.getFullYear();
-        var hours = date.getHours();
-        var minutes = "0" + date.getMinutes();
-        var seconds = "0" + date.getSeconds();
-        var formattedTime = day + '/' + month + '/' + year + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+        const dateFormat = new Date(res.data.thoiGianKichCa);
+        const day = dateFormat.getDate();
+        const month = dateFormat.getMonth() + 1;
+        const year = dateFormat.getFullYear();
+        const hours = dateFormat.getHours();
+        const minutes = "0" + dateFormat.getMinutes();
+        const seconds = "0" + dateFormat.getSeconds();
+        const formattedTime = day + '/' + month + '/' + year + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
         let data = {
           timeShift: formattedTime,
           managementMoney: res.data.tienQuanLyDua,
           soldMoney: res.data.tongTienDaBan,
-          casher: this.state.hoVaTen
+          casher: this.state.hoVaTen,
+          invoices: res.data.soHoaDonDaBan,
+          invoicesPromotion: res.data.soHoaDonChietKhau,
+          invoicesCancel: res.data.soHoaDonDaHuy,
+          cashMoney: res.data.tienMat,
+          cardMoney: res.data.tienQuetThe,
+          transferMoney: res.data.tienChuyenKhoan,
         }
         const htmlShift = ReactDOMServer.renderToStaticMarkup(this.templateShift(data));
         try {

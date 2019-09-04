@@ -321,16 +321,15 @@ main {
 
 .number-bill, .date-bill {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   font-size: 14px;
 }
 .title-bill {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-size: 15px;
-}
-.title-bill, {
-  font-size: 17px !important;
+  font-family: 'Roboto-Bold';
+  font-weight: bold;
 }
 .bill-header {
   width: 100%;
@@ -339,10 +338,6 @@ main {
   font-size: 16px;
   border-bottom: 1px solid #ccc;
   height: 125px;
-}
-.title-bill {
-  font-family: 'Roboto-Bold';
-  font-weight: bold;
 }
 .bill-header .left-header {
   width: 55%;
@@ -765,7 +760,7 @@ main {
   color: #4ad605;
 }
 .btn-copy-bill {
-  width: 100%;
+  width: 80%;
   border: none;
   color: white;
   padding: 8px;
@@ -774,6 +769,7 @@ main {
   font-size: 14px;
   border-radius: 3px 3px;
   background-color: #195fff;
+  margin-bottom: 17px;
 }
 .search-order-block {
   width: 100%;
@@ -798,7 +794,6 @@ main {
 }
 .table-box-block {
   width: 100%;
-  margin-top: 7px;
   float: left;
 }
 .table-box-block button {

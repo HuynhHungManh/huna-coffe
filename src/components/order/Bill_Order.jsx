@@ -751,8 +751,6 @@ class Bill_Order extends Component {
     arrayChoose.forEach((item, index) => {
       priceTotal = priceTotal + item.price;
     });
-    console.log(arrType);
-    console.log(isChoose);
 
     if (!isChoose && Number(this.state.inputPayment) != 0) {
       let inputPayment = 0;
@@ -827,7 +825,6 @@ class Bill_Order extends Component {
   }
 
   handlePayment(e) {
-    console.log(e);
     let value = Number(e.toString().replace(/,/g,''));
     this.setState({
       inputPayment: Number(value)
@@ -907,12 +904,9 @@ class Bill_Order extends Component {
         <div className="bill-box">
           <div className="bill-header">
             <div className="left-header">
-              <p className="title-bill">
-                Hóa Đơn Bán Hàng
-              </p>
-              <p className="number-bill">
-                Số:<span className="number"> {this.state.codeOrder ? this.state.codeOrder : ''}</span>
-              </p>
+              <button className="btn-copy-bill" onClick={this.copyProductsBill.bind(this)}>
+                Copy hóa đơn trước
+              </button>
               <p className="date-bill">
                 Thời gian: {this.state.dateOrder}
                 <span className="time-bill">
@@ -924,9 +918,13 @@ class Bill_Order extends Component {
               </p>
             </div>
             <div className="right-header">
-              <button className="btn-copy-bill" onClick={this.copyProductsBill.bind(this)}>
-                Copy hóa đơn trước
-              </button>
+
+              <p className="title-bill">
+                Hóa Đơn Bán Hàng
+              </p>
+              <p className="number-bill">
+                Số:<span className="number"> {this.state.codeOrder ? this.state.codeOrder : ''}</span>
+              </p>
               <div className="table-box-block">
                 <p className="number-table-text">
                   Bàn số:
