@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import {connect} from 'react-redux';
 import Item_Bill from './Item_Bill.jsx';
-import {Orders, Promotion, GetCode, TotalPromotion} from 'api';
+import {Orders, Promotion, GetCode, TotalPromotion, NoteOrder} from 'api';
 import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
 import Modal from 'react-modal';
@@ -62,7 +62,6 @@ class Bill_Order extends Component {
       promotionItems: [],
       promotionBill: 0,
       multiSelected: [],
-      isPromotionTypeBill: false,
       numberTable: 0,
       peopleSelect: [],
       nameModel: 'addInfo',
@@ -88,6 +87,7 @@ class Bill_Order extends Component {
       priceAfterPromotion: 0,
       discount: 0,
       isCheckedTakeAWay: false,
+      isHide: false
     }
   }
 
@@ -95,6 +95,10 @@ class Bill_Order extends Component {
     this.timerID = setInterval(
       () => this.tick(),
       1000
+    );
+    this.timerCallPromotion = setInterval(
+      () => this.props.reloadPromotion(),
+      60 * 1000
     );
     let getOrderProcessTmp = JSON.parse(localStorage.getItem('orderProcessTmp'));
     this.getCode();
@@ -122,6 +126,7 @@ class Bill_Order extends Component {
 
   componentWillUnmount() {
     clearInterval(this.timerID);
+    clearInterval(this.timerCallPromotion);
   }
 
   tick() {
@@ -241,7 +246,8 @@ class Bill_Order extends Component {
     }
     if (prevProps.getCode !== this.props.getCode) {
       this.setState({
-        codeOrder: this.props.getCode.maHoaDon
+        codeOrder: this.props.getCode.maHoaDon,
+        isHide: false
       });
     }
   }
@@ -286,163 +292,171 @@ class Bill_Order extends Component {
     localStorage.removeItem('orderProcessTmp');
   }
 
-  submitOrders(typeSubmit) {
-    let date = new Date();
-    let dateFormat = JSON.parse(JSON.stringify(date));
-    let auth = JSON.parse(localStorage.getItem('auth'));
-    let orderProducts = [];
-    const outlay = Number(this.state.outlay);
-    this.state.productsBill.forEach((item, index) => {
-      let priceAfterPromotionItem = item.donGia * item.quantum;
-      if (item.itemPromotion && item.itemPromotion > 0) {
-        priceAfterPromotionItem = (item.donGia - item.itemPromotion) * item.quantum;
-      }
-      let dataProducts = {
-        'donGia': item.donGia,
-        'ghiChuMonOrderThucDon': item.itemNote && item.itemNote != 'undefined' ? item.itemNote : [],
-        'khuyenMai': item.discount ? item.discount : 0,
-        'ngayOrder': dateFormat,
-        'soLuong': item.quantum,
-        'thanhTien': priceAfterPromotionItem,
-        'thucDonId': item.id,
-        'tongGia': (item.donGia * item.quantum),
-        'ten': item.ten,
-        'chietKhau' : item.discount ? item.discount : 0,
-        'isPrinter': item.viTriIn ? item.viTriIn : 'BAR'
-      }
-      orderProducts.push(dataProducts);
-    });
-    let payBack = outlay - Number(this.state.priceAfterPromotion);
-    let payCash = 0;
-    let payCard = 0;
-    let payTransfer = 0;
-    if (this.state.typePaymentTmp && this.state.typePaymentTmp.length > 0) {
-      this.state.typePaymentTmp.forEach((item, index) => {
-        if (item.type == 'cash') {
-          if (outlay > this.state.priceAfterPromotion) {
-            payCash = outlay;
-          } else {
-            payCash = item.price;
-          }
-        } else if (item.type == 'card') {
-          payCard = item.price;
-        } else if (item.type == 'transfer') {
-          payTransfer = item.price;
-        } 
-      });
-    } else {
-      payCash = outlay;
+async submitOrders(typeSubmit) {
+  const code = this.state.codeOrder;
+  const productsBill = this.state.productsBill;
+  let statusSubmit = false;
+  let date = new Date();
+  let dateFormat = JSON.parse(JSON.stringify(date));
+  let auth = JSON.parse(localStorage.getItem('auth'));
+  let orderProducts = [];
+  
+  const outlay = Number(this.state.outlay);
+  productsBill.forEach((item, index) => {
+    let priceAfterPromotionItem = item.donGia * item.quantum;
+    if (item.itemPromotion && item.itemPromotion > 0) {
+      priceAfterPromotionItem = (item.donGia - item.itemPromotion) * item.quantum;
     }
-    let peopleSelect = this.state.peopleSelect.find(item => item.value == true);
-    const data = {
-      'tienCaThe': payCard,
-      'tienChuyenKhoan': payTransfer,
-      'ma' : this.state.codeOrder,
-      'khuyenMai': this.state.promotionBill ? this.state.promotionBill : 0,
+    let dataProducts = {
+      'donGia': item.donGia,
+      'ghiChuMonOrderThucDon': item.itemNote && item.itemNote != 'undefined' ? item.itemNote : [],
+      'khuyenMai': item.discount ? item.discount : 0,
       'ngayOrder': dateFormat,
-      'nguoiChietKhauId': peopleSelect ? peopleSelect.id : 0,
-      'nhanVienOrderId': auth.userId ? auth.userId : 0,
-      'orderThucDons': orderProducts,
-      'thanhTien': this.state.priceAfterPromotion,
-      'tongGia': this.state.priceTotal,
-      'trangThaiOrder': 'DA_THANH_TOAN',
-      'soBan': this.state.numberTable,
-      'tienKhachDua': payCash,
-      'tienThoiLai': payBack ? payBack : 0
-    };
-    this.setState({
-      orderDetail: [data]
-    });
-
-    if (typeSubmit == "Order") {
-      if (this.state.statusCopyPreBill == true) {
-        this.alertNotification('Hóa đơn này đã thanh toán, vui lòng chọn nhập lại!', 'warning');
-      } else if (payBack < 0) {
-        this.alertNotification('Khách chưa đưa tiền hoặc không đủ!', 'warning');
-      } else if (data.soBan == 0 && this.state.isCheckedTakeAWay == false) {
-        this.alertNotification('Bạn chưa nhập số bàn!', 'warning');
-      } else if (this.state.productsBill && this.state.productsBill.length == 0) {
-        this.alertNotification('Bạn chưa chọn món!', 'warning');
-      } else {
-        this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
-        this.props.countCodeAfterSubmit();
-        this.alertNotification('Bạn đã order thành công!', 'success');
-        let d = new Date();
-        let hour = (d.getHours() < 10 ? '0' : '') + d.getHours();
-        let minutes = (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
-        let timeCopy = hour + ':' + minutes;
-        let copyProductsBill = {
-          productsBill: this.state.productsBill,
-          priceTotal: this.state.priceTotal,
-          discountPriceTotal: this.state.discountPriceTotal,
-          discountAfter: this.state.priceAfterPromotion,
-          dateCopy: timeCopy,
-          dateOrder: this.state.dateOrder,
-          outlay: outlay,
-          numberTable: this.state.numberTable,
-          orderCode: data.ma,
-          promotionBill: this.state.promotionBill,
-          outlayBack: this.state.outlayBack,
-          typePaymentTmp: this.state.typePaymentTmp,
-          paymentTmp: this.state.paymentTmp,
-          inputPayment: this.state.inputPayment,
-          customerPayment: this.state.customerPayment,
-          peopleSelect: this.state.peopleSelect ? this.state.peopleSelect : []
-        }
-          localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
-          try {
-            const mainProcess = window.require("electron").remote.require('./print.js');
-            let getStorePrinters = JSON.parse(localStorage.getItem('storePrinter'));
-            const htmlBill = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'bill'));
-            let htmlBar = 'none';
-            if (data.orderThucDons && data.orderThucDons.find(item => item.isPrinter == 'BAR')) {
-              htmlBar = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'bar'));
-            } 
-            let htmlCooker = 'none';
-            if (data.orderThucDons && data.orderThucDons.find(item => item.isPrinter == 'BEP')) {
-              htmlCooker = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'cooker'));
-            }
-            mainProcess.print(htmlBill, htmlBar, htmlCooker, getStorePrinters);
-          }
-          catch(err) {
-            this.alertNotification('Kiểm tra máy in!', 'error');
-          }
-          this.clearForm();
-          this.getCode();
-          this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: dateFormat}));
-        }).catch((reason) => {
-          this.alertNotification('Order không thành công!', 'error');
-        });
-      }
-    } else if (typeSubmit == 'Store') {
-      if (this.state.statusCopyPreBill == true) {
-        this.alertNotification('Hóa đơn này đã thanh toán, vui lòng chọn nhập lại!', 'warning');
-      } else if (this.state.productsBill && this.state.productsBill.length == 0) {
-        this.alertNotification('Vui lòng chọn món!', 'warning');
-      } else {
-        let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
-        let orderNewListTmp = [];
-        data.productsBill = this.state.productsBill;
-        data.priceTotal = this.state.priceTotal;
-        data.discountPriceTotal = this.state.discountPriceTotal;
-        data.discountAfter = this.state.priceAfterPromotion;
-        data.dateOrder = this.state.dateOrder;
-        data.orderCode = this.state.codeOrder;
-        data.isCheckedTakeAWay = this.state.isCheckedTakeAWay;
-        data.peopleSelect= this.state.peopleSelect ? this.state.peopleSelect : [];
-        if (orderListTmp) {
-          orderNewListTmp = orderListTmp.concat(data);
-        } else {
-          orderNewListTmp.push(data);
-        }
-        localStorage.setItem('orderListTmp', JSON.stringify(orderNewListTmp));
-        this.props.countCodeAfterSubmit();
-        this.alertNotification('Bạn đã lưu thành công!', 'success');
-        this.props.countCodeAfterSubmit();
-        this.clearForm();
-      }
+      'soLuong': item.quantum,
+      'thanhTien': priceAfterPromotionItem,
+      'thucDonId': item.id,
+      'tongGia': (item.donGia * item.quantum),
+      'ten': item.ten,
+      'chietKhau' : item.discount ? item.discount : 0,
+      'isPrinter': item.viTriIn ? item.viTriIn : 'BAR'
     }
-    localStorage.removeItem('orderProcessTmp');
+    orderProducts.push(dataProducts);
+  });
+  let payBack = outlay - Number(this.state.priceAfterPromotion);
+  let payCash = 0;
+  let payCard = 0;
+  let payTransfer = 0;
+  if (this.state.typePaymentTmp && this.state.typePaymentTmp.length > 0) {
+    this.state.typePaymentTmp.forEach((item, index) => {
+      if (item.type == 'cash') {
+        if (outlay > this.state.priceAfterPromotion) {
+          payCash = outlay;
+        } else {
+          payCash = item.price;
+        }
+      } else if (item.type == 'card') {
+        payCard = item.price;
+      } else if (item.type == 'transfer') {
+        payTransfer = item.price;
+      } 
+    });
+  } else {
+    payCash = outlay;
+  }
+  let peopleSelect = this.state.peopleSelect.find(item => item.value == true);
+  const data = {
+    'tienCaThe': payCard,
+    'tienChuyenKhoan': payTransfer,
+    'ma': code,
+    'khuyenMai': this.state.promotionBill ? this.state.promotionBill : 0,
+    'ngayOrder': dateFormat,
+    'nguoiChietKhauId': peopleSelect ? peopleSelect.id : 0,
+    'nhanVienOrderId': auth.userId ? auth.userId : 0,
+    'orderThucDons': orderProducts,
+    'thanhTien': this.state.priceAfterPromotion,
+    'tongGia': this.state.priceTotal,
+    'trangThaiOrder': 'DA_THANH_TOAN',
+    'soBan': this.state.numberTable,
+    'tienKhachDua': payCash,
+    'tienThoiLai': payBack ? payBack : 0
+  };
+  this.setState({
+    orderDetail: [data]
+  });
+
+  if (typeSubmit == "Order") {
+    if (this.state.statusCopyPreBill == true) {
+      this.alertNotification('Hóa đơn này đã thanh toán, vui lòng chọn nhập lại!', 'warning');
+    } else if (payBack < 0) {
+      this.alertNotification('Khách chưa đưa tiền hoặc không đủ!', 'warning');
+    } else if (data.soBan == 0 && this.state.isCheckedTakeAWay == false) {
+      this.alertNotification('Bạn chưa nhập số bàn!', 'warning');
+    } else if (productsBill && productsBill.length == 0) {
+      this.alertNotification('Bạn chưa chọn món!', 'warning');
+    } else {
+      this.state.isHide = true;
+      this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
+      this.props.countCodeAfterSubmit();
+      this.alertNotification('Bạn đã order thành công!', 'success');
+      let hour = (date.getHours() < 10 ? '0' : '') + date.getHours();
+      let minutes = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+      let timeCopy = hour + ':' + minutes;
+      let copyProductsBill = {
+        productsBill: productsBill,
+        priceTotal: this.state.priceTotal,
+        discountPriceTotal: this.state.discountPriceTotal,
+        discountAfter: this.state.priceAfterPromotion,
+        dateCopy: timeCopy,
+        dateOrder: this.state.dateOrder,
+        outlay: outlay,
+        numberTable: this.state.numberTable,
+        orderCode: data.ma,
+        promotionBill: this.state.promotionBill,
+        outlayBack: this.state.outlayBack,
+        typePaymentTmp: this.state.typePaymentTmp,
+        paymentTmp: this.state.paymentTmp,
+        inputPayment: this.state.inputPayment,
+        customerPayment: this.state.customerPayment,
+        peopleSelect: this.state.peopleSelect ? this.state.peopleSelect : []
+      }
+        localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
+        try {
+          const mainProcess = window.require("electron").remote.require('./print.js');
+          let getStorePrinters = JSON.parse(localStorage.getItem('storePrinter'));
+          const htmlBill = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'bill'));
+          let htmlBar = 'none';
+          if (data.orderThucDons && data.orderThucDons.find(item => item.isPrinter == 'BAR')) {
+            htmlBar = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'bar'));
+          } 
+          let htmlCooker = 'none';
+          if (data.orderThucDons && data.orderThucDons.find(item => item.isPrinter == 'BEP')) {
+            htmlCooker = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, auth, 'cooker'));
+          }
+          mainProcess.print(htmlBill, htmlBar, htmlCooker, 'none');
+        }
+        catch(err) {
+          this.alertNotification('Kiểm tra máy in!', 'error');
+        }
+        this.clearForm();
+        this.getCode();
+        this.setState({
+          codeTmp: code
+        });
+        this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: dateFormat}));
+      }).catch((reason) => {
+        this.state.isHide = false;
+        this.alertNotification('Order không thành công!', 'error');
+      });
+    }
+  } else if (typeSubmit == 'Store') {
+    if (this.state.statusCopyPreBill == true) {
+      this.alertNotification('Hóa đơn này đã thanh toán, vui lòng chọn nhập lại!', 'warning');
+    } else if (productsBill && productsBill.length == 0) {
+      this.alertNotification('Vui lòng chọn món!', 'warning');
+    } else {
+      let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
+      let orderNewListTmp = [];
+      data.productsBill = productsBill;
+      data.priceTotal = this.state.priceTotal;
+      data.discountPriceTotal = this.state.discountPriceTotal;
+      data.discountAfter = this.state.priceAfterPromotion;
+      data.dateOrder = this.state.dateOrder;
+      data.orderCode = code;
+      data.isCheckedTakeAWay = this.state.isCheckedTakeAWay;
+      data.peopleSelect= this.state.peopleSelect ? this.state.peopleSelect : [];
+      if (orderListTmp) {
+        orderNewListTmp = orderListTmp.concat(data);
+      } else {
+        orderNewListTmp.push(data);
+      }
+      localStorage.setItem('orderListTmp', JSON.stringify(orderNewListTmp));
+      this.props.countCodeAfterSubmit();
+      this.alertNotification('Bạn đã lưu thành công!', 'success');
+      this.props.countCodeAfterSubmit();
+      this.clearForm();
+    }
+  }
+  localStorage.removeItem('orderProcessTmp');
   };
 
   copyProductsBill() {
@@ -534,6 +548,7 @@ class Bill_Order extends Component {
       itemNoteTmp: data.itemNote ? data.itemNote : [],
       nameModel: 'addInfo'
     });
+    this.props.dispatch(NoteOrder.actions.noteOrders());
   }
 
   cancelItemBill(idUnique, id) {
@@ -912,7 +927,7 @@ class Bill_Order extends Component {
                 <span className="time-bill">
                   { this.state.statusCopyPreBill == true
                     ? this.state.dateCopy
-                    : this.state.date.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'}).replace(/(:\d{2}| [AP]M)$/, "")
+                    : this.state.date.toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'})
                   }
                 </span>
               </p>
@@ -1074,7 +1089,12 @@ class Bill_Order extends Component {
             <button id="check" className="save btn-active" onClick={this.submitOrders.bind(this, 'Store')}>
               Lưu
             </button>
-            <button className="pay btn-active" onClick={this.submitOrders.bind(this, 'Order')} >
+            <button className={
+              classnames('pay btn-active', {
+                'hide-button' : this.state.isHide,
+              })}
+              onClick={this.submitOrders.bind(this, 'Order')} 
+            >
               Thanh toán
             </button>
           </div>

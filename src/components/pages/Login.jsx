@@ -163,6 +163,10 @@ class Login extends React.Component {
                 <span className="validation-text">{this.state.message}</span>
               </div>) : null
             }
+            <div className="copyright">
+              <p>Copyright © 2019 Huna Coffee</p>
+              <p>version: 2.7.0</p>
+            </div>
             <div className="btn-login btn-active" onClick={this.submitLogin.bind(this)}>
               <span className="text-login">Đăng Nhập</span>
             </div>

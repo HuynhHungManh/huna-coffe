@@ -138,15 +138,33 @@ class TableTemporaryBill extends Component {
     }
   }
 
-  getDate(jsonDate) {
-    let currentdate = new Date(jsonDate);
-    let datetime = currentdate.getDate() + "/"
-      + (currentdate.getMonth()+1)  + "/"
-      + currentdate.getFullYear();
+  convertUTCDateToLocalDate(date) {
+    var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+    var offset = date.getTimezoneOffset() / 60;
+    var hours = date.getHours();
+
+    newDate.setHours(hours - offset);
+
+    return newDate;   
+  }
+  getDate(jsonDate, format) {
+    var strDateTime = jsonDate;
+    var myDate = new Date(strDateTime);
+    let currentdate = this.convertUTCDateToLocalDate(myDate);
+    
+
+    let datetime = ('0' + currentdate.getDate()).slice(-2) + '/'
+             + ('0' + (currentdate.getMonth()+1)).slice(-2) + '/'
+             + currentdate.getFullYear();
 
     let hours = (currentdate.getHours() < 10 ? '0' : '') + currentdate.getHours();
     let minutes = (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
-    return hours + ":" + minutes;
+    if (format == '') {
+      return hours + ":" + minutes;
+    } else {
+      return datetime + " " + hours + ":" + minutes;
+    }
   }
 
   cancelItemBill(id) {
@@ -235,7 +253,9 @@ class TableTemporaryBill extends Component {
     let dateOrder = ('0' + date.getDate()).slice(-2) + '/'
                  + ('0' + (date.getMonth()+1)).slice(-2) + '/'
                  + date.getFullYear();
-    let timePrint = date.getHours() + ':' + date.getMinutes();
+
+    let timePrint = this.getDate(date, '');
+    console.log(timePrint);
     this.props.dispatch(Orders.actions.orderThucDons({orderId: item.id})).then((res) => {
       if (res.data) {
         let dataDetail = res.data;
@@ -265,7 +285,7 @@ class TableTemporaryBill extends Component {
         );
         try {
           const mainProcess = window.require("electron").remote.require('./print.js');
-          mainProcess.print(html, 'none', 'none');
+          mainProcess.print(html, 'none', 'none', 'none');
           this.alertNotification('In thành công!', 'success');
         }
         catch(err) {
@@ -366,7 +386,7 @@ class TableTemporaryBill extends Component {
                           return (
                             <tr key = {i}>
                               <td width="15%">{item.ma}</td>
-                              <td width="13%">{this.getDate(item.ngayOrder)}</td>
+                              <td width="13%">{this.getDate(item.ngayOrder, '')}</td>
                               <td width="9%">{item.soBan}</td>
                               <td width="10%">-</td>
                               <td width="13%">
@@ -479,7 +499,7 @@ class TableTemporaryBill extends Component {
                 <div className="view-order-price-tmp">
                   <div className="title-left">
                     <p className="title-text">
-                      Thời gian: <span className="bold">{this.state.viewDateOrder}</span>
+                      Thời gian: <span className="bold">{this.getDate(this.state.viewDateOrder, 'd-m-y')}</span>
                     </p>
                   </div>
                   <div className="title-right">

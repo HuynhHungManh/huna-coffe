@@ -23,6 +23,7 @@ class Content_Order extends Component {
     this.addNote = this.addNote.bind(this);
     this.changeTotal = this.changeTotal.bind(this);
     this.processOrderTmp = this.processOrderTmp.bind(this);
+    this.reloadPromotion = this.reloadPromotion.bind(this);
     this.state = {
       products: [],
       statusClear: false,
@@ -39,7 +40,8 @@ class Content_Order extends Component {
       promotionBill: 0,
       promotionGroup: [],
       promotionGroupId: [],
-      promotionItems: []
+      promotionItems: [],
+      autoLoadPromotion: true
     }
   }
 
@@ -142,29 +144,31 @@ class Content_Order extends Component {
       }
     }
     if (prevState.products !== this.state.products) {
-      // this.setState({
-      //   products: this.state.products
-      // });
       let getOrderProcessTmp = JSON.parse(localStorage.getItem('orderProcessTmp'));
       if (getOrderProcessTmp) {
         this.processOrderTmp(getOrderProcessTmp);
       }
     }
     if (prevProps.promotion !== this.props.promotion) {
-
       let promotionBill = this.props.promotion.find(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_HOA_DON' 
-        && this.checkPromotionDate(item.tuNgay, item.denNgay));
-      console.log(this.props.promotion);
-
+        && this.checkPromotionDate(item.tuNgay, item.denNgay) && this.checkPromotionTime(item.tuGio, item.denGio) 
+        && item.apDung == true && this.checkPromotionDay(item) && this.state.autoLoadPromotion == true);
       if (promotionBill) {
         this.setState({
           promotionBill: promotionBill.chietKhau
         });
       } else {
+        if (this.state.autoLoadPromotion == true) {
+          this.setState({
+            promotionBill: 0
+          });
+        }
         let promotionGroup = this.props.promotion.filter(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_NHOM_MON' 
-          && this.checkPromotionDate(item.tuNgay, item.denNgay));
+          && this.checkPromotionDate(item.tuNgay, item.denNgay) && this.checkPromotionTime(item.tuGio, item.denGio) 
+          && item.apDung == true && this.checkPromotionDay(item) && this.state.autoLoadPromotion == true);
         let promotionItems = this.props.promotion.filter(item => item.maLoaiKhuyenMai == 'KHUYEN_MAI_MON'
-          && this.checkPromotionDate(item.tuNgay, item.denNgay));
+          && this.checkPromotionDate(item.tuNgay, item.denNgay) && this.checkPromotionTime(item.tuGio, item.denGio) 
+          && item.apDung == true && this.checkPromotionDay(item) && this.state.autoLoadPromotion == true);
         if (promotionGroup) {
           let arrayId = [];
           promotionGroup.forEach((item, index) => {
@@ -185,6 +189,15 @@ class Content_Order extends Component {
         }
       }
     }
+    if (prevProps.status !== this.props.status) {
+      this.setState({
+        autoLoadPromotion: this.props.status
+      });
+    }
+  }
+
+  reloadPromotion() {
+    this.props.dispatch(Promotion.actions.promotion());
   }
 
   storeProductsBill(productsBill) {
@@ -202,6 +215,107 @@ class Content_Order extends Component {
       return true;
     }
     return false;
+  }
+
+  converTime(time) {
+    var timeHM = time.replace(':00', '');
+    var timeH = 0;
+    var timeM = 0;
+    if (timeHM.includes(":00")) {
+      timeH = parseInt(timeHM.replace(':00', ''));
+      timeM = 0;
+    } else {
+      timeM = timeHM.split(':')[1];
+      timeH = timeHM.split(':')[0];
+    }
+
+    return [parseInt(timeH), parseInt(timeM)];
+  }
+
+  checkPromotionTime(timeStart, timeEnd) {
+    var timeStartCov = 0;
+    var timeEndCov = 24;
+    var timeStartMCov = 0;
+    var timeEndMCov = 60;
+    var date = new Date();
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+    var timeStartHM = this.converTime(timeStart);
+    var timeEndHM = this.converTime(timeEnd);
+
+    if (timeStartHM && timeStartHM != null) {
+      timeStartCov = timeStartHM[0];
+      timeStartMCov = timeStartHM[1];
+    }
+    if (timeEndHM && timeEndHM != null) {
+      timeEndCov = timeEndHM[0];
+      timeEndMCov = timeEndHM[1];
+    }
+
+
+    if (timeStartCov <= 17) {
+      timeStartCov = timeStartCov + 7;
+    } else {
+      timeStartCov = timeStartCov - 17;
+    }
+
+    if (timeEndCov <= 17) {
+      timeEndCov = timeEndCov + 7;
+    } else {
+      timeEndCov = timeEndCov - 17;
+    }
+    if (timeStartCov > timeEndCov) {
+      return false
+    }
+
+    if (timeStartMCov == 0 && timeEndMCov == 0 && timeStartCov <= hour && timeEndCov > hour) {
+      return true;
+    } 
+    else if (timeStartMCov != 0 && timeEndMCov != 0 && timeStartCov <= hour && timeEndCov >= hour) {
+      if (timeStartCov == hour && minute < timeStartMCov) {
+        return false;
+      }
+      if (timeEndCov == hour && minute > timeEndMCov) {
+        return false;
+      }
+      return true;
+    }
+    else if (timeStartMCov == 0 && timeEndMCov != 0 && timeStartCov <= hour && timeEndCov >= hour) {
+      if (timeEndCov == hour && minute > timeEndMCov) {
+        return false;
+      }
+      return true;
+    }
+    else if (timeStartMCov != 0 && timeEndMCov == 0 && timeStartCov <= hour && timeEndCov > hour) {
+      if (timeStartCov == hour && minute < timeStartMCov) {
+        return false;
+      }
+
+      return true;
+    }
+    return false
+  }
+
+  checkPromotionDay(item) {
+    var today = new Date();
+    var day = today.getDay();
+    if (item.thuHai == true && day == 1) {
+      return true;
+    } else if (item.thuBa == true && day == 2) {
+      return true;
+    } else if (item.thuTu == true && day == 3) {
+      return true;
+    } else if (item.thuNam == true && day == 4) {
+      return true;
+    } else if (item.thuSau == true && day == 5) {
+      return true;
+    } else if (item.thuBay == true && day == 6) {
+      return true;
+    } else if (item.chuNhat == true && day == 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   toTimestamp(strDate){
@@ -251,7 +365,6 @@ class Content_Order extends Component {
   }
 
   changeTotal(price) {
-    // console.log(price);
     this.setState({
       priceTotal: price
     });
@@ -307,14 +420,7 @@ class Content_Order extends Component {
           if (this.state.chooseProductsBill.length == 0) {
             priceTotal = newItem.donGia;
           } else {
-            // chooseProductsBillState.forEach((item, index) => {
-            //   if (item.itemPromotion && item.itemPromotion > 0) {
-            //     priceTotal = priceTotal + (item.donGia * item.quantum) - item.itemPromotion;
-            //   } else {
-            //     priceTotal = priceTotal + (item.donGia * item.quantum);
-            //   }
-            // });
-            // priceTotal = priceTotal + newItem.donGia;
+  
           }
           this.setState(prevState => ({
             chooseProductsBill: this.promotionCheck([...prevState.chooseProductsBill, newItem])
@@ -322,17 +428,8 @@ class Content_Order extends Component {
         }
         item.selectStatus = true;
         this.state.products[index].selectStatus = true;
-        // this.setState({
-        //   products : preProduct
-        // });
-        // console.log(item);
       }
-      // preProduct.push(item);
     });
-
-    // this.setState({
-    //   products : preProduct
-    // });
   }
 
   addNote(arr) {
@@ -446,15 +543,6 @@ class Content_Order extends Component {
           }
         });
       });
-
-      // if (item.itemPromotion && item.itemPromotion > 0) {
-      //   priceTotal = priceTotal + (item.donGia * item.quantum) - item.itemPromotion;
-      // } else {
-      //   priceTotal = priceTotal + (item.donGia * item.quantum);
-      // }
-      // console.log(priceTotal);
-      // console.log(productsCurrent);
-
       this.setState({
         products: productsCurrent,
         chooseProductsBill: getCopyProductsBill
@@ -531,6 +619,7 @@ class Content_Order extends Component {
           promotionBill = {this.state.promotionBill}
           changeTotal = {this.changeTotal}
           processOrderTmp = {this.processOrderTmp}
+          reloadPromotion = {this.reloadPromotion}
         />
       </div>
     );
@@ -545,7 +634,8 @@ const bindStateToProps = (state) => {
   return {
     products: state.products || [],
     categories: state.categories,
-    promotion: state.promotion
+    promotion: state.promotion,
+    status: state.status
   }
 }
 

@@ -11,6 +11,7 @@ import Modal from 'react-modal';
 Modal.setAppElement('body');
 import  MultiSelectReact  from 'multi-select-react';
 import NumberFormat from 'react-number-format';
+import Switch from "react-switch";
 
 class Header extends Component {
   constructor(props, context) {
@@ -22,8 +23,15 @@ class Header extends Component {
       listPrinter: [],
       listPrinterTmp: [],
       type: '',
-      totalPromotion: 0
+      totalPromotion: 0,
+      checkedAutoPromotion: true
     }
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(checked) {
+    this.props.dispatch(this.changeStatusAuto(checked));
+    this.setState({ checkedAutoPromotion: checked });
   }
 
   componentWillMount() {
@@ -45,6 +53,13 @@ class Header extends Component {
       this.setState({
         hoVaTen : auth.hoVaTen
       });
+    }
+  }
+
+  changeStatusAuto(key) {
+    return {
+      type: 'STATUS_AUTO_LOAD_PROMOTION',
+      key
     }
   }
 
@@ -120,7 +135,7 @@ class Header extends Component {
         const htmlShift = ReactDOMServer.renderToStaticMarkup(this.templateShift(data));
         try {
           const mainProcess = window.require("electron").remote.require('./print.js');
-          mainProcess.print(htmlShift, 'none', 'none');
+          mainProcess.print('none', 'none', 'none', htmlShift);
         }
         catch(err) {
           this.alertNotification('Kiểm tra máy in!', 'error');
@@ -228,6 +243,23 @@ class Header extends Component {
             <span className="title">{this.state.page}</span>
           </p>
           <div className="account-info-box">
+            <div className="switch-checkbox">
+              <Switch
+                checked={this.state.checkedAutoPromotion}
+                onChange={this.handleChange}
+                onColor="#86d3ff"
+                onHandleColor="#2693e6"
+                handleDiameter={30}
+                uncheckedIcon={false}
+                checkedIcon={false}
+                boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                height={20}
+                width={48}
+                className="react-switch"
+                id="material-switch"
+              />
+            </div>
             <span className="icon-printer" onClick={this.choosePrinter.bind(this)}></span>
             <span className="icon-users" onClick={this.confirmShift.bind(this)}></span>
             <p className="account-text">

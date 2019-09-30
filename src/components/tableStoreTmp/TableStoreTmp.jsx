@@ -186,49 +186,14 @@ class TableStoreTmp extends Component {
       orderListData: orderListData,
       statusPopup: false
     }, () => this.gotoPage('/order'));
-    // this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
-    //   let orderListData = this.state.orderListData;
-    //   orderListData.splice(index, 1);
-    //   this.setState({
-    //     orderListData: orderListData,
-    //     statusPopup: false
-    //   });
-    //   let date = new Date();
-    //   let timeCopy = (date.getHours() < 10 ? '0' : '') + date.getHours() + ":" + 
-    //   (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
-    //   let copyProductsBill = {
-    //     productsBill: data.productsBill,
-    //     priceTotal: data.priceTotal,
-    //     discountPriceTotal: data.discountPriceTotal,
-    //     discountAfter: data.discountAfter,
-    //     dateCopy: timeCopy,
-    //     dateOrder: data.dateOrder,
-    //     outlay: data.tienKhachDua,
-    //     numberTable: data.soBan,
-    //     orderCode: data.ma,
-    //     promotionBill: data.khuyenMai,
-    //     outlayBack: data.tienThoiLai,
-    //     typePaymentTmp: data.typePaymentTmp,
-    //     paymentTmp: data.paymentTmp,
-    //     inputPayment: data.inputPayment,
-    //     customerPayment: data.customerPayment
-    //   }
-    //   this.alertNotification('Bạn đã order thành công!', 'success');
-    //   localStorage.setItem('orderListTmp', JSON.stringify(orderListData));
-    //   localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
-    //   // const mainProcess = window.require("electron").remote.require('./print.js');
-    //   let html = ReactDOMServer.renderToStaticMarkup(this.templatePrint(data, this.state.auth));
-    //   // mainProcess.print(html, 'none', 'none');
-    // }).catch((reason) => {
-    //   this.alertNotification('Order không thành công!', 'error');
-    // });
   }
 
   getDate(jsonDate) {
     let currentdate = new Date(jsonDate);
-    let datetime = currentdate.getDate() + "/"
-      + (currentdate.getMonth()+1)  + "/"
-      + currentdate.getFullYear();
+    let datetime = ('0' + currentdate.getDate()).slice(-2) + '/'
+             + ('0' + (currentdate.getMonth()+1)).slice(-2) + '/'
+             + currentdate.getFullYear();
+
     let hour = (currentdate.getHours() < 10 ? '0' : '') + currentdate.getHours();
     let minutes = (currentdate.getMinutes() < 10 ? '0' : '') + currentdate.getMinutes();
 
