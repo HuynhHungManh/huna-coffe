@@ -52,7 +52,8 @@ class TableTemporaryBill extends Component {
       formality: '',
       statusOrder: '',
       codeOrder: '',
-      auth: ''
+      auth: '',
+      storeOrder: []
     };
     this.handleChange = this.handleChange.bind(this);
   }
@@ -90,30 +91,75 @@ class TableTemporaryBill extends Component {
     this.setState({
       auth: JSON.parse(localStorage.getItem('auth'))
     });
-    this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
-      if (res.data.content && res.data.content.length > 0) {
-        let arrayTmpDetail = [];
-        this.setState({
-          isLoadingOrder: true,
-          billTotal: res.data.content.length
+
+    if (this.props.checkOffline == false) {
+      this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder})).then((res) => {
+        if (res.data.content && res.data.content.length > 0) {
+          let arrayTmpDetail = [];
+          this.setState({
+            isLoadingOrder: true,
+            billTotal: res.data.content.length
+          });
+          let data = res.data;
+          let arrayTmp = [];
+        } else if (res.data.content && res.data.content.length == 0) {
+          this.setState({
+            isLoadingOrder: true
+          });
+        }
+      }).catch((error) => {
+        this.alertNotification('Server lỗi!', 'error');
+      });
+    } else {
+      // console.log(this.props.storeOrder);
+      var data = [];
+      this.props.storeOrder.forEach((item, index) => {
+        data.push({
+          orderThucDons: item.orderThucDons ? item.orderThucDons : [],
+          id: item.id,
+          khuyenMai: item.khuyenMai,
+          khuyenMaiChiTiet: 0,
+          lyDoHuyOrder: item.lyDoHuyOrder ? item.lyDoHuyOrder : null,
+          ma: item.ma,
+          maTrangThaiOrder: item.trangThaiOrder,
+          ngayOrder: item.ngayOrder,
+          nguoiChietKhau: item.nguoiChietKhauId,
+          nhanVienOrder: item.nhanVienOrderId,
+          soBan: item.soBan ? item.soBan : 0,
+          thanhTien: item.thanhTien,
+          tienCaThe: item.tienCaThe,
+          tienChuyenKhoan: item.tienChuyenKhoan,
+          tienKhachDua: item.tienKhachDua,
+          textTrangThaiOrder: 'Đã thanh toán',
+          tienKhuyenMai: 0,
+          tienKhuyenMaiChiTiet: 0,
+          tienThoiLai: item.tienThoiLai,
+          tongGia: item.tongGia,
         });
-        let data = res.data;
-        let arrayTmp = [];
-      } else if (res.data.content && res.data.content.length == 0) {
+      });
+      this.setState({
+        isLoadingOrder: true,
+        getOrders: data.reverse()
+      });
+    }
+    if (this.props.checkOffline == false) {
+      this.props.dispatch(Orders.actions.ressonCancelOrders({ngayOrder: this.state.dateOreder})).then((res) => {
+        if (res.data) {
+          this.setState({
+            optionCancel: res.data
+          });
+        }
+      });
+      this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: this.state.dateOreder}));
+      this.props.dispatch(TotalPrice.actions.totalPrice({ngayOrder: this.state.dateOreder}));
+    } else {
+      let storeData = JSON.parse(localStorage.getItem('storeData'));
+      if (storeData.data.ressonCancelOrders) {
         this.setState({
-          isLoadingOrder: true
+          optionCancel: storeData.data.ressonCancelOrders
         });
       }
-    });
-    this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: this.state.dateOreder}));
-    this.props.dispatch(TotalPrice.actions.totalPrice({ngayOrder: this.state.dateOreder}));
-    this.props.dispatch(Orders.actions.ressonCancelOrders({ngayOrder: this.state.dateOreder})).then((res) => {
-      if (res.data) {
-        this.setState({
-          optionCancel: res.data
-        });
-      }
-    });
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -136,24 +182,23 @@ class TableTemporaryBill extends Component {
         priceTotal: this.props.totalPrice.tongTien
       });
     }
+    if (prevProps.storeOrder !== this.props.storeOrder) {
+
+    }
   }
 
   convertUTCDateToLocalDate(date) {
     var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
-
     var offset = date.getTimezoneOffset() / 60;
     var hours = date.getHours();
-
     newDate.setHours(hours - offset);
-
     return newDate;   
   }
+
   getDate(jsonDate, format) {
     var strDateTime = jsonDate;
     var myDate = new Date(strDateTime);
     let currentdate = this.convertUTCDateToLocalDate(myDate);
-    
-
     let datetime = ('0' + currentdate.getDate()).slice(-2) + '/'
              + ('0' + (currentdate.getMonth()+1)).slice(-2) + '/'
              + currentdate.getFullYear();
@@ -164,6 +209,13 @@ class TableTemporaryBill extends Component {
       return hours + ":" + minutes;
     } else {
       return datetime + " " + hours + ":" + minutes;
+    }
+  }
+
+  dispatchStoreOrder(storeOrder) {
+    return {
+      type: 'STORE_ORDER',
+      storeOrder
     }
   }
 
@@ -190,52 +242,93 @@ class TableTemporaryBill extends Component {
   }
 
   cancelOrder(id) {
-    this.props.dispatch(Orders.actions.cancelOrders({idOrder: id}, {'lyDoHuyOrderId': Number(this.state.valueCancel)}))
-    .then((res) => {
-      this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder}));
+    if (this.props.checkOffline == false) {
+      this.props.dispatch(Orders.actions.cancelOrders({idOrder: id}, {'lyDoHuyOrderId': Number(this.state.valueCancel)}))
+      .then((res) => {
+        this.props.dispatch(Orders.actions.getOrders({ngayOrder: this.state.dateOreder}));
+        this.alertNotification('Bạn đã hủy thành công!', 'success');
+        this.closeCancelForm();
+      })
+      .catch((e) => {
+        this.alertNotification('Bạn không thể hủy order!', 'error');
+      });
+    } else {
+      var data = this.state.getOrders;
+      data.forEach((item, index) => {
+        if (item.id == parseInt(id)) {
+          item.textTrangThaiOrder = "Đã huỷ hoá đơn";
+          item.maTrangThaiOrder = 'HUY_ORDER';
+          item.lyDoHuyOrderId = Number(this.state.valueCancel);
+        }
+      });
+      this.props.dispatch(this.dispatchStoreOrder(data));
       this.alertNotification('Bạn đã hủy thành công!', 'success');
       this.closeCancelForm();
-    })
-    .catch((e) => {
-      this.alertNotification('Bạn không thể hủy order!', 'error');
-    });
+    }
   }
 
   viewOrder(id) {
-    this.props.dispatch(Orders.actions.orderThucDons({orderId: id})).then((res) => {
-      if (res.data) {
-        let priceDiscount = 0;
-        let dataOrder = this.state.getOrders.find(item => item.id == id);
-        let promotionBill = 0;
-        let data = res.data;
-        let status = '';
+    if (this.props.checkOffline == false) {
+      this.props.dispatch(Orders.actions.orderThucDons({orderId: id})).then((res) => {
+        if (res.data) {
+          let priceDiscount = 0;
+          let dataOrder = this.state.getOrders.find(item => item.id == id);
+          let promotionBill = 0;
+          let data = res.data;
+          let status = '';
 
-        data.forEach(function(item, index) {
-          item.promotion = Math.round((item.khuyenMai / item.donGia) * 100);
-        });
-        if (dataOrder) {
-          status = dataOrder.textTrangThaiOrder ? dataOrder.textTrangThaiOrder : '';
+          data.forEach(function(item, index) {
+            item.promotion = Math.round((item.khuyenMai / item.donGia) * 100);
+          });
+          if (dataOrder) {
+            status = dataOrder.textTrangThaiOrder ? dataOrder.textTrangThaiOrder : '';
+          }
+          this.setState({
+            orderThucDons: data,
+            statusPopup: true,
+            idItemCurrent: id,
+            modelCurrent: 'viewOrder',
+            viewOrderPriceTotal: dataOrder.tongGia,
+            viewOrderPriceDiscount: dataOrder.tienKhuyenMai ? dataOrder.tienKhuyenMai : 0,
+            viewOrderAfterDiscount: dataOrder.thanhTien ? dataOrder.thanhTien : 0,
+            viewDateOrder: dataOrder ? dataOrder.ngayOrder : '',
+            priceCustomerCash: dataOrder.tienKhachDua ? dataOrder.tienKhachDua : 0,
+            priceCustomerCard: dataOrder.tienCaThe ? dataOrder.tienCaThe : 0,
+            priceCustomerTransfer: dataOrder.tienChuyenKhoan ? dataOrder.tienChuyenKhoan : 0,
+            priceCustomerBack: dataOrder.tienThoiLai ? dataOrder.tienThoiLai : 0,
+            numberTable: dataOrder && dataOrder.soBan != 0 ? dataOrder.soBan : 'Mang về',
+            promotionBill: dataOrder.khuyenMai ? dataOrder.khuyenMai : 0,
+            statusOrder: status,
+            codeOrder: dataOrder.ma ? dataOrder.ma : ''
+          });
         }
-        this.setState({
-          orderThucDons: data,
-          statusPopup: true,
-          idItemCurrent: id,
-          modelCurrent: 'viewOrder',
-          viewOrderPriceTotal: dataOrder.tongGia,
-          viewOrderPriceDiscount: dataOrder.tienKhuyenMai ? dataOrder.tienKhuyenMai : 0,
-          viewOrderAfterDiscount: dataOrder.thanhTien ? dataOrder.thanhTien : 0,
-          viewDateOrder: dataOrder ? dataOrder.ngayOrder : '',
-          priceCustomerCash: dataOrder.tienKhachDua ? dataOrder.tienKhachDua : 0,
-          priceCustomerCard: dataOrder.tienCaThe ? dataOrder.tienCaThe : 0,
-          priceCustomerTransfer: dataOrder.tienChuyenKhoan ? dataOrder.tienChuyenKhoan : 0,
-          priceCustomerBack: dataOrder.tienThoiLai ? dataOrder.tienThoiLai : 0,
-          numberTable: dataOrder && dataOrder.soBan != 0 ? dataOrder.soBan : 'Mang về',
-          promotionBill: dataOrder.khuyenMai ? dataOrder.khuyenMai : 0,
-          statusOrder: status,
-          codeOrder: dataOrder.ma ? dataOrder.ma : ''
-        });
-      }
-    });
+      })
+      .catch((error) => {
+        this.alertNotification('Server lỗi!', 'error');
+      });
+    } else {
+      var data = this.state.getOrders.find(item => item.id == id);
+      console.log(data);
+      this.setState({
+        orderThucDons: data.orderThucDons,
+        statusPopup: true,
+        idItemCurrent: id,
+        modelCurrent: 'viewOrder',
+        viewOrderPriceTotal: data.tongGia,
+        viewOrderPriceDiscount: data.tienKhuyenMai ? data.tienKhuyenMai : 0,
+        viewOrderAfterDiscount: data.thanhTien ? data.thanhTien : 0,
+        viewDateOrder: data ? data.ngayOrder : '',
+        priceCustomerCash: data.tienKhachDua ? data.tienKhachDua : 0,
+        priceCustomerCard: data.tienCaThe ? data.tienCaThe : 0,
+        priceCustomerTransfer: data.tienChuyenKhoan ? data.tienChuyenKhoan : 0,
+        priceCustomerBack: data.tienThoiLai ? data.tienThoiLai : 0,
+        numberTable: data && data.soBan != 0 ? data.soBan : 'Mang về',
+        promotionBill: data.khuyenMai ? data.khuyenMai : 0,
+        statusOrder: data.textTrangThaiOrder ? data.textTrangThaiOrder : '',
+        codeOrder: data.ma ? data.ma : ''
+      });
+    }
+    
   }
 
   printOrder(item) {
@@ -255,7 +348,6 @@ class TableTemporaryBill extends Component {
                  + date.getFullYear();
 
     let timePrint = this.getDate(date, '');
-    console.log(timePrint);
     this.props.dispatch(Orders.actions.orderThucDons({orderId: item.id})).then((res) => {
       if (res.data) {
         let dataDetail = res.data;
@@ -387,7 +479,7 @@ class TableTemporaryBill extends Component {
                             <tr key = {i}>
                               <td width="15%">{item.ma}</td>
                               <td width="13%">{this.getDate(item.ngayOrder, '')}</td>
-                              <td width="9%">{item.soBan}</td>
+                              <td width="9%">{(item.soBan && item.soBan != ' ') ? item.soBan : 0}</td>
                               <td width="10%">-</td>
                               <td width="13%">
                                 <NumberFormat value={item.thanhTien} displayType={'text'} thousandSeparator={true} /> đ
@@ -477,7 +569,7 @@ class TableTemporaryBill extends Component {
                           this.state.orderThucDons.map((item, i) => {
                             return (
                               <tr key={i}>
-                                <td>{item.tenThucDon}</td>
+                                <td>{this.props.checkOffline == false ? item.tenThucDon : item.ten}</td>
                                 <td>
                                   <NumberFormat value={item.donGia} displayType={'text'} thousandSeparator={true} /> đ
                                 </td>
@@ -631,7 +723,9 @@ const bindStateToProps = (state) => {
   return {
     orders: state.orders,
     totalPromotion: state.totalPromotion,
-    totalPrice: state.totalPrice
+    totalPrice: state.totalPrice,
+    storeOrder: state.storeOrder,
+    checkOffline: state.checkOffline
   }
 }
 

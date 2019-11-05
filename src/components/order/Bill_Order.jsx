@@ -87,7 +87,9 @@ class Bill_Order extends Component {
       priceAfterPromotion: 0,
       discount: 0,
       isCheckedTakeAWay: false,
-      isHide: false
+      isHide: false,
+      isOffline: false,
+      setCode: 0
     }
   }
 
@@ -101,26 +103,49 @@ class Bill_Order extends Component {
       60 * 1000
     );
     let getOrderProcessTmp = JSON.parse(localStorage.getItem('orderProcessTmp'));
-    this.getCode();
+    this.getCode(false);
   
     if (getOrderProcessTmp) {
       this.processOrderTmp(getOrderProcessTmp);
     } else {
-      this.props.dispatch(Promotion.actions.peolePromotion()).then((res) => {
-        if (res.data && res.data.content) {
-          let data = [];
-          res.data.content.forEach((item, index) => {
-            data.push({
-              id: item.id,
-              label : item.hoVaTen
+        let data = [];
+        this.props.dispatch(Promotion.actions.peolePromotion()).then((res) => {
+          if (res.data && res.data.content) {
+            res.data.content.forEach((item, index) => {
+              if (item.active == true && item.block == false && item.deleted == false) {
+                data.push({
+                  id : item.id,
+                  label : item.hoVaTen
+                });
+              }
             });
-          });
 
-          this.setState({
-            peopleSelect: data
+            this.setState({
+              peopleSelect: data
+            });
+          }
+        }).catch((error) => {
+        let storeData = JSON.parse(localStorage.getItem('storeData'));
+        let peolePromotion = storeData.data.peolePromotion;
+        const promise = new Promise((resolve, reject) => {
+          let obj = {};
+          peolePromotion.forEach((item, index) => {
+            if (item.active == true && item.block == false && item.deleted == false) {
+              data.push({
+                id : item.id,
+                label : item.hoVaTen
+              });
+            }
           });
-        }
-      })
+          resolve({data: data});
+        });
+        Promise.all([promise]).then(values => {
+          let data = values[0];
+          this.setState({
+            peopleSelect: data.data
+          });
+        });
+      });
     }
   }
 
@@ -193,10 +218,6 @@ class Bill_Order extends Component {
       });
     }
 
-    if (prevState.promotionBill !== this.state.promotionBill) {
-
-    }
-
     if (prevProps.productsBill !== this.props.productsBill) {
       let pricePromotion = 0;
       let priceTotal = 0;
@@ -248,6 +269,11 @@ class Bill_Order extends Component {
       this.setState({
         codeOrder: this.props.getCode.maHoaDon,
         isHide: false
+      });
+    }
+    if (prevProps.isOffline !== this.props.isOffline) {
+      this.setState({
+        isOffline: true
       });
     }
   }
@@ -358,7 +384,8 @@ async submitOrders(typeSubmit) {
     'trangThaiOrder': 'DA_THANH_TOAN',
     'soBan': this.state.numberTable,
     'tienKhachDua': payCash,
-    'tienThoiLai': payBack ? payBack : 0
+    'tienThoiLai': payBack ? payBack : 0,
+    'textTrangThaiOrder': 'Đã thanh toán'
   };
   this.setState({
     orderDetail: [data]
@@ -373,32 +400,42 @@ async submitOrders(typeSubmit) {
       this.alertNotification('Bạn chưa nhập số bàn!', 'warning');
     } else if (productsBill && productsBill.length == 0) {
       this.alertNotification('Bạn chưa chọn món!', 'warning');
+    } else if (this.props.checkOffline == true) {
+      this.state.isHide = false;
+      // this.props.countCodeAfterSubmit();
+      const newData = this.props.storeOrder;
+      data.id = this.state.setCode;
+      data.ma = this.state.codeOrder;
+      newData.push(data);
+      this.props.dispatch(this.dispatchStoreOrder(newData));
+      this.getCode(true);
+      this.clearForm();
     } else {
       this.state.isHide = true;
       this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
-      this.props.countCodeAfterSubmit();
-      this.alertNotification('Bạn đã order thành công!', 'success');
-      let hour = (date.getHours() < 10 ? '0' : '') + date.getHours();
-      let minutes = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
-      let timeCopy = hour + ':' + minutes;
-      let copyProductsBill = {
-        productsBill: productsBill,
-        priceTotal: this.state.priceTotal,
-        discountPriceTotal: this.state.discountPriceTotal,
-        discountAfter: this.state.priceAfterPromotion,
-        dateCopy: timeCopy,
-        dateOrder: this.state.dateOrder,
-        outlay: outlay,
-        numberTable: this.state.numberTable,
-        orderCode: data.ma,
-        promotionBill: this.state.promotionBill,
-        outlayBack: this.state.outlayBack,
-        typePaymentTmp: this.state.typePaymentTmp,
-        paymentTmp: this.state.paymentTmp,
-        inputPayment: this.state.inputPayment,
-        customerPayment: this.state.customerPayment,
-        peopleSelect: this.state.peopleSelect ? this.state.peopleSelect : []
-      }
+        this.props.countCodeAfterSubmit();
+        this.alertNotification('Bạn đã order thành công!', 'success');
+        let hour = (date.getHours() < 10 ? '0' : '') + date.getHours();
+        let minutes = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+        let timeCopy = hour + ':' + minutes;
+        let copyProductsBill = {
+          productsBill: productsBill,
+          priceTotal: this.state.priceTotal,
+          discountPriceTotal: this.state.discountPriceTotal,
+          discountAfter: this.state.priceAfterPromotion,
+          dateCopy: timeCopy,
+          dateOrder: this.state.dateOrder,
+          outlay: outlay,
+          numberTable: this.state.numberTable,
+          orderCode: data.ma,
+          promotionBill: this.state.promotionBill,
+          outlayBack: this.state.outlayBack,
+          typePaymentTmp: this.state.typePaymentTmp,
+          paymentTmp: this.state.paymentTmp,
+          inputPayment: this.state.inputPayment,
+          customerPayment: this.state.customerPayment,
+          peopleSelect: this.state.peopleSelect ? this.state.peopleSelect : []
+        }
         localStorage.setItem('copyProductsBill', JSON.stringify(copyProductsBill));
         try {
           const mainProcess = window.require("electron").remote.require('./print.js');
@@ -418,14 +455,13 @@ async submitOrders(typeSubmit) {
           this.alertNotification('Kiểm tra máy in!', 'error');
         }
         this.clearForm();
-        this.getCode();
+        this.getCode(false);
         this.setState({
           codeTmp: code
         });
         this.props.dispatch(TotalPromotion.actions.totalPromotion({ngayOrder: dateFormat}));
       }).catch((reason) => {
-        this.state.isHide = false;
-        this.alertNotification('Order không thành công!', 'error');
+        this.alertNotification('Server lỗi!', 'error');
       });
     }
   } else if (typeSubmit == 'Store') {
@@ -450,7 +486,6 @@ async submitOrders(typeSubmit) {
         orderNewListTmp.push(data);
       }
       localStorage.setItem('orderListTmp', JSON.stringify(orderNewListTmp));
-      this.props.countCodeAfterSubmit();
       this.alertNotification('Bạn đã lưu thành công!', 'success');
       this.props.countCodeAfterSubmit();
       this.clearForm();
@@ -458,6 +493,13 @@ async submitOrders(typeSubmit) {
   }
   localStorage.removeItem('orderProcessTmp');
   };
+
+  dispatchStoreOrder(storeOrder) {
+    return {
+      type: 'STORE_ORDER',
+      storeOrder
+    }
+  }
 
   copyProductsBill() {
     this.props.copyProductsBill();
@@ -904,10 +946,46 @@ async submitOrders(typeSubmit) {
     });
   }
 
-  getCode() {
+  getCode(isOrder) {
     let infoApp = JSON.parse(localStorage.getItem('infoApp'));
     let codeDevice = (infoApp && infoApp.maMay) ? infoApp.maMay : 'M01';
-    this.props.dispatch(GetCode.actions.getCode({maMay: codeDevice}));
+    if (this.props.checkOffline == false) {
+      this.props.dispatch(GetCode.actions.getCode({maMay: codeDevice}))
+      .then((res) => {})
+      .catch((error) => {
+        this.alertNotification('Server lỗi!', 'warning');
+      });
+    } else {
+      console.log(this.props.getCode);
+      let setCode = this.state.setCode;
+      if (this.props.getCode && this.props.getCode.maHoaDon) {
+        setCode = parseInt(this.props.getCode.maHoaDon.slice(-4));
+      }
+      if (isOrder == true) {
+        setCode = setCode + 1;
+        this.setState({
+          setCode: this.state.setCode + 1
+        });
+      }
+      var date = new Date();
+      let year = date.getFullYear().toString().slice(-2);
+      let month = ('0' + (date.getMonth()+1)).slice(-2);
+      let day = ('0' + date.getDate()).slice(-2);
+      let numberBill = 10000 + setCode;
+      let numberBillBuild = numberBill.toString().slice(-4);
+      let code = codeDevice + 'OFF' + '.' + year + month + day + numberBillBuild;
+      this.props.dispatch(this.setCode({maHoaDon: code}));
+      this.setState({
+        codeOrder: code
+      });
+    }
+  }
+
+  setCode(getCode) {
+    return {
+      type: 'GET_CODE',
+      getCode
+    }
   }
 
   render() {
@@ -1354,7 +1432,10 @@ const bindStateToProps = (state) => {
   return {
     promotion: state.promotion,
     noteOrders: state.noteOrders,
-    getCode: state.getCode
+    getCode: state.getCode,
+    isOffline: state.isOffline,
+    storeOrder: state.storeOrder,
+    checkOffline: state.checkOffline
   }
 }
 

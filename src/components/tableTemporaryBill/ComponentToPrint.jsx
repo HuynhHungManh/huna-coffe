@@ -9,15 +9,6 @@ class ComponentToPrint extends Component {
     let auth = this.props.auth;
     let totalPrice = data && data.thanhTien ? data.thanhTien : 0;
     let customerPrice = 0;
-    // if (data.tienKhachDua) {
-    //   customerPrice = customerPrice + data.tienKhachDua;
-    // };
-    // if (data.tienCaThe) {
-    //   customerPrice = customerPrice + data.tienCaThe;
-    // };
-    // if (data.tienChuyenKhoan) {
-    //   customerPrice = customerPrice + data.tienChuyenKhoan;
-    // };
 
     return (
       <div className="template-print" style={{textAlign: 'center'}}>

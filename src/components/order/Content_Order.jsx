@@ -7,6 +7,8 @@ import {PropTypes} from 'prop-types';
 import {Numberic} from 'components/keyboarded';
 import {Orders, Promotion, NoteOrder, TotalPromotion} from 'api';
 import DragScrollProvider from 'drag-scroll-provider';
+import { Offline, Online } from "react-detect-offline";
+import Spinner from 'react-spinkit';
 
 class Content_Order extends Component {
   constructor(props, context) {
@@ -41,7 +43,9 @@ class Content_Order extends Component {
       promotionGroup: [],
       promotionGroupId: [],
       promotionItems: [],
-      autoLoadPromotion: true
+      autoLoadPromotion: true,
+      statusLoadData: true,
+      isOffline: false
     }
   }
 
@@ -61,8 +65,7 @@ class Content_Order extends Component {
         };
       }
     });
-    this.props.dispatch(Promotion.actions.promotion());
-    this.props.dispatch(NoteOrder.actions.noteOrders());
+    // this.props.dispatch(Promotion.actions.promotion());
     let orderListTmp = JSON.parse(localStorage.getItem('orderListTmp'));
     let itemStore = orderListTmp ? orderListTmp.length : 0;
     this.props.dispatch(Orders.actions.getOrders({ngayOrder: dateTodayFormat})).then((res) => {
@@ -82,15 +85,22 @@ class Content_Order extends Component {
           countCode: res.data.content.length + itemStore
         });
       }
+    }).catch((error) => {
+      this.alertNotification('Server lỗi!', 'error');
     });
+    let storeData = JSON.parse(localStorage.getItem('storeData'));
+    if (storeData) {
+       this.setState({
+        statusLoadData: false
+      });
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if(prevProps.products !== this.props.products) {
+    if (prevProps.products !== this.props.products) {
       let getStoreProducts = JSON.parse(localStorage.getItem('products'));
       let products = this.props.products;
       let preProduct = [];
-      // let categoriesIdCurrent = JSON.parse(localStorage.getItem('categoriesIdCurrent'));
       products.forEach((item, index) => {
         if (getStoreProducts != null
           && getStoreProducts.length > 0
@@ -194,10 +204,24 @@ class Content_Order extends Component {
         autoLoadPromotion: this.props.status
       });
     }
+    if (prevProps.statusLoadData !== this.props.statusLoadData) {
+      setTimeout(()=> {
+        this.setState({
+          statusLoadData: this.props.statusLoadData
+        });
+      }, 1000);
+    }
+    if (prevProps.checkOffline !== this.props.checkOffline) {
+      this.setState({
+        isOffline: this.props.checkOffline
+      });
+    }
   }
 
   reloadPromotion() {
-    this.props.dispatch(Promotion.actions.promotion());
+    if (this.state.isOffline == false) {
+      this.props.dispatch(Promotion.actions.promotion());
+    }
   }
 
   storeProductsBill(productsBill) {
@@ -400,13 +424,6 @@ class Content_Order extends Component {
               itemState.quantum = itemState.quantum + 1;
               itemState.priceAndQuantum = itemState.quantum * itemState.donGia;
             }
-
-            // if (itemState.itemPromotion && itemState.itemPromotion > 0) {
-
-            //   priceTotal = priceTotal + ((itemState.donGia - itemState.itemPromotion) * itemState.quantum);
-            // } else {
-            //   priceTotal = priceTotal + (itemState.quantum * itemState.donGia);
-            // }
             arrTmp.push(itemState);
           });
 
@@ -496,11 +513,6 @@ class Content_Order extends Component {
           item.quantum = item.quantum + 1;
         }
       }
-      // if (item.itemPromotion && item.itemPromotion > 0) {
-      //   priceTotal = priceTotal + (item.quantum * (item.donGia - item.itemPromotion));
-      // } else {
-      //   priceTotal = priceTotal + (item.quantum * item.donGia);
-      // }
       productsBillPre.push(item);
     });
     this.setState({
@@ -580,24 +592,32 @@ class Content_Order extends Component {
   render() {
     return(
       <div className="content-order">
-        <DragScrollProvider>
-          {({ onMouseDown, ref }) => (
-          <div
-            className="item-order-block scrollable"
-            ref={ref}
-            onMouseDown={onMouseDown}>
-              <ul className="item-order-box">
-                { this.state.products &&
-                  this.state.products.map((item, i) => {
-                    return (
-                      <Item_Order key = {i} data = {item} chooseProduct = {this.chooseProduct}/>
-                    )
-                  })
+        
+          <DragScrollProvider>
+            {({ onMouseDown, ref }) => (
+              <div
+                className="item-order-block scrollable"
+                ref={ref}
+                onMouseDown={onMouseDown}>
+                {
+                  this.props.statusLoadData == true
+                  ?
+                  <Spinner name="line-scale" />
+                  :
+                  <ul className="item-order-box">
+                      { this.state.products &&
+                        this.state.products.map((item, i) => {
+                          return (
+                            <Item_Order key = {i} data = {item} chooseProduct = {this.chooseProduct}/>
+                          )
+                        })
+                      }
+                  </ul>
                 }
-              </ul>
-            </div>
-          )}
-        </DragScrollProvider>
+              </div>
+            )}
+          </DragScrollProvider>
+        
         <Bill_Order
           updateQuantum = {this.updateQuantum}
           cancelItemBill = {this.cancelItemBill}
@@ -635,7 +655,9 @@ const bindStateToProps = (state) => {
     products: state.products || [],
     categories: state.categories,
     promotion: state.promotion,
-    status: state.status
+    status: state.status,
+    statusLoadData: state.statusLoadData,
+    checkOffline: state.checkOffline
   }
 }
 

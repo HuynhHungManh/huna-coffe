@@ -1,6 +1,6 @@
 import React from 'react';
 import {CommonLayout} from 'layouts';
-import {Auth} from 'api';
+import {Auth, Categories} from 'api';
 import {connect} from 'react-redux';
 import {PropTypes} from 'prop-types';
 import classnames from 'classnames';

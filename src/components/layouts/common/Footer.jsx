@@ -101,6 +101,8 @@ class Footer extends Component {
         statusPopup: false
       }, () => {
         this.gotoPage('/');
+        localStorage.removeItem('checkOnlyShowPopup');
+        localStorage.removeItem('auth');
       });
     })
     .catch((err) => {

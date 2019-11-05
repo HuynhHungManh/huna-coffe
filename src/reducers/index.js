@@ -13,6 +13,10 @@ import {noteOrders} from 'base/reducers/noteOrders';
 import {totalPromotion} from 'base/reducers/totalPromotion';
 import {totalPrice} from 'base/reducers/totalPrice';
 import {getCode} from 'base/reducers/getCode';
+import {storeData} from 'base/reducers/storeData';
+import {statusLoadData} from 'base/reducers/statusLoadData';
+import {checkOffline} from 'base/reducers/checkOffline';
+import {storeOrder} from 'base/reducers/storeOrder';
 
 let rootReducer = combineReducers(
   {
@@ -27,7 +31,11 @@ let rootReducer = combineReducers(
     noteOrders,
     totalPromotion,
     totalPrice,
-    getCode
+    getCode,
+    storeData,
+    statusLoadData,
+    checkOffline,
+    storeOrder
   }
 );
 

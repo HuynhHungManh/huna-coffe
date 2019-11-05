@@ -12,6 +12,7 @@ Modal.setAppElement('body');
 import  MultiSelectReact  from 'multi-select-react';
 import NumberFormat from 'react-number-format';
 import Switch from "react-switch";
+import classnames from 'classnames';
 
 class Header extends Component {
   constructor(props, context) {
@@ -24,14 +25,30 @@ class Header extends Component {
       listPrinterTmp: [],
       type: '',
       totalPromotion: 0,
-      checkedAutoPromotion: true
+      checkedAutoPromotion: true,
+      checkOnline: !this.props.checkOffline,
+      checkedAutoPromotionTMP: true,
+      checkOnlineTMP: !this.props.checkOffline,
+      isRemoveCache: false,
+      isRemoveCacheTMP: false
     }
     this.handleChange = this.handleChange.bind(this);
+    this.handleChangeCheckOnline = this.handleChangeCheckOnline.bind(this);
   }
 
   handleChange(checked) {
-    this.props.dispatch(this.changeStatusAuto(checked));
-    this.setState({ checkedAutoPromotion: checked });
+    this.setState({ checkedAutoPromotionTMP: checked });
+  }
+
+  handleChangeCheckOnline(checked) {
+    this.setState({ checkOnlineTMP: checked });
+  }
+
+  changeOnline (isOffline) {
+    return {
+      type: 'CHECK_OFFLINE',
+      isOffline
+    }
   }
 
   componentWillMount() {
@@ -67,6 +84,12 @@ class Header extends Component {
     if (prevProps.totalPromotion !== this.props.totalPromotion) {
       this.setState({
         totalPromotion: this.props.totalPromotion.tongChietKhau ? this.props.totalPromotion.tongChietKhau : 0
+      });
+    }
+    
+    if (prevProps.checkOffline !== this.props.checkOffline) {
+      this.setState({
+        checkOnlineTMP: !this.props.checkOffline
       });
     }
   }
@@ -195,6 +218,14 @@ class Header extends Component {
     this.setState({
       statusPopup: false
     });
+
+    if (this.state.type == 'configsApp') {
+      this.setState({
+        checkedAutoPromotionTMP : this.state.checkedAutoPromotion,
+        checkOnlineTMP : this.state.checkOnline,
+        isRemoveCacheTMP: this.state.isRemoveCache
+      });
+    }
   }
 
   getPrinter(list) {
@@ -217,21 +248,81 @@ class Header extends Component {
     }
   }
 
-  choosePrinter() {
+  openConfigs() {
     this.setState({
       statusPopup: true,
-      type: 'getPrinter'
+      type: 'configsApp'
     });
-    const mainProcess = window.require("electron").remote.require('./getPrint.js');
-    mainProcess.getPrint(this.getPrinter.bind(this));
   }
 
-  savePrinter() {
-    if (this.state.listPrinterTmp.length > 0) {
+  dispatchOrders(data) {
+    var dataStore = [];
+    this.props.dispatch(Orders.actions.orders(null, data)).then((res) => {
+      if (data.lyDoHuyOrderId && data.id) {
+        this.props.dispatch(Orders.actions.cancelOrders({idOrder: data.id}, {'lyDoHuyOrderId': Number(this.state.valueCancel)}));
+      }
+      dataStore = this.props.storeOrder.filter(item => item.isPrinter != data.id);
+      this.props.dispatch(this.dispatchStoreOrder(dataStore));
+    });
+  }
+
+  dispatchStoreOrder(storeOrder) {
+    return {
+      type: 'STORE_ORDER',
+      storeOrder
+    }
+  }
+
+  syncOffline() {
+    const order = this.props.storeOrder;
+    if (order) { 
+      for (let i = 0; i < order.length ; i++) {
+        this.dispatchOrders(order[i]);
+      };
+    }
+  }
+
+  saveConfigs() {
+    this.setState({
+      checkedAutoPromotion: this.state.checkedAutoPromotionTMP,
+      statusPopup: false
+    });
+    this.props.dispatch(this.changeStatusAuto(this.state.checkedAutoPromotionTMP));
+
+    if (!this.state.checkOnlineTMP != this.props.checkOffline) {
       this.setState({
-        listPrinter: this.state.listPrinterTmp
+        type: 'confirmCheckOnline',
+        statusPopup: true
       });
     }
+
+    if (this.state.isRemoveCacheTMP == true) {
+      localStorage.removeItem('storeData');
+      localStorage.removeItem('checkOnlyShowPopup');
+    }
+
+  }
+
+  confirmChange() {
+    this.props.dispatch(this.changeOnline(!this.state.checkOnlineTMP));
+    this.setState({
+      checkOnline: this.state.checkOnlineTMP,
+      statusPopup: false
+    });
+    this.syncOffline();
+  }
+
+  closeModelAffterConfirm() {
+    this.setState({
+      statusPopup: false,
+      checkOnlineTMP: this.state.checkOnline
+    });
+  }
+
+  toggleChange() {
+    this.setState({
+      isRemoveCacheTMP: !this.state.isRemoveCacheTMP,
+    });
   }
 
   render() {
@@ -243,24 +334,19 @@ class Header extends Component {
             <span className="title">{this.state.page}</span>
           </p>
           <div className="account-info-box">
-            <div className="switch-checkbox">
-              <Switch
-                checked={this.state.checkedAutoPromotion}
-                onChange={this.handleChange}
-                onColor="#86d3ff"
-                onHandleColor="#2693e6"
-                handleDiameter={30}
-                uncheckedIcon={false}
-                checkedIcon={false}
-                boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                height={20}
-                width={48}
-                className="react-switch"
-                id="material-switch"
-              />
-            </div>
-            <span className="icon-printer" onClick={this.choosePrinter.bind(this)}></span>
+            <span 
+              className={
+              classnames('icon3-connection', {
+                'icon3-connection offline' : this.props.checkOffline,
+              })}
+            >
+              {
+                this.props.checkOffline ? 
+                  <span className="icon-cross"></span>
+                : ""
+              }
+            </span>
+            <span className="icon3-cog" onClick={this.openConfigs.bind(this)}></span>
             <span className="icon-users" onClick={this.confirmShift.bind(this)}></span>
             <p className="account-text">
               Xin chào:
@@ -293,7 +379,7 @@ class Header extends Component {
               <button className="btn close-button" onClick={this.closeModel.bind(this)}>
                 Đóng
               </button>
-              <button className="btn" onClick={this.closeModel.bind(this)}>
+              <button className="btn handle-configs" onClick={this.saveConfigs.bind(this)}>
                 Lưu
               </button>
             </div>
@@ -321,6 +407,127 @@ class Header extends Component {
           </div>
           : ""
         }
+        { 
+          this.state.type == 'configsApp' ?
+          <div className="configs-block">
+            <div className="configs-header">
+              <p className="text-title">Cài đặt</p>
+              <span className="icon-cross" onClick={this.closeModel.bind(this)}></span>
+            </div>
+            <div className="configs-content">
+              <div className="item-block">
+                <div className="title">
+                  Tự động cập nhập khuyến mãi: 
+                </div>
+                <div className="content">
+                  <div className="switch-checkbox">
+                    <Switch
+                      className="react-switch"
+                      onChange={this.handleChange}
+                      checked={this.state.checkedAutoPromotionTMP}
+                      aria-labelledby="neat-label"
+                      height={26}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="item-block">
+                <div className="title">
+                  Trạng thái: 
+                  <span className={
+                    classnames('text-color-green', {
+                      'text-color-red' : !this.state.checkOnlineTMP,
+                    })}
+                  >
+                    {
+                      this.state.checkOnlineTMP == true 
+                      ?
+                        ' ONLINE'
+                      :
+                        ' OFFLINE'
+                    }
+                  </span> 
+                </div>
+                <div className="content">
+                  <div className="switch-checkbox">
+                    <Switch
+                      className="react-switch"
+                      onChange={this.handleChangeCheckOnline}
+                      checked={this.state.checkOnlineTMP}
+                      aria-labelledby="neat-label"
+                      height={26}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="item-block">
+                <div className="title">
+                  Xóa cache:
+                </div>
+                <div className="content">
+                  <input type="checkbox" className="cb-remove-cache"
+                    checked={this.state.isRemoveCacheTMP}
+                    onChange={this.toggleChange.bind(this)}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="configs-footer">
+              <button className="btn close-button" onClick={this.closeModel.bind(this)}>
+                Đóng
+              </button>
+              <button className="btn handle-configs" onClick={this.saveConfigs.bind(this)}>
+                Lưu
+              </button>
+            </div>
+          </div>
+          : ""
+        }
+        {
+          this.state.type == 'confirmCheckOnline' ?
+            <div className="check-online-block">
+              <div className="check-online-header">
+                <p className="text-title">Xác nhận</p>
+                <span className="icon-cross" onClick={this.closeModel.bind(this)}></span>
+              </div>
+              <div className="check-online-content">
+                <p>Bạn có muốn chuyển ứng dụng sang 
+                  <span 
+                    className={
+                    classnames('text-color-green', {
+                      'text-color-red' : !this.state.checkOnlineTMP,
+                    })}
+                  >
+                    {
+                      this.state.checkOnlineTMP ?
+                      ' ONLINE ' :
+                      ' OFFLINE '
+                    }
+                  </span> 
+                ?</p>
+                {
+                  this.state.checkOnlineTMP && this.props.storeOrder &&  this.props.storeOrder.length > 0
+                  ?
+                    <div>
+                      <p>Có
+                        <span className="text-color-red"> {this.props.storeOrder.length} </span>
+                         hóa đơn offline, hệ thống sẽ chuyển sang online</p>
+                      <p>sau khi đồng bộ đến server.</p>
+                    </div>
+                  : ""
+                }
+              </div>
+              <div className="check-online-footer">
+                <button className="btn close-button" onClick={this.closeModelAffterConfirm.bind(this)}>
+                  Đóng
+                </button>
+                <button className="btn handle-check-online" onClick={this.confirmChange.bind(this)}>
+                  Xác nhận
+                </button>
+              </div>
+            </div>
+          : ""
+        }
         </Modal>
       </header>
     );
@@ -333,7 +540,9 @@ Header.contextTypes = {
 
 const bindStateToProps = (state) => {
   return {
-    totalPromotion: state.totalPromotion
+    totalPromotion: state.totalPromotion,
+    storeOrder: state.storeOrder,
+    checkOffline: state.checkOffline
   }
 }
 
